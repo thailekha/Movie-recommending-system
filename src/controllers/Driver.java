@@ -1,0 +1,66 @@
+package controllers;
+import java.io.File;
+
+import asg.cliche.Command;
+import asg.cliche.Param;
+import asg.cliche.Shell;
+import asg.cliche.ShellFactory;
+import edu.princeton.cs.introcs.In;
+
+public class Driver {
+
+	public Driver() throws Exception {
+
+	}
+
+	public static void main(String[] agrs) throws Exception {
+		// new Driver().read(1);
+
+		Driver main = new Driver();
+
+		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
+				main);
+		shell.commandLoop();
+	}
+
+	@Command(description = "Create a new User")
+	public void createUser(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
+			@Param(name = "email") String email, @Param(name = "password") String password) {
+
+	}
+
+	public void read(int tokenLength) throws Exception {
+		File usersFile = new File("small_data/genre.dat");
+		In inUsers = new In(usersFile);
+		// each field is separated(delimited) by a '|'
+		String delims = "[|]";
+		while (!inUsers.isEmpty()) {
+			// get user and rating from data source
+			String userDetails = inUsers.readLine();
+			System.out.println(userDetails);
+
+			// parse user details string
+			String[] userTokens = userDetails.split(delims);
+
+			// output user data to console.
+			if (userTokens.length == tokenLength) {
+				// System.out.println("UserID: "+userTokens[0]+",First Name:"+
+				// userTokens[1]+",Surname:" + userTokens[2]+",Age:"+
+				// Integer.parseInt(userTokens[3])+",Gender:"+userTokens[4]+",Occupation:"+
+				// userTokens[5]);
+				for (int i = 0; i < tokenLength; i++)
+					System.out.println(userTokens[i]);
+
+			} else {
+				throw new Exception("Invalid member length: " + userTokens.length);
+			}
+		}
+	}
+
+	// Object castcader(String x,String type){
+	// switch(type) {
+	// case "int": return (int) x;
+	// }
+	// return null;
+	// }
+}
