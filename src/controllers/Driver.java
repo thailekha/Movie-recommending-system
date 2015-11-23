@@ -1,16 +1,24 @@
 package controllers;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 import asg.cliche.Command;
 import asg.cliche.Param;
 import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
 import edu.princeton.cs.introcs.In;
+import models.User;
 
 public class Driver {
 
-	public Driver() throws Exception {
+	private Recommender recommender;
 
+	public Driver() throws Exception {
+		recommender = new Recommender();
 	}
 
 	public static void main(String[] agrs) throws Exception {
@@ -23,11 +31,18 @@ public class Driver {
 		shell.commandLoop();
 	}
 
-	@Command(description = "Create a new User")
-	public void createUser(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
-			@Param(name = "email") String email, @Param(name = "password") String password) {
-
+	@Command(description = "Add a new User")
+	public void addUser(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
+			@Param(name = "age") int age, @Param(name = "gender") String gender,
+			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) {
+		recommender.addUser(firstName, lastName, age, gender, occupation, zip);
 	}
+	
+	@Command(description="Get all users details")
+	  public void getUsers ()
+	  {
+	    
+	  }
 
 	public void read(int tokenLength) throws Exception {
 		File usersFile = new File("small_data/genre.dat");

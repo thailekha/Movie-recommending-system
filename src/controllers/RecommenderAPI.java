@@ -3,7 +3,7 @@ import models.Movie;
 import models.Rating;
 
 public interface RecommenderAPI {
-	void addUser(String firstName, String lastName, int age, String gender, String occupation);
+	void addUser(String firstName, String lastName, int age, String gender, String occupation,String zip);
 
 	void removeUser(int userID);
 
