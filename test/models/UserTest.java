@@ -31,12 +31,12 @@ public class UserTest {
 
 	@Test
 	public void testCreateUser() {
-		User a = new User("Monkey D", "Luffy", 17, "M", "student", "123456");
+		User a = new User("Monkey D", "Luffy", "17", "M", "student", "123456");
 
 		assertEquals(a.getUserId(), 1);
 		assertEquals(a.getFirstName(), "Monkey D");
 		assertEquals(a.getLastName(), "Luffy");
-		assertEquals(a.getAge(), 17);
+		assertEquals(a.getAge(), "17");
 		assertEquals(a.getGender(), "M");
 		assertEquals(a.getOccupation(), "student");
 		assertEquals(a.getZip(), "123456");
@@ -44,13 +44,13 @@ public class UserTest {
 
 	@Test
 	public void testCreateManyUser() {
-		User a = new User("Monkey D", "Luffy", 17, "M", "student", "123456");
-		User b = new User("Zorro", "Swordman", 19, "M", "student", "78990");
+		User a = new User("Monkey D", "Luffy", "17", "M", "student", "123456");
+		User b = new User("Zorro", "Swordman", "19", "M", "student", "78990");
 
 		assertEquals(a.getUserId(), 1);
 		assertEquals(a.getFirstName(), "Monkey D");
 		assertEquals(a.getLastName(), "Luffy");
-		assertEquals(a.getAge(), 17);
+		assertEquals(a.getAge(), "17");
 		assertEquals(a.getGender(), "M");
 		assertEquals(a.getOccupation(), "student");
 		assertEquals(a.getZip(), "123456");
@@ -58,7 +58,7 @@ public class UserTest {
 		assertEquals(b.getUserId(), 2);
 		assertEquals(b.getFirstName(), "Zorro");
 		assertEquals(b.getLastName(), "Swordman");
-		assertEquals(b.getAge(), 19);
+		assertEquals(b.getAge(), "19");
 		assertEquals(b.getGender(), "M");
 		assertEquals(b.getOccupation(), "student");
 		assertEquals(b.getZip(), "78990");
@@ -66,13 +66,16 @@ public class UserTest {
 
 	@Test
 	public void testCreateInvalidUser() {
-		User a = new User(null, "", 100, "       ", "aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-				+ "aaaaaaaaaaaaaaaaaaaaaaa", "      123456789      ");
+		String longStr = "";
+		for(int i = 0; i < 300;i++) {
+			longStr += i;
+		}
+		User a = new User(null, "", null, "       ", longStr, "      123456789      ");
 		
 		assertEquals(a.getUserId(), 1);
 		assertEquals(a.getFirstName(), "default first name");
 		assertEquals(a.getLastName(), "default last name");
-		assertEquals(a.getAge(), -1);
+		assertEquals(a.getAge(), "default age");
 		assertEquals(a.getGender(), "F");
 		assertEquals(a.getOccupation(), "default occupation");
 		assertEquals(a.getZip(), "123456789");
@@ -80,8 +83,8 @@ public class UserTest {
 	
 	@Test
 	public void testEqual() {
-		User a = new User("Monkey D", "Luffy", 17, "M", "student", "123456");
-		User b = new User("Zorro", "Swordman", 19, "M", "student", "78990");
+		User a = new User("Monkey D", "Luffy", "17", "M", "student", "123456");
+		User b = new User("Zorro", "Swordman", "19", "M", "student", "78990");
 		
 		assertEquals(a,a);
 		assertNotEquals(a,b);

@@ -9,15 +9,16 @@ public class User {
 	// Each user has rated at least 20 movies
 	private static long counter = 1;
 	private long userId;
-	private String firstName, lastName, gender, occupation, zip;
-	private int age;
+	private String firstName, lastName, age, gender, occupation, zip;
+	//private int age;
 
-	public User(String firstName, String lastName, int age, String gender, String occupation, String zip) {
+	public User(String firstName, String lastName, String age, String gender, String occupation, String zip) {
 		String[] strs = new String[] { firstName, lastName, gender, occupation, zip };
 		userId = counter++;
 		this.firstName = Valid.str(firstName, "default first name");
 		this.lastName = Valid.str(lastName, "default last name");
-		this.age = Valid.integer(age, 1, 99, -1);
+		//this.age = Valid.integer(age, 1, 99, -1);
+		this.age = Valid.str(age, "default age");
 		this.gender = Valid.str(gender, "F");
 		this.occupation = Valid.str(occupation, "default occupation");
 		this.zip = Valid.str(zip, "default zip");
@@ -36,7 +37,7 @@ public class User {
 		return lastName;
 	}
 	
-	public int getAge() {
+	public String getAge() {
 		return age;
 	}
 

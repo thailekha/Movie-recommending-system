@@ -6,7 +6,7 @@ public class Valid {
 		if(toCheck == null)
 			return defaultStr;
 		String result = toCheck.trim();
-		return (result.length() > 0 && result.length() <= 50) ? result : defaultStr;
+		return (result.length() > 0 && result.length() <= 200) ? result : defaultStr;
 	}
 
 	public static int integer(int toCheck, int min, int max, int defaultInt) {
