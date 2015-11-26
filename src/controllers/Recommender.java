@@ -1,20 +1,31 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
+import models.Movie;
 import models.User;
 
 public class Recommender {
 
-	private List<User> users = new ArrayList<>();
+	private HashMap<Long,User> users = new HashMap<>();
+	private HashMap<Long,Movie> movies = new HashMap<>();
 
 	public void addUser(String firstName, String lastName, String age, String gender, String occupation, String zip) {
 		// TODO Auto-generated method stub
-		users.add(new User(firstName, lastName, age, gender, occupation, zip));
+		User u = new User(firstName, lastName, age, gender, occupation, zip);
+		users.put(u.getUserId(),u);
 	}
 	
-	public List<User> getUsers() {
+	public HashMap<Long,User> getUsers() {
 		return users;
+	}
+
+	public void addMovie(String title, String releaseDate, String url, String genreCode) {
+		// TODO Auto-generated method stub
+		Movie m = new Movie(title,releaseDate,url,genreCode);
+		movies.put(m.getMovieId(), m);
 	}
 }

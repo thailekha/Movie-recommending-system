@@ -14,14 +14,14 @@ public class User {
 
 	public User(String firstName, String lastName, String age, String gender, String occupation, String zip) {
 		String[] strs = new String[] { firstName, lastName, gender, occupation, zip };
-		userId = counter++;
-		this.firstName = Valid.str(firstName, "default first name");
-		this.lastName = Valid.str(lastName, "default last name");
+		this.userId = counter++;
+		this.firstName = Valid.str(firstName, 200,"default first name");
+		this.lastName = Valid.str(lastName, 200,"default last name");
 		//this.age = Valid.integer(age, 1, 99, -1);
-		this.age = Valid.str(age, "default age");
-		this.gender = Valid.str(gender, "F");
-		this.occupation = Valid.str(occupation, "default occupation");
-		this.zip = Valid.str(zip, "default zip");
+		this.age = Valid.str(age, 3,"default age");
+		this.gender = Valid.str(gender, 1 ,"F");
+		this.occupation = Valid.str(occupation, 200,"default occupation");
+		this.zip = Valid.str(zip, 200,"default zip");
 		System.out.println(this);
 	}
 
@@ -76,5 +76,9 @@ public class User {
 	
 	public static void resetCounter() {
 		counter = 1;
+	}
+	
+	public static long getCounter() {
+		return counter;
 	}
 }
