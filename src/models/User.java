@@ -1,28 +1,31 @@
 package models;
 
+import java.util.Comparator;
+
 import com.google.common.base.Objects;
 
 import utils.ToJsonString;
 import utils.Valid;
 
-public class User {
+//TODO: NAMES IN LOWER CASE ?
+public class User implements Comparable<User> {
 	// Each user has rated at least 20 movies
 	private static long counter = 1;
 	private long userId;
 	private String firstName, lastName, age, gender, occupation, zip;
-	//private int age;
+	// private int age;
 
 	public User(String firstName, String lastName, String age, String gender, String occupation, String zip) {
 		String[] strs = new String[] { firstName, lastName, gender, occupation, zip };
 		this.userId = counter++;
-		this.firstName = Valid.str(firstName, 200,"default first name");
-		this.lastName = Valid.str(lastName, 200,"default last name");
-		//this.age = Valid.integer(age, 1, 99, -1);
-		this.age = Valid.str(age, 3,"default age");
-		this.gender = Valid.str(gender, 1 ,"F");
-		this.occupation = Valid.str(occupation, 200,"default occupation");
-		this.zip = Valid.str(zip, 200,"default zip");
-		System.out.println(this);
+		this.firstName = Valid.str(firstName, 200, "default first name");
+		this.lastName = Valid.str(lastName, 200, "default last name");
+		// this.age = Valid.integer(age, 1, 99, -1);
+		this.age = Valid.str(age, 3, "default age");
+		this.gender = Valid.str(gender, 1, "F");
+		this.occupation = Valid.str(occupation, 200, "default occupation");
+		this.zip = Valid.str(zip, 200, "default zip");
+		// System.out.println(this);
 	}
 
 	public long getUserId() {
@@ -36,7 +39,7 @@ public class User {
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public String getAge() {
 		return age;
 	}
@@ -53,8 +56,13 @@ public class User {
 		return zip;
 	}
 
-	public String toString() {
+	public String toJsonString() {
 		return new ToJsonString(getClass(), this).toString();
+	}
+
+	public String toString() {
+		return userId + " - " + firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", "
+				+ zip;
 	}
 
 	@Override
@@ -73,12 +81,42 @@ public class User {
 			return false;
 		}
 	}
-	
+
 	public static void resetCounter() {
 		counter = 1;
 	}
-	
+
 	public static long getCounter() {
 		return counter;
+	}
+
+	// firstName, lastName, age, gender, occupation, zip
+	@Override
+	public int compareTo(User that) {
+		int compareFirstName = firstName.toLowerCase().compareTo(that.firstName.toLowerCase());
+		int compareLastName = lastName.toLowerCase().compareTo(that.lastName.toLowerCase());
+		if (compareFirstName < 0)
+			return -1;
+		else if (compareFirstName > 0)
+			return 1;
+		if (compareLastName < 0)
+			return -1;
+		else if (compareLastName > 0)
+			return 1;
+		return 0;
+	}
+	
+	public int compareTo(String firstName, String lastName) {
+		int compareFirstName = this.firstName.toLowerCase().compareTo(firstName.toLowerCase());
+		int compareLastName = this.lastName.toLowerCase().compareTo(lastName.toLowerCase());
+		if (compareFirstName < 0)
+			return -1;
+		else if (compareFirstName > 0)
+			return 1;
+		if (compareLastName < 0)
+			return -1;
+		else if (compareLastName > 0)
+			return 1;
+		return 0;
 	}
 }
