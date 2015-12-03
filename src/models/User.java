@@ -1,31 +1,40 @@
 package models;
 
 import java.util.Comparator;
+import java.util.HashSet;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
 
 import utils.ToJsonString;
 import utils.Valid;
 
-//TODO: NAMES IN LOWER CASE ?
+//TODO: NAMES IN LOWER CASE ? / OCCUPATION
 public class User implements Comparable<User> {
 	// Each user has rated at least 20 movies
 	private static long counter = 1;
+	private static HashSet<String> occupations = Sets.newHashSet("administrator", "artist", "doctor", "educator",
+			"engineer", "entertainment", "executive", "healthcare", "homemaker", "lawyer", "librarian", "marketing",
+			"none", "other", "programmer", "retired", "salesman", "scientist", "student", "technician", "writer");
 	private long userId;
-	private String firstName, lastName, age, gender, occupation, zip;
-	// private int age;
+	private String firstName, lastName, gender, occupation, zip;
+	private int age;
 
-	public User(String firstName, String lastName, String age, String gender, String occupation, String zip) {
-		String[] strs = new String[] { firstName, lastName, gender, occupation, zip };
-		this.userId = counter++;
-		this.firstName = Valid.str(firstName, 200, "default first name");
-		this.lastName = Valid.str(lastName, 200, "default last name");
-		// this.age = Valid.integer(age, 1, 99, -1);
-		this.age = Valid.str(age, 3, "default age");
-		this.gender = Valid.str(gender, 1, "F");
-		this.occupation = Valid.str(occupation, 200, "default occupation");
-		this.zip = Valid.str(zip, 200, "default zip");
-		// System.out.println(this);
+	public User(String firstName, String lastName, int age, String gender, String occupation, String zip)
+			throws Exception {
+		if (str(firstName, 200) && str(lastName, 200) && str(gender, 1) && occupations.contains(occupation)
+				&& str(zip, 200) && age > 0 && age < 100) {
+			this.userId = counter++;
+			this.firstName = firstName.trim();
+			this.lastName = lastName.trim();
+			this.age = age;
+			this.gender = gender.trim();
+			this.occupation = occupation.trim();
+			this.zip = zip.trim();
+			// System.out.println(this);
+		} else {
+			throw new Exception();
+		}
 	}
 
 	public long getUserId() {
@@ -40,7 +49,7 @@ public class User implements Comparable<User> {
 		return lastName;
 	}
 
-	public String getAge() {
+	public int getAge() {
 		return age;
 	}
 
@@ -67,7 +76,8 @@ public class User implements Comparable<User> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.lastName, this.firstName, this.gender, this.occupation, this.zip, this.age);
+		return Objects.hashCode(this.userId, this.lastName, this.firstName, this.gender, this.occupation, this.zip,
+				this.age);
 	}
 
 	@Override
@@ -97,26 +107,52 @@ public class User implements Comparable<User> {
 		int compareLastName = lastName.toLowerCase().compareTo(that.lastName.toLowerCase());
 		if (compareFirstName < 0)
 			return -1;
-		else if (compareFirstName > 0)
+		if (compareFirstName > 0)
 			return 1;
 		if (compareLastName < 0)
 			return -1;
-		else if (compareLastName > 0)
+		if (compareLastName > 0)
+			return 1;
+		if(age < that.age)
+			return -1;
+		if(age > that.age)
 			return 1;
 		return 0;
 	}
-	
-	public int compareTo(String firstName, String lastName) {
+
+	public int compareTo(String firstName, String lastName, int age) {
 		int compareFirstName = this.firstName.toLowerCase().compareTo(firstName.toLowerCase());
 		int compareLastName = this.lastName.toLowerCase().compareTo(lastName.toLowerCase());
 		if (compareFirstName < 0)
 			return -1;
-		else if (compareFirstName > 0)
+		if (compareFirstName > 0)
 			return 1;
 		if (compareLastName < 0)
 			return -1;
-		else if (compareLastName > 0)
+		if (compareLastName > 0)
+			return 1;
+		if(this.age < age)
+			return -1;
+		if(this.age > age)
 			return 1;
 		return 0;
 	}
+
+	// For testing
+	public static void incrementCounter() {
+		counter++;
+	}
+
+	private static boolean str(String toCheck, int length) {
+		if (toCheck == null)
+			return false;
+		String result = toCheck.trim();
+		return result.length() > 0 && result.length() <= length;
+	}
+
+	// private String identifyOccupation(String oc) {
+	// switch(oc.toLowerCase()) {
+	//
+	// }
+	// }
 }

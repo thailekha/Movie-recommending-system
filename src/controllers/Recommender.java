@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import models.Movie;
+import models.Rating;
 import models.User;
 
 public class Recommender {
@@ -14,7 +15,8 @@ public class Recommender {
 	private HashMap<Long, User> users = new HashMap<>();
 	private HashMap<Long, Movie> movies = new HashMap<>();
 	private ArrayList<Long> userIdList = new ArrayList<>();
-
+	private ArrayList<Rating> ratings = new ArrayList<>();
+	
 	public void addUser(String firstName, String lastName, String age, String gender, String occupation, String zip) {
 		// TODO Auto-generated method stub
 		User u = new User(firstName, lastName, age, gender, occupation, zip);
@@ -125,6 +127,11 @@ public class Recommender {
 			}
 		}
 		return results;
+	}
+	
+	public void addRating(long userID, long movieID, int rating) throws Exception {
+		if(users.containsKey(userID) && movies.containsKey(movieID))
+			ratings.add(new Rating(userID, movieID, rating));
 	}
 
 	public Movie getMovie(Long id) {

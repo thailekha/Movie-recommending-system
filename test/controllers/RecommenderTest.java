@@ -31,6 +31,7 @@ public class RecommenderTest {
 	@Before
 	public void setUp() throws Exception {
 		User.resetCounter();
+		Movie.resetCounter();
 		r = new Recommender();		
 	}
 
