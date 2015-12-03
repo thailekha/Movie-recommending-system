@@ -70,14 +70,12 @@ public class UserTest {
 
 	@Test
 	public void testCreateInvalidUser() {
-		
-		User a;
 		try {
 			String longStr = "";
 			for(int i = 0; i < 300;i++) {
 				longStr += i;
 			}
-			a = new User(null, "", 999, "       ", longStr, "      123456789      ");
+			User a = new User(null, "", 999, "       ", longStr, "      123456789      ");
 			fail("Should have thrown an Exception");
 		} catch (Exception e) {
 			assertTrue(true);

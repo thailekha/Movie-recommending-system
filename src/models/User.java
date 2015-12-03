@@ -37,6 +37,18 @@ public class User implements Comparable<User> {
 		}
 	}
 
+	//For searching query
+	public User(String firstName, String lastName, int age) throws Exception {
+		if (str(firstName, 200) && str(lastName, 200) && age > 0 && age < 100) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+			this.age = age;
+		}
+		else {
+			throw new Exception();
+		}
+	}
+
 	public long getUserId() {
 		return userId;
 	}
@@ -113,30 +125,32 @@ public class User implements Comparable<User> {
 			return -1;
 		if (compareLastName > 0)
 			return 1;
-		if(age < that.age)
+		if (age < that.age)
 			return -1;
-		if(age > that.age)
+		if (age > that.age)
 			return 1;
 		return 0;
 	}
 
-	public int compareTo(String firstName, String lastName, int age) {
-		int compareFirstName = this.firstName.toLowerCase().compareTo(firstName.toLowerCase());
-		int compareLastName = this.lastName.toLowerCase().compareTo(lastName.toLowerCase());
-		if (compareFirstName < 0)
-			return -1;
-		if (compareFirstName > 0)
-			return 1;
-		if (compareLastName < 0)
-			return -1;
-		if (compareLastName > 0)
-			return 1;
-		if(this.age < age)
-			return -1;
-		if(this.age > age)
-			return 1;
-		return 0;
-	}
+	// public int compareTo(String firstName, String lastName, int age) {
+	// int compareFirstName =
+	// this.firstName.toLowerCase().compareTo(firstName.toLowerCase());
+	// int compareLastName =
+	// this.lastName.toLowerCase().compareTo(lastName.toLowerCase());
+	// if (compareFirstName < 0)
+	// return -1;
+	// if (compareFirstName > 0)
+	// return 1;
+	// if (compareLastName < 0)
+	// return -1;
+	// if (compareLastName > 0)
+	// return 1;
+	// if(this.age < age)
+	// return -1;
+	// if(this.age > age)
+	// return 1;
+	// return 0;
+	// }
 
 	// For testing
 	public static void incrementCounter() {

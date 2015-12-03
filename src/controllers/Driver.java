@@ -24,14 +24,14 @@ public class Driver {
 
 	public Driver() throws Exception {
 		recommender = new Recommender();
-		User[] users = Fixtures.getUsersForSort2();
+		User[] users = Fixtures.getSimilarUsers();
 
 		for (int i = 0; i < users.length; i++) {
 			recommender.addUser(users[i]);
 		}
-		
+
 		Movie[] movies = Fixtures.getMovies();
-		for(int i = 0; i < movies.length; i++) {
+		for (int i = 0; i < movies.length; i++) {
 			recommender.addMovie(movies[i]);
 		}
 	}
@@ -46,67 +46,80 @@ public class Driver {
 
 	@Command(description = "Add a new User")
 	public void createUser(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
-			@Param(name = "age") String age, @Param(name = "gender") String gender,
-			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) {
+			@Param(name = "age") int age, @Param(name = "gender") String gender,
+			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) throws Exception {
 		recommender.addUser(firstName, lastName, age, gender, occupation, zip);
 	}
 
 	@Command(description = "Add a new Movie")
 	public void createMovie(@Param(name = "Movie title") String title,
 			@Param(name = "Movie release date") String releaseDate, @Param(name = "Movie url") String url,
-			@Param(name = "Genre code") String genreCode) {
+			@Param(name = "Genre code") String genreCode) throws Exception {
 		recommender.addMovie(title, releaseDate, url, genreCode);
 	}
-	
+
 	@Command(description = "Get all movies details")
 	public void getMovies() {
 		Iterator<Movie> movies = recommender.getMovies().values().iterator();
 		while (movies.hasNext()) {
 			System.out.println(movies.next().toString());
 		}
-//		ArrayList<Long> ids = recommender.getUserIdList();
-//		for(Long id: ids) {
-//			System.out.println(recommender.getUser(id));
-//		}
+		// ArrayList<Long> ids = recommender.getUserIdList();
+		// for(Long id: ids) {
+		// System.out.println(recommender.getUser(id));
+		// }
 	}
 
 	@Command(description = "Get a movie detals")
 	public void getMovie(@Param(name = "Movie ID") Long id) {
 		Movie m = recommender.getMovie(id);
-		if(m == null)
+		if (m == null)
 			System.out.println("Movie not found");
 		else
 			System.out.println(m);
-	}	
-	
+	}
+
 	@Command(description = "Get all users details")
 	public void getUsers() {
-//		Iterator<User> users = recommender.getUsers().values().iterator();
-//		while (users.hasNext()) {
-//			System.out.println(users.next().toString());
-//		}
+		// Iterator<User> users = recommender.getUsers().values().iterator();
+		// while (users.hasNext()) {
+		// System.out.println(users.next().toString());
+		// }
 		ArrayList<Long> ids = recommender.getUserIdList();
-		for(Long id: ids) {
+		for (Long id : ids) {
 			System.out.println(recommender.getUser(id));
 		}
 	}
 
 	@Command(description = "Look up user(s)")
-	public void userLookup(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName) {
-		ArrayList<User> foundUsers = recommender.searchUser(firstName, lastName);
-		if (foundUsers.size() == 0) {
+	public void userLookup(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
+			@Param(name = "age") int age) throws Exception {
+		ArrayList<Comparable> found = recommender.searchUser(firstName, lastName,age);
+		if (found.size() == 0) {
 			System.out.println("Not found");
 		} else {
-			for (User user : foundUsers) {
-				System.out.println(user);
+			for (Comparable item : found) {
+				System.out.println(item);
 			}
 		}
 	}
 	
+	@Command(description = "Look up movie(s)")
+	public void movieLookup(@Param(name = "movive title") String title) throws Exception {
+		ArrayList<Comparable> found = recommender.searchMovie(title);
+		if (found.size() == 0) {
+			System.out.println("Not found");
+		} else {
+			for (Comparable item : found) {
+				System.out.println(item);
+			}
+		}
+	}
+
 	@Command(description = "Remove a user")
 	public void removeUser(@Param(name = "User ID") Long id) {
 		User removed = recommender.removeUser(id);
-		if(removed == null)
+		if (removed == null)
 			System.out.println("User not existed");
 		else
 			System.out.println("Deleted --> " + removed);

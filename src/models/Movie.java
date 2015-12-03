@@ -23,6 +23,13 @@ public class Movie implements Comparable<Movie> {
 		}
 	}
 
+	public Movie(String title) throws Exception {
+		if(str(title, 200)) 
+			this.title = title;
+		else
+			throw new Exception();
+	}
+	
 	public long getMovieId() {
 		return movieId;
 	}
@@ -65,7 +72,7 @@ public class Movie implements Comparable<Movie> {
 	
 	@Override
 	public int compareTo(Movie that) {
-		int compareTitle = title.compareTo(that.title);
+		int compareTitle = title.toLowerCase().compareTo(that.title.toLowerCase());
 		if(compareTitle < 0)
 			return -1;
 		if(compareTitle > 0)
