@@ -5,13 +5,13 @@ import models.Rating;
 public interface RecommenderAPI {
 	void addUser(String firstName, String lastName, int age, String gender, String occupation,String zip);
 
-	void removeUser(int userID);
+	void removeUser(long userID);
 
 	void addMovie(String title, int year, String url);
 
-	void addRating(int userID, int movieID, int rating);
+	void addRating(long userID, long movieID, int rating);
 
-	Movie getMovie(int movieID);
+	Movie getMovie(long movieID);
 
 	Rating getUserRatings(int userID);
 

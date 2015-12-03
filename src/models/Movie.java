@@ -49,7 +49,7 @@ public class Movie {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj instanceof User) {
+		if (obj instanceof Movie) {
 			final Movie other = (Movie) obj;
 			return Objects.equal(title, other.getTitle()) && Objects.equal(releaseDate, other.getReleaseDate())
 					&& Objects.equal(url, other.getUrl()) && Objects.equal(genreCode, other.getGenreCode());

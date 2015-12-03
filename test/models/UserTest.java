@@ -12,14 +12,6 @@ public class UserTest {
 	// String firstName, String lastName, int age, String gender, String
 	// occupation, String zip
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		User.resetCounter();

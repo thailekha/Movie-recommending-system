@@ -28,7 +28,9 @@ public class Fixtures {
 				new User("a", "Jerry", "99", "M", "unknown", "456567"), };
 	}
 	
-	public static User[] sorted = new User[] {
-
-	};
+	public static Movie[] getMovies() {
+		return new Movie[]{new Movie("Toy Story (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)","0001100000000000000"),
+				new Movie("GoldenEye (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?GoldenEye%20(1995)","0001100000000000000"),
+				new Movie("Get Shorty (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Get%20Shorty%20(1995)","010001001000000000")};
+	}
 }

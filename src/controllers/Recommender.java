@@ -18,12 +18,11 @@ public class Recommender {
 	public void addUser(String firstName, String lastName, String age, String gender, String occupation, String zip) {
 		// TODO Auto-generated method stub
 		User u = new User(firstName, lastName, age, gender, occupation, zip);
-		if(!users.containsValue(u)) {
+		if (!users.containsValue(u)) {
 			users.put(u.getUserId(), u);
 			userIdList.add(u.getUserId());
 			addSort(userIdList);
 		}
-		
 	}
 
 	public void addUser(User user) {
@@ -49,7 +48,15 @@ public class Recommender {
 	public void addMovie(String title, String releaseDate, String url, String genreCode) {
 		// TODO Auto-generated method stub
 		Movie m = new Movie(title, releaseDate, url, genreCode);
-		movies.put(m.getMovieId(), m);
+		if (!movies.containsValue(m)) {
+			movies.put(m.getMovieId(), m);
+		}
+	}
+
+	public void addMovie(Movie movie) {
+		if (!(movies.containsKey(movie.getMovieId()) && movies.containsValue(movie))) {
+			movies.put(movie.getMovieId(), movie);
+		}
 	}
 
 	public User getUser(Long id) {
@@ -120,6 +127,14 @@ public class Recommender {
 		return results;
 	}
 
+	public Movie getMovie(Long id) {
+		return movies.get(id);
+	}
+	
+	public HashMap<Long, Movie> getMovies() {
+		return movies;
+	}
+	
 	void addSort(ArrayList<Long> ids) {
 		for (int i = userIdList.size() - 1; i > 0; i--) {
 			long curId = userIdList.get(i);
@@ -146,7 +161,6 @@ public class Recommender {
 					// System.out.println(userIdList);
 				} else
 					break;
-
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,12 +13,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import models.Fixtures;
+import models.Movie;
 import models.User;
 
 public class RecommenderTest {
 	
 	Recommender r;
-	//User uA,uB,uC,uD,uE;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -108,5 +109,19 @@ public class RecommenderTest {
 			id--;
 		}
 		assertEquals(r.getUsersSize(),0);
+	}
+	
+	@Test
+	public void testGetMovie() {
+		Movie[] movies = Fixtures.getMovies();
+		for(int i = 0; i < movies.length; i++) {
+			r.addMovie(movies[i]);
+		}
+		Random rand = new Random();
+		for(int i = 0; i < 10000; i++){
+			int index = rand.nextInt(movies.length);
+			long id = (long) index + 1;
+			assertEquals(movies[index],r.getMovie(id));
+		}
 	}
 }

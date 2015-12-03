@@ -12,14 +12,6 @@ import utils.Valid;
 
 public class MovieTest {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		Movie.resetCounter();
@@ -37,6 +29,15 @@ public class MovieTest {
 		assertEquals(a.getReleaseDate(),"01-Jan-1995");
 		assertEquals(a.getUrl(),"http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)");
 		assertEquals(a.getGenreCode(),"0001100000000000000");
+		
+		Movie mirrorA = new Movie("Toy Story (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)","0001100000000000000");
+		assertEquals(mirrorA.getMovieId(),2);
+		assertEquals(mirrorA.getTitle(),"Toy Story (1995)");
+		assertEquals(mirrorA.getReleaseDate(),"01-Jan-1995");
+		assertEquals(mirrorA.getUrl(),"http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)");
+		assertEquals(mirrorA.getGenreCode(),"0001100000000000000");
+		
+		assertEquals(a,mirrorA);
 	}
 
 	@Test

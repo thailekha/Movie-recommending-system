@@ -7,12 +7,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import asg.cliche.Command;
 import asg.cliche.Param;
 import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
 import edu.princeton.cs.introcs.In;
 import models.Fixtures;
+import models.Movie;
 import models.User;
 
 public class Driver {
@@ -25,6 +28,11 @@ public class Driver {
 
 		for (int i = 0; i < users.length; i++) {
 			recommender.addUser(users[i]);
+		}
+		
+		Movie[] movies = Fixtures.getMovies();
+		for(int i = 0; i < movies.length; i++) {
+			recommender.addMovie(movies[i]);
 		}
 	}
 
@@ -49,7 +57,28 @@ public class Driver {
 			@Param(name = "Genre code") String genreCode) {
 		recommender.addMovie(title, releaseDate, url, genreCode);
 	}
+	
+	@Command(description = "Get all movies details")
+	public void getMovies() {
+		Iterator<Movie> movies = recommender.getMovies().values().iterator();
+		while (movies.hasNext()) {
+			System.out.println(movies.next().toString());
+		}
+//		ArrayList<Long> ids = recommender.getUserIdList();
+//		for(Long id: ids) {
+//			System.out.println(recommender.getUser(id));
+//		}
+	}
 
+	@Command(description = "Get a movie detals")
+	public void getMovie(@Param(name = "Movie ID") Long id) {
+		Movie m = recommender.getMovie(id);
+		if(m == null)
+			System.out.println("Movie not found");
+		else
+			System.out.println(m);
+	}	
+	
 	@Command(description = "Get all users details")
 	public void getUsers() {
 //		Iterator<User> users = recommender.getUsers().values().iterator();
