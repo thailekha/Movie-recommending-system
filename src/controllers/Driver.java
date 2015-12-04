@@ -133,12 +133,30 @@ public class Driver {
 	}
 	
 	@Command(description = "Get ratings")
-	public void getRatings() throws Exception {
+	public void getRatings() {
 		ArrayList<Rating> ratings = recommender.getRatings();
 		for(Rating r: ratings)
 			System.out.println(r);
 	}
 
+	@Command(description = "Get top ten movies")
+	public void getTopten() {
+		HashSet<Movie> topten = recommender.getTopTenMovies();
+		if(topten.size() == 0) {
+			System.out.println("Unavailable");
+			return;
+		}
+		
+		if(topten.size() < 10)
+			System.out.println("There are less than 10 movies that are top\nTop movies:");
+		else
+			System.out.println("Top ten movies:");
+		
+		Iterator<Movie> ite = topten.iterator();
+		while(ite.hasNext())
+			System.out.println(ite.next());
+	}
+	
 	// public void read(int tokenLength) throws Exception {
 	// File usersFile = new File("small_data/genre.dat");
 	// In inUsers = new In(usersFile);
