@@ -171,6 +171,14 @@ public class Recommender {
 		}
 	}
 	
+	public Rating getRating(long userId, long movieId) {
+		return ratingsDB.get(userId, movieId);
+	}
+	
+	public HashBasedTable<Long,Long,Rating> getRatingsDB() {
+		return ratingsDB;
+	}
+	
 	public Movie getMovie(Long id) {
 		return movies.get(id);
 	}
@@ -194,7 +202,6 @@ public class Recommender {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void sort(ArrayList<Long> ids, HashMap<Long, ? extends Comparable> map) {
 		for (int i = 1; i < ids.size(); i++) {
 			for (int j = i; j > 0; j--) {

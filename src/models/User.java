@@ -98,8 +98,10 @@ public class User implements Comparable<User> {
 	}
 	
 	public void removeRating(Rating r) {
-		if(r != null)
-			ratings.remove(r);
+		if(r != null) {
+			while(ratings.contains(r))
+				ratings.remove(r);
+		}
 	}
 	
 	public String toJsonString() {
