@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.common.collect.HashBasedTable;
+
 import models.Movie;
 import models.Rating;
 import models.User;
@@ -17,6 +19,7 @@ public class Recommender {
 	private ArrayList<Long> userIdList = new ArrayList<>();
 	private ArrayList<Long> movieIdList = new ArrayList<>();
 	private ArrayList<Rating> ratings = new ArrayList<>();
+	private HashBasedTable<Long,Long,Rating> ratingsDB = HashBasedTable.create(); //userid,movieid,rating
 	
 	public void addUser(String firstName, String lastName, int age, String gender, String occupation, String zip) throws Exception {
 		// TODO Auto-generated method stub
@@ -46,6 +49,10 @@ public class Recommender {
 		return userIdList;
 	}
 
+	public ArrayList<Rating> getRatings() {
+		return ratings;
+	}
+	
 	public int getUsersSize() {
 		return users.size();
 	}
@@ -83,14 +90,17 @@ public class Recommender {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public ArrayList<Comparable> searchUser(String firstName, String lastName, int age) throws Exception {
 		return search(users,userIdList,new User(firstName,lastName,age));
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public ArrayList<Comparable> searchMovie(String title) throws Exception {
 		return search(movies,movieIdList,new Movie(title));
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private ArrayList<Comparable> search(HashMap<Long,? extends Comparable> map,ArrayList<Long> ids,Comparable query) {
 		ArrayList<Comparable> results = new ArrayList<>();
 
@@ -146,11 +156,21 @@ public class Recommender {
 		return results;
 	}
 	
-	public void addRating(long userID, long movieID, int rating) throws Exception {
-		if(users.containsKey(userID) && movies.containsKey(movieID))
-			ratings.add(new Rating(userID, movieID, rating));
+	public void addRating(long userId, long movieId, int rating) throws Exception {
+		if(users.containsKey(userId) && movies.containsKey(movieId)) {
+			User user = users.get(userId);
+			Rating r = new Rating(userId, movieId, rating);
+			Rating put = ratingsDB.put(userId, movieId, r); //the previous value, if replaced
+			if(put != null) {
+				while(ratings.contains(put))
+					ratings.remove(put);
+				user.removeRating(put);
+			}
+			ratings.add(r);
+			user.addRating(r);
+		}
 	}
-
+	
 	public Movie getMovie(Long id) {
 		return movies.get(id);
 	}
@@ -159,6 +179,7 @@ public class Recommender {
 		return movies;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void addSort(ArrayList<Long> ids, HashMap<Long,? extends Comparable> map) {
 		for (int i = ids.size() - 1; i > 0; i--) {
 			long curId = ids.get(i);
@@ -173,6 +194,7 @@ public class Recommender {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void sort(ArrayList<Long> ids, HashMap<Long, ? extends Comparable> map) {
 		for (int i = 1; i < ids.size(); i++) {
 			for (int j = i; j > 0; j--) {
@@ -189,6 +211,7 @@ public class Recommender {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean less(Comparable p, Comparable q) {
 		return p.compareTo(q) < 0;
 	}

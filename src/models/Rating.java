@@ -43,7 +43,7 @@ public class Rating implements Comparable<Rating> {
 	public int compareTo(Rating that) {
 		if (rating < that.rating)
 			return -1;
-		else if (rating > that.rating)
+		if (rating > that.rating)
 			return 1;
 		return 0;
 	}

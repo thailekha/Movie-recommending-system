@@ -16,6 +16,7 @@ import asg.cliche.ShellFactory;
 import edu.princeton.cs.introcs.In;
 import models.Fixtures;
 import models.Movie;
+import models.Rating;
 import models.User;
 
 public class Driver {
@@ -94,7 +95,7 @@ public class Driver {
 	@Command(description = "Look up user(s)")
 	public void userLookup(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
 			@Param(name = "age") int age) throws Exception {
-		ArrayList<Comparable> found = recommender.searchUser(firstName, lastName,age);
+		ArrayList<Comparable> found = recommender.searchUser(firstName, lastName, age);
 		if (found.size() == 0) {
 			System.out.println("Not found");
 		} else {
@@ -103,7 +104,7 @@ public class Driver {
 			}
 		}
 	}
-	
+
 	@Command(description = "Look up movie(s)")
 	public void movieLookup(@Param(name = "movive title") String title) throws Exception {
 		ArrayList<Comparable> found = recommender.searchMovie(title);
@@ -123,6 +124,19 @@ public class Driver {
 			System.out.println("User not existed");
 		else
 			System.out.println("Deleted --> " + removed);
+	}
+
+	@Command(description = "Rate a movie")
+	public void rateMovie(@Param(name = "User ID") Long userId, @Param(name = "Movie ID") Long movieId,
+			@Param(name = "Rating") int rating) throws Exception {
+		recommender.addRating(userId, movieId, rating);
+	}
+	
+	@Command(description = "Get ratings")
+	public void getRatings() throws Exception {
+		ArrayList<Rating> ratings = recommender.getRatings();
+		for(Rating r: ratings)
+			System.out.println(r);
 	}
 
 	// public void read(int tokenLength) throws Exception {

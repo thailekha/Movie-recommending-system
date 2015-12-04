@@ -1,6 +1,8 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.common.base.Objects;
@@ -19,6 +21,8 @@ public class User implements Comparable<User> {
 	private long userId;
 	private String firstName, lastName, gender, occupation, zip;
 	private int age;
+	//private HashMap<Long,Rating> ratings = new HashMap<>(); //quicker to check duplicate ratings
+	private ArrayList<Rating> ratings = new ArrayList<>(); 
 
 	public User(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
@@ -77,6 +81,27 @@ public class User implements Comparable<User> {
 		return zip;
 	}
 
+	public ArrayList<Rating> getRatings() {
+		return ratings;
+	}
+	
+	//What to return if: new, duplicate. If duplicate, recommender need to find and replace
+//	public Rating addRating(long movieId, int rating) throws Exception {
+//		Rating r = new Rating(userId,movieId,rating);
+//		ratings.put(movieId, r);
+//		
+//	}
+	
+	public void addRating(Rating r) {
+		if(r != null && !ratings.contains(r))
+			ratings.add(r);
+	}
+	
+	public void removeRating(Rating r) {
+		if(r != null)
+			ratings.remove(r);
+	}
+	
 	public String toJsonString() {
 		return new ToJsonString(getClass(), this).toString();
 	}
