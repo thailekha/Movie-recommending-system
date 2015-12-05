@@ -61,7 +61,7 @@ public class Fixtures {
 		};
 	}
 	
-	public static Rating[] sampleDataRatings() throws Exception {
+	public static Rating[] sampleSmallDataRatings() throws Exception {
 		return new Rating[]{
 				new Rating(5,10,-5,875636493),
 				new Rating(1,1,3,878542420),
@@ -69,6 +69,17 @@ public class Fixtures {
 				new Rating(2,1,5,888552084),
 				new Rating(2,1,1,888980240),
 				new Rating(3,1,3,889237455)
+		};
+	}
+	
+	public static Rating[] sampleBigDataRatings() throws Exception {
+		return new Rating[]{
+				new Rating(196,242,1,881250949),
+				new Rating(186,302,1,891717742),
+				new Rating(712,662,5,874730320),
+				new Rating(380,684,1,885478886),
+				new Rating(13,225,-3,882399156),
+				new Rating(12,203,1,879959583)
 		};
 	}
 }

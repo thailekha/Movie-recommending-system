@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,11 +39,10 @@ public class Driver {
 	}
 
 	public static void main(String[] agrs) throws Exception {
-		// new Driver().read(1);
-		Driver main = new Driver();
-		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
-				main);
-		shell.commandLoop();
+		 Driver main = new Driver();
+		 Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
+		 main);
+		 shell.commandLoop();
 	}
 
 	@Command(description = "Add a new User")
@@ -131,32 +131,32 @@ public class Driver {
 			@Param(name = "Rating") int rating) throws Exception {
 		recommender.addRating(userId, movieId, rating);
 	}
-	
+
 	@Command(description = "Get ratings")
 	public void getRatings() {
 		ArrayList<Rating> ratings = recommender.getRatings();
-		for(Rating r: ratings)
+		for (Rating r : ratings)
 			System.out.println(r);
 	}
 
 	@Command(description = "Get top ten movies")
 	public void getTopten() {
 		HashSet<Movie> topten = recommender.getTopTenMovies();
-		if(topten.size() == 0) {
+		if (topten.size() == 0) {
 			System.out.println("Unavailable");
 			return;
 		}
-		
-		if(topten.size() < 10)
+
+		if (topten.size() < 10)
 			System.out.println("There are less than 10 movies that are top\nTop movies:");
 		else
 			System.out.println("Top ten movies:");
-		
+
 		Iterator<Movie> ite = topten.iterator();
-		while(ite.hasNext())
+		while (ite.hasNext())
 			System.out.println(ite.next());
 	}
-	
+
 	// public void read(int tokenLength) throws Exception {
 	// File usersFile = new File("small_data/genre.dat");
 	// In inUsers = new In(usersFile);

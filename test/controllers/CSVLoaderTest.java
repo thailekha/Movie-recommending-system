@@ -28,21 +28,13 @@ public class CSVLoaderTest {
 	@Test
 	public void testLoadUsers() {
 		try {
-			long preIDcounter = User.getCounter();
+			//long preCounter = User.getCounter();
 			User[] samples = Fixtures.sampleDataUsers();
-			HashSet<User> users = CSVLoader.loadUsers("small_data/users5.dat");
-			
+			HashSet<User> users = CSVLoader.loadUsers("data_movieLens/users.dat");
+			assertEquals(users.size(),943);
+			//assertEquals(User.getCounter(),users.size()+preCounter);
 			assertNotNull(users);
-			assertEquals(samples.length,users.size());
-			//assertEquals(User.getCounter(), preIDcounter + users.size());
-			Iterator<User> ite = users.iterator();
-			while (ite.hasNext()) {
-				User next = ite.next();
-				assertTrue(next instanceof User);
-				//System.out.println(next);
-			}
 			for (int i = 0; i < samples.length; i++) {
-				//System.out.println("Case: " + samples[i]);
 				assertTrue(users.contains(samples[i]));
 			}
 		} catch (Exception e) {
@@ -55,19 +47,9 @@ public class CSVLoaderTest {
 	public void testLoadMovies() {
 		try {
 			Movie[] samples = Fixtures.getMovies();
-			HashSet<Movie> movies = CSVLoader.loadMovies("small_data/items5.dat");
-			
+			HashSet<Movie> movies = CSVLoader.loadMovies("data_movieLens/newItems.dat");
 			assertNotNull(movies);
-			assertEquals(10,movies.size());
-			//assertEquals(User.getCounter(), preIDcounter + users.size());
-			Iterator<Movie> ite = movies.iterator();
-			while (ite.hasNext()) {
-				Movie next = ite.next();
-				assertTrue(next instanceof Movie);
-				//System.out.println(next);
-			}
 			for (int i = 0; i < samples.length; i++) {
-				System.out.println("Case: " + samples[i]);
 				assertTrue(movies.contains(samples[i]));
 			}
 		} catch (Exception e) {
@@ -78,11 +60,14 @@ public class CSVLoaderTest {
 	@Test
 	public void testLoadRatings() {
 		try {
-			Fixtures.sampleDataUsers();
-			Fixtures.getMovies();
-			Rating[] samples = Fixtures.sampleDataRatings();
-			HashSet<Rating> ratings = CSVLoader.loadRatings("small_data/ratings5.dat");
+			//Fixtures.sampleDataUsers();
+			//Fixtures.getMovies();
+			CSVLoader.loadUsers("data_movieLens/users.dat");
+			CSVLoader.loadMovies("data_movieLens/newItems.dat");
+			Rating[] samples = Fixtures.sampleBigDataRatings();
+			HashSet<Rating> ratings = CSVLoader.loadRatings("data_movieLens/ratings.dat");
 			assertNotNull(ratings);
+			assertEquals(ratings.size(),100000);
 			for(int i = 0; i < samples.length;i++) {
 				assertTrue(ratings.contains(samples[i]));
 			}

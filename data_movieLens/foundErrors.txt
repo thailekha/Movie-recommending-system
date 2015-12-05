@@ -1,0 +1,31 @@
+Empty entity before Kull the emperor ...
+==> deleted, then but missing a "new line" character
+Code used to fix : 
+
+		File file = new File("data_movieLens/items.dat");
+		In ins = new In(file);
+		try {
+			File newFile = new File("data_movieLens/newItems.dat");
+			FileOutputStream out = new FileOutputStream(newFile);
+			try {
+				String line = "";
+				while (!ins.isEmpty()) {
+					line = ins.readAll();
+					int position = line.indexOf("268|Chasing Amy");
+					String pre = line.substring(0, position);
+					String post = line.substring(position, line.length());
+					line = pre + '\n' + post;
+				}
+				out.write(line.getBytes());
+				System.out.println("ok");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				out.close();
+			}
+		} finally {
+			ins.close();
+		}
+
+Deadly cure - ULR empty error
+Boys in Venice - ULR empty error
