@@ -40,10 +40,35 @@ public class Fixtures {
 	public static Movie[] getMovies() throws Exception {
 		return new Movie[] {
 				new Movie("Toy Story (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)",
-						"0001100000000000000"),
+						"0001110000000000000"),
 				new Movie("GoldenEye (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?GoldenEye%20(1995)",
-						"0001100000000000000"),
+						"0110000000000000100"),
+				new Movie("Four Rooms (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Four%20Rooms%20(1995)",
+						"0000000000000000100"),
 				new Movie("Get Shorty (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Get%20Shorty%20(1995)",
-						"010001001000000000") };
+						"0100010010000000000") ,
+				new Movie("Shanghai Triad (Yao a yao yao dao waipo qiao) (1995)", "01-Jan-1995", "http://us.imdb.com/Title?Yao+a+yao+yao+dao+waipo+qiao+(1995)",
+						"0000000010000000000")};
+	}
+	
+	public static User[] sampleDataUsers() throws Exception {
+		return new User[]{
+				new User("Leonard", "Hernandez", 24, "M", "technician", "85711"),
+				new User("Melody", "Roberson", 53, "F", "other", "94043"),
+				new User("Gregory", "Newton", 23, "M", "writer", "32067"),
+				new User("Oliver", "George", 24, "M", "technician", "43537"),
+				new User("Jenna", "Parker", 33, "F", "other", "15213")
+		};
+	}
+	
+	public static Rating[] sampleDataRatings() throws Exception {
+		return new Rating[]{
+				new Rating(5,10,-5,875636493),
+				new Rating(1,1,3,878542420),
+				new Rating(1,1,5,889751711),
+				new Rating(2,1,5,888552084),
+				new Rating(2,1,1,888980240),
+				new Rating(3,1,3,889237455)
+		};
 	}
 }

@@ -113,9 +113,10 @@ public class User implements Comparable<User> {
 				+ zip;
 	}
 
+	//ID has affect on the Set contains method
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.userId, this.lastName, this.firstName, this.gender, this.occupation, this.zip,
+		return Objects.hashCode(this.lastName, this.firstName, this.gender, this.occupation, this.zip,
 				this.age);
 	}
 

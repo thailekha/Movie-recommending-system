@@ -56,7 +56,7 @@ public class Movie implements Comparable<Movie> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.movieId,this.title, this.releaseDate, this.url, this.genreCode);
+		return Objects.hashCode(this.title, this.releaseDate, this.url, this.genreCode);
 	}
 
 	@Override

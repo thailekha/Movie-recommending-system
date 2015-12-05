@@ -10,7 +10,7 @@ public class Rating implements Comparable<Rating> {
 
 	private static final HashSet<Integer> validRatings = Sets.newHashSet(-5, -3, -1, 0, 1, 3, 5);
 	private long userId, movieId;
-	private int rating; 
+	private int rating;
 	private long timestamp;
 
 	public Rating(long userId, long movieId, int rating) throws Exception {
@@ -19,6 +19,17 @@ public class Rating implements Comparable<Rating> {
 			this.movieId = movieId;
 			this.rating = rating;
 			this.timestamp = System.currentTimeMillis() * 1000;
+		} else
+			throw new Exception();
+	}
+
+	public Rating(long userId, long movieId, int rating, long timestamp) throws Exception {
+		if (userId < User.getCounter() && movieId < Movie.getCounter() && validRatings.contains(rating)
+				&& timestamp >= 0) {
+			this.userId = userId;
+			this.movieId = movieId;
+			this.rating = rating;
+			this.timestamp = timestamp;
 		} else
 			throw new Exception();
 	}
@@ -61,7 +72,7 @@ public class Rating implements Comparable<Rating> {
 		} else
 			return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.userId, this.movieId, this.rating, this.timestamp);
