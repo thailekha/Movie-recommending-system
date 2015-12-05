@@ -8,8 +8,16 @@ import models.Rating;
 import models.User;
 
 public class CSVLoader {
-	public static HashSet<User> loadUsers(String filename) throws Exception {
-		File file = new File(filename);
+	private String users, movies, ratings;
+
+	public CSVLoader(String users, String movies, String ratings) {
+		this.users = users;
+		this.movies = movies;
+		this.ratings = ratings;
+	}
+
+	public HashSet<User> loadUsers() throws Exception {
+		File file = new File(users);
 		In ins = new In(file);
 		try {
 			String delims = "[|]";
@@ -36,8 +44,8 @@ public class CSVLoader {
 		}
 	}
 
-	public static HashSet<Movie> loadMovies(String filename) throws Exception {
-		File file = new File(filename);
+	public HashSet<Movie> loadMovies() throws Exception {
+		File file = new File(movies);
 		In ins = new In(file);
 
 		try {
@@ -67,8 +75,8 @@ public class CSVLoader {
 		}
 	}
 
-	public static HashSet<Rating> loadRatings(String filename) throws Exception {
-		File file = new File(filename);
+	public HashSet<Rating> loadRatings() throws Exception {
+		File file = new File(ratings);
 		In ins = new In(file);
 		try {
 			String delims = "[|]";

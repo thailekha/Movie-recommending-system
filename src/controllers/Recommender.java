@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.HashBasedTable;
@@ -12,6 +13,7 @@ import com.google.common.collect.HashBasedTable;
 import models.Movie;
 import models.Rating;
 import models.User;
+import utils.CSVLoader;
 
 public class Recommender {
 
@@ -22,6 +24,8 @@ public class Recommender {
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private HashBasedTable<Long, Long, Rating> ratingsDB = HashBasedTable.create(); // userid,movieid,rating
+	private CSVLoader primer = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
+			"data_movieLens/ratings.dat");
 
 	public void addUser(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
@@ -178,6 +182,18 @@ public class Recommender {
 		}
 	}
 
+	public void addRating(Rating r) {
+		long uId = r.getUserId();
+		long mId = r.getMovieId();
+		if (users.containsKey(uId) && movies.containsKey(mId) && r.getTime() >= 0
+				&& Rating.checkRating(r.getRating())) {
+			ratings.add(r);
+			ratingsDB.put(r.getUserId(), r.getMovieId(), r);
+			users.get(uId).addRating(r);
+			ratingsSorted = false;
+		}
+	}
+
 	public Rating getRating(long userId, long movieId) {
 		return ratingsDB.get(userId, movieId);
 	}
@@ -200,13 +216,29 @@ public class Recommender {
 			if (!ratingsSorted) {
 				sortRatings();
 			}
-			for(int i = ratings.size() - 1; i >= 0; i--) {
+			for (int i = ratings.size() - 1; i >= 0; i--) {
 				Rating r = ratings.get(i);
-				if(r.getRating() > 0)
+				if (r.getRating() > 0)
 					topten.add(movies.get(r.getMovieId()));
 			}
 		}
 		return topten;
+	}
+
+	public void prime() throws Exception {
+		Iterator<User> users = primer.loadUsers().iterator();
+		Iterator<Movie> movies = primer.loadMovies().iterator();
+		Iterator<Rating> ratings = primer.loadRatings().iterator();
+
+		while (users.hasNext()) {
+			addUser(users.next());
+		}
+		while (movies.hasNext()) {
+			addMovie(movies.next());
+		}
+		while (ratings.hasNext()) {
+			addRating(ratings.next());
+		}
 	}
 
 	private void sortRatings() {
@@ -229,21 +261,22 @@ public class Recommender {
 		}
 	}
 
-//	private void sort(ArrayList<Long> ids, HashMap<Long, ? extends Comparable> map) {
-//		for (int i = 1; i < ids.size(); i++) {
-//			for (int j = i; j > 0; j--) {
-//				long curId = ids.get(j);
-//				long prevId = ids.get(j - 1);
-//				Comparable cur = map.get(curId);
-//				Comparable prev = map.get(prevId);
-//				if (less(cur, prev)) {
-//					Collections.swap(ids, j, j - 1);
-//					// System.out.println(userIdList);
-//				} else
-//					break;
-//			}
-//		}
-//	}
+	// private void sort(ArrayList<Long> ids, HashMap<Long, ? extends
+	// Comparable> map) {
+	// for (int i = 1; i < ids.size(); i++) {
+	// for (int j = i; j > 0; j--) {
+	// long curId = ids.get(j);
+	// long prevId = ids.get(j - 1);
+	// Comparable cur = map.get(curId);
+	// Comparable prev = map.get(prevId);
+	// if (less(cur, prev)) {
+	// Collections.swap(ids, j, j - 1);
+	// // System.out.println(userIdList);
+	// } else
+	// break;
+	// }
+	// }
+	// }
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean less(Comparable p, Comparable q) {

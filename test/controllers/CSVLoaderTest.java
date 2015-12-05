@@ -17,8 +17,11 @@ import utils.CSVLoader;
 
 public class CSVLoaderTest {
 
+	CSVLoader c;
+
 	@Before
 	public void setUp() throws Exception {
+		c = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat");
 	}
 
 	@After
@@ -28,52 +31,51 @@ public class CSVLoaderTest {
 	@Test
 	public void testLoadUsers() {
 		try {
-			//long preCounter = User.getCounter();
+			// long preCounter = User.getCounter();
 			User[] samples = Fixtures.sampleDataUsers();
-			HashSet<User> users = CSVLoader.loadUsers("data_movieLens/users.dat");
-			assertEquals(users.size(),943);
-			//assertEquals(User.getCounter(),users.size()+preCounter);
+			HashSet<User> users = c.loadUsers();
+			assertEquals(users.size(), 943);
+			// assertEquals(User.getCounter(),users.size()+preCounter);
 			assertNotNull(users);
 			for (int i = 0; i < samples.length; i++) {
 				assertTrue(users.contains(samples[i]));
 			}
 		} catch (Exception e) {
 			fail(e.getMessage());
-		} 
+		}
 	}
 
-	
 	@Test
 	public void testLoadMovies() {
 		try {
 			Movie[] samples = Fixtures.getMovies();
-			HashSet<Movie> movies = CSVLoader.loadMovies("data_movieLens/newItems.dat");
+			HashSet<Movie> movies = c.loadMovies();
 			assertNotNull(movies);
 			for (int i = 0; i < samples.length; i++) {
 				assertTrue(movies.contains(samples[i]));
 			}
 		} catch (Exception e) {
 			fail(e.getMessage());
-		} 
+		}
 	}
-	
+
 	@Test
 	public void testLoadRatings() {
 		try {
-			//Fixtures.sampleDataUsers();
-			//Fixtures.getMovies();
-			CSVLoader.loadUsers("data_movieLens/users.dat");
-			CSVLoader.loadMovies("data_movieLens/newItems.dat");
+			// Fixtures.sampleDataUsers();
+			// Fixtures.getMovies();
+			c.loadUsers();
+			c.loadMovies();
 			Rating[] samples = Fixtures.sampleBigDataRatings();
-			HashSet<Rating> ratings = CSVLoader.loadRatings("data_movieLens/ratings.dat");
+			HashSet<Rating> ratings = c.loadRatings();
 			assertNotNull(ratings);
-			assertEquals(ratings.size(),100000);
-			for(int i = 0; i < samples.length;i++) {
+			assertEquals(ratings.size(), 100000);
+			for (int i = 0; i < samples.length; i++) {
 				assertTrue(ratings.contains(samples[i]));
 			}
 		} catch (Exception e) {
 			fail(e.getMessage());
-		} 
+		}
 	}
-	
+
 }
