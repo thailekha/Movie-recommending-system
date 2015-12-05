@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import com.google.common.collect.HashBasedTable;
 
 import models.Movie;
@@ -37,7 +39,7 @@ public class Recommender {
 	}
 
 	public void addUser(User user) {
-		if (!(users.containsKey(user.getUserId()) && users.containsValue(user))) {
+		if (!users.containsKey(user.getUserId()) && !users.containsValue(user)) {
 			putUser(user);
 		}
 	}
@@ -73,7 +75,7 @@ public class Recommender {
 	}
 
 	public void addMovie(Movie movie) {
-		if (!(movies.containsKey(movie.getMovieId()) && movies.containsValue(movie))) {
+		if (!movies.containsKey(movie.getMovieId()) && !movies.containsValue(movie)) {
 			putMovie(movie);
 		}
 	}
@@ -212,11 +214,11 @@ public class Recommender {
 
 	public HashSet<Movie> getTopTenMovies() {
 		HashSet<Movie> topten = new HashSet<>();
-		if (movies.size() < 10) {
+		if (movies.size() > 10) {
 			if (!ratingsSorted) {
 				sortRatings();
 			}
-			for (int i = ratings.size() - 1; i >= 0; i--) {
+			for (int i = ratings.size() - 1; i >= ratings.size() - 10; i--) {
 				Rating r = ratings.get(i);
 				if (r.getRating() > 0)
 					topten.add(movies.get(r.getMovieId()));
@@ -226,19 +228,24 @@ public class Recommender {
 	}
 
 	public void prime() throws Exception {
+		System.out.println("Loading...");
 		Iterator<User> users = primer.loadUsers().iterator();
-		Iterator<Movie> movies = primer.loadMovies().iterator();
-		Iterator<Rating> ratings = primer.loadRatings().iterator();
-
 		while (users.hasNext()) {
 			addUser(users.next());
 		}
+
+		Iterator<Movie> movies = primer.loadMovies().iterator();
 		while (movies.hasNext()) {
 			addMovie(movies.next());
 		}
+
+		Iterator<Rating> ratings = primer.loadRatings().iterator();
 		while (ratings.hasNext()) {
 			addRating(ratings.next());
 		}
+
+		System.out.println("Completed, " + this.users.size() + " users, " + this.movies.size() + " movies, "
+				+ this.ratings.size() + "/" + this.ratingsDB.size() + " ratings");
 	}
 
 	private void sortRatings() {

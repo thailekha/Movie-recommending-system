@@ -113,6 +113,7 @@ public class Driver {
 		} else {
 			for (Comparable item : found) {
 				System.out.println(item);
+				System.out.println(item.hashCode());
 			}
 		}
 	}
@@ -155,6 +156,7 @@ public class Driver {
 		Iterator<Movie> ite = topten.iterator();
 		while (ite.hasNext())
 			System.out.println(ite.next());
+		System.out.println(topten.size());
 	}
 
 	@Command(description = "prime")
