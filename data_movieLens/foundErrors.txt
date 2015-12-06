@@ -29,3 +29,5 @@ Code used to fix :
 
 Deadly cure - ULR empty error
 Boys in Venice - ULR empty error
+
+In ratings: removed all entries associated with movie id 267

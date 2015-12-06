@@ -16,6 +16,7 @@ import models.Movie;
 import models.Rating;
 import models.User;
 import utils.CSVLoader;
+import utils.Serializer;
 
 public class Recommender {
 
@@ -29,6 +30,16 @@ public class Recommender {
 	private CSVLoader primer = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
 			"data_movieLens/ratings.dat");
 
+	private Serializer serializer;
+	
+	public Recommender() {
+		
+	}
+	
+	public Recommender(Serializer s) {
+		serializer = s;
+	}
+	
 	public void addUser(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
 		// TODO Auto-generated method stub
@@ -58,6 +69,14 @@ public class Recommender {
 		return userIdList;
 	}
 
+	public ArrayList<Long> getMovieIdList() {
+		return movieIdList;
+	}
+	
+	public boolean ratingsSorted() {
+		return ratingsSorted;
+	}
+	
 	public ArrayList<Rating> getRatings() {
 		return ratings;
 	}
@@ -238,10 +257,14 @@ public class Recommender {
 		while (movies.hasNext()) {
 			addMovie(movies.next());
 		}
-
+		
 		Iterator<Rating> ratings = primer.loadRatings().iterator();
 		while (ratings.hasNext()) {
-			addRating(ratings.next());
+			Rating nextR = ratings.next();
+//			if(this.movies.containsKey(nextR.getMovieId())){
+//				System.out.println("flaw");
+//			}
+			addRating(nextR);
 		}
 
 		System.out.println("Completed, " + this.users.size() + " users, " + this.movies.size() + " movies, "
@@ -288,5 +311,31 @@ public class Recommender {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean less(Comparable p, Comparable q) {
 		return p.compareTo(q) < 0;
+	}
+	
+	public void load() throws Exception {
+		serializer.read();
+		User.setCounter((long) serializer.pop());
+		Movie.setCounter((long) serializer.pop());
+		users = (HashMap<Long, User>) serializer.pop();
+		movies = (HashMap<Long, Movie>) serializer.pop();
+		userIdList = (ArrayList<Long>) serializer.pop();
+		movieIdList = (ArrayList<Long>) serializer.pop();
+		ratings = (ArrayList<Rating>) serializer.pop();
+		ratingsSorted = (boolean) serializer.pop();
+		ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
+	}	
+	
+	public void store() throws Exception {
+		serializer.push(ratingsDB);
+		serializer.push(ratingsSorted);
+		serializer.push(ratings);
+		serializer.push(movieIdList);
+		serializer.push(userIdList);
+		serializer.push(movies);
+		serializer.push(users);
+		serializer.push(Movie.getCounter());
+		serializer.push(User.getCounter());
+		serializer.write();
 	}
 }

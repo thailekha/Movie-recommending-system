@@ -185,6 +185,11 @@ public class User implements Comparable<User> {
 		counter++;
 	}
 
+	public static void setCounter(long counter) {
+		if(counter >= 1)
+			User.counter = counter;
+	}
+	
 	private static boolean str(String toCheck, int length) {
 		if (toCheck == null)
 			return false;

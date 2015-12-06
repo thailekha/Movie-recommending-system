@@ -5,11 +5,23 @@ package controllers;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.common.collect.HashBasedTable;
+
+import models.Movie;
+import models.Rating;
+import models.User;
+import utils.JSONSerializer;
+import utils.Serializer;
 
 /**
  * @author HP
@@ -17,25 +29,15 @@ import org.junit.Test;
  */
 public class RecommenderPersistenceTest {
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
+	Recommender r;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
+		User.resetCounter();
+		Movie.resetCounter();
 	}
 
 	/**
@@ -43,11 +45,78 @@ public class RecommenderPersistenceTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		User.resetCounter();
+		Movie.resetCounter();
 	}
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
+	  public void testJSONSerializer() throws Exception
+	  { 
+	    String datastoreFile = "testdatastore.json";
+	    deleteFile (datastoreFile);
 
+	    Serializer serializer = new JSONSerializer(new File (datastoreFile));
+
+	    r = new Recommender(serializer); 
+	    r.prime();
+	    r.store();
+	    long uCount = User.getCounter();
+	    long mCount = Movie.getCounter();
+	    
+	    Recommender r2 =  new Recommender(serializer);
+	    r2.load();
+	    
+	    assertEquals (r.getUsersSize(), r2.getUsersSize());
+	    assertEquals(User.getCounter(),uCount);
+	    assertEquals(Movie.getCounter(),mCount);
+	    
+	    //Test maps and table
+	    Iterator<User> users = r.getUsers().values().iterator();
+	    while(users.hasNext())
+	    {
+	      assertTrue (r2.getUsers().containsValue(users.next()));
+	    }
+	    Iterator<Movie> movies = r.getMovies().values().iterator();
+		while (movies.hasNext()) {
+			assertTrue (r2.getMovies().containsValue(movies.next()));
+		}
+		Iterator<Rating> ratings = r.getRatingsDB().values().iterator();
+		while (ratings.hasNext()) {
+			Rating rate = ratings.next();
+			User u = r.getUser(rate.getUserId());
+			User mirrorU = r2.getUser(rate.getUserId());
+			Movie m = r.getMovie(rate.getMovieId());
+			Movie mirrorM = r2.getMovie(rate.getMovieId());
+			
+			assertEquals(u,mirrorU);
+			assertEquals(m,mirrorM);
+			assertTrue(u.getRatings().contains(rate));
+			assertTrue (r2.getRatingsDB().containsValue(ratings.next()));
+		}
+		
+		
+		//Test other fields
+		assertEquals(r.getUserIdList().size(),r2.getUserIdList().size());
+		for(long id: r.getUserIdList()) {
+			assertTrue(r2.getUserIdList().contains(id));
+		}
+		assertEquals(r.getMovieIdList().size(),r2.getMovieIdList().size());
+		for(long id: r.getMovieIdList()) {
+			assertTrue(r2.getMovieIdList().contains(id));
+		}
+		assertEquals(r.getRatings().size(),r2.getRatings().size());
+		for(Rating rating: r.getRatings()) {
+			assertTrue(r2.getRatings().contains(rating));
+		}
+		assertEquals(r.ratingsSorted(),r2.ratingsSorted());
+		
+	    deleteFile ("testdatastore.json");
+	  }
+	
+	void deleteFile(String fileName) {
+		File datastore = new File(fileName);
+		if (datastore.exists()) {
+			datastore.delete();
+		}
+	}
 }

@@ -26,16 +26,16 @@ public class Driver {
 
 	public Driver() throws Exception {
 		recommender = new Recommender();
-		User[] users = Fixtures.getSimilarUsers();
-
-		for (int i = 0; i < users.length; i++) {
-			recommender.addUser(users[i]);
-		}
-
-		Movie[] movies = Fixtures.getMovies();
-		for (int i = 0; i < movies.length; i++) {
-			recommender.addMovie(movies[i]);
-		}
+//		User[] users = Fixtures.getSimilarUsers();
+//
+//		for (int i = 0; i < users.length; i++) {
+//			recommender.addUser(users[i]);
+//		}
+//
+//		Movie[] movies = Fixtures.getMovies();
+//		for (int i = 0; i < movies.length; i++) {
+//			recommender.addMovie(movies[i]);
+//		}
 	}
 
 	public static void main(String[] agrs) throws Exception {

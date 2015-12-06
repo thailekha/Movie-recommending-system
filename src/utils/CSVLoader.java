@@ -1,13 +1,18 @@
 package utils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
+
+import com.google.common.collect.HashBiMap;
 
 import models.Movie;
 import models.Rating;
 import models.User;
 
 public class CSVLoader {
+	private HashBiMap<Long,Long> userIdTranlator = HashBiMap.create();
+	private HashBiMap<Long,Long> movieIdTranlator = HashBiMap.create();
 	private String users, movies, ratings;
 
 	public CSVLoader(String users, String movies, String ratings) {
@@ -16,6 +21,14 @@ public class CSVLoader {
 		this.ratings = ratings;
 	}
 
+	public HashBiMap<Long,Long> getUserIdTranlator() {
+		return userIdTranlator;
+	}
+	
+	public HashBiMap<Long,Long> getMovieIdTranlator() {
+		return movieIdTranlator;
+	}
+	
 	public HashSet<User> loadUsers() throws Exception {
 		File file = new File(users);
 		In ins = new In(file);
@@ -26,14 +39,18 @@ public class CSVLoader {
 				String details = ins.readLine();
 				String[] tokens = details.split(delims);
 				if (tokens.length == 7) {
-					String id = tokens[0];
+					long id = Long.parseLong(tokens[0]);
 					String firstName = tokens[1];
 					String lastName = tokens[2];
 					int age = Integer.parseInt(tokens[3]);
 					String gender = tokens[4];
 					String occupation = tokens[5];
 					String zip = tokens[6];
-					result.add(new User(firstName, lastName, age, gender, occupation, zip));
+					User toAdd = new User(firstName, lastName, age, gender, occupation, zip);
+					Long translation = userIdTranlator.put(id, toAdd.getUserId());
+					if(translation != null)
+						throw new Exception("Duplicate ids detected in <" + users + ">");
+					result.add(toAdd);
 				} else {
 					throw new Exception("Invalid member length: " + tokens.length);
 				}
@@ -55,14 +72,18 @@ public class CSVLoader {
 				String details = ins.readLine();
 				String[] tokens = details.split(delims);
 				if (tokens.length == 23) {
-					String id = tokens[0];
+					long id = Long.parseLong(tokens[0]);
 					String title = tokens[1];
 					String releaseDate = tokens[2];
 					String url = tokens[3];
 					String genreCode = "";
 					for (int i = 4; i < 23; i++)
 						genreCode += tokens[i];
-					result.add(new Movie(title, releaseDate, url, genreCode));
+					Movie toAdd = new Movie(title, releaseDate, url, genreCode);
+					Long translation = movieIdTranlator.put(id, toAdd.getMovieId());
+					if(translation != null)
+						throw new Exception("Duplicate ids detected in <" + movies + ">");
+					result.add(toAdd);
 				} else {
 					throw new Exception("Invalid member length: " + tokens.length);
 				}
@@ -89,7 +110,13 @@ public class CSVLoader {
 					long movieId = Long.parseLong(tokens[1]);
 					int rating = Integer.parseInt(tokens[2]);
 					long timestamp = Long.parseLong(tokens[3]);
-					result.add(new Rating(userId, movieId, rating, timestamp));
+					
+					Long translatedUserId = userIdTranlator.get(userId);
+					Long translatedMovieId = movieIdTranlator.get(movieId);
+					if(translatedUserId == null || translatedMovieId == null) {
+						System.out.println("null");
+					}
+					result.add(new Rating(translatedUserId, translatedMovieId, rating, timestamp));
 				} else {
 					throw new Exception("Invalid member length: " + tokens.length);
 				}

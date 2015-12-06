@@ -24,8 +24,11 @@ public class Rating implements Comparable<Rating> {
 	}
 
 	public Rating(long userId, long movieId, int rating, long timestamp) throws Exception {
-		if (userId < User.getCounter() && movieId < Movie.getCounter() && checkRating(rating)
-				&& timestamp >= 0) {
+		boolean uCond = userId < User.getCounter();
+		boolean mCond = movieId < Movie.getCounter();
+		boolean rCond = checkRating(rating);
+		boolean tCond = timestamp >= 0;
+		if (uCond && mCond && rCond && tCond) {
 			this.userId = userId;
 			this.movieId = movieId;
 			this.rating = rating;
@@ -77,7 +80,7 @@ public class Rating implements Comparable<Rating> {
 	public int hashCode() {
 		return Objects.hashCode(this.userId, this.movieId, this.rating, this.timestamp);
 	}
-	
+
 	public static boolean checkRating(int rating) {
 		return validRatings.contains(rating);
 	}

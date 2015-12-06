@@ -93,6 +93,11 @@ public class Movie implements Comparable<Movie> {
 		counter++;
 	}
 
+	public static void setCounter(long counter) {
+		if(counter >= 1)
+			Movie.counter = counter;
+	}
+	
 	private boolean checkGenreCode(String code) {
 		String c = code.trim();
 		for (int i = 0; i < c.length(); i++) {
