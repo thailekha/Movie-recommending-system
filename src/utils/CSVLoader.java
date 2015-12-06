@@ -11,8 +11,8 @@ import models.Rating;
 import models.User;
 
 public class CSVLoader {
-	private HashBiMap<Long,Long> userIdTranlator = HashBiMap.create();
-	private HashBiMap<Long,Long> movieIdTranlator = HashBiMap.create();
+	private HashMap<Long,Long> userIdTranlator = new HashMap<>();
+	private HashMap<Long,Long> movieIdTranlator = new HashMap<>();
 	private String users, movies, ratings;
 
 	public CSVLoader(String users, String movies, String ratings) {
@@ -21,11 +21,11 @@ public class CSVLoader {
 		this.ratings = ratings;
 	}
 
-	public HashBiMap<Long,Long> getUserIdTranlator() {
+	public HashMap<Long,Long> getUserIdTranlator() {
 		return userIdTranlator;
 	}
 	
-	public HashBiMap<Long,Long> getMovieIdTranlator() {
+	public HashMap<Long,Long> getMovieIdTranlator() {
 		return movieIdTranlator;
 	}
 	

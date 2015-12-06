@@ -83,24 +83,29 @@ public class CSVLoaderTest {
 					fail("Duplicate detected");
 			}
 			
-			BiMap<Long,Long> uTrans = c.getUserIdTranlator().inverse();
-			BiMap<Long,Long> mTrans = c.getMovieIdTranlator().inverse();
+			HashMap<Long,Long> uTrans = c.getUserIdTranlator();
+			HashMap<Long,Long> mTrans = c.getMovieIdTranlator();
+			assertNotNull(uTrans);
+			assertNotNull(mTrans);
+			assertEquals(uTrans.size(),temporaryDB.rowKeySet().size());
+			assertEquals(mTrans.size(),temporaryDB.columnKeySet().size());
 			
-			Rating test1 = temporaryDB.get(uTrans.get(196), mTrans.get(242));
+			Rating test1 = temporaryDB.get(uTrans.get((long) 196),mTrans.get((long) 242));
 			assertNotNull(test1);
 			assertEquals(test1.getRating(),1);
 			assertEquals(test1.getTime(),881250949);
 			
-			Rating test2 = temporaryDB.get(uTrans.get(624), mTrans.get(333));
+			Rating test2 = temporaryDB.get(uTrans.get((long) 624), mTrans.get((long) 333));
 			assertNotNull(test2);
 			assertEquals(test2.getRating(),3);
 			assertEquals(test2.getTime(),879791884);
 			
-			Rating test3 = temporaryDB.get(uTrans.get(12), mTrans.get(203));
+			Rating test3 = temporaryDB.get(uTrans.get((long) 12), mTrans.get((long) 203));
 			assertNotNull(test3);
 			assertEquals(test3.getRating(),1);
 			assertEquals(test3.getTime(),879959583);
 		} catch (Exception e) {
+			//e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
