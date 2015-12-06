@@ -12,6 +12,7 @@ import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import com.google.common.collect.HashBasedTable;
 
+import edu.princeton.cs.introcs.Stopwatch;
 import models.Movie;
 import models.Rating;
 import models.User;
@@ -27,8 +28,7 @@ public class Recommender {
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private HashBasedTable<Long, Long, Rating> ratingsDB = HashBasedTable.create(); // userid,movieid,rating
-	private CSVLoader primer = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
-			"data_movieLens/ratings.dat");
+	private CSVLoader primer;
 
 	private Serializer serializer;
 	
@@ -36,7 +36,8 @@ public class Recommender {
 		
 	}
 	
-	public Recommender(Serializer s) {
+	public Recommender(Serializer s,CSVLoader primer) {
+		this.primer = primer;
 		serializer = s;
 	}
 	
@@ -314,6 +315,7 @@ public class Recommender {
 	}
 	
 	public void load() throws Exception {
+		Stopwatch watch = new Stopwatch();
 		serializer.read();
 		User.setCounter((long) serializer.pop());
 		Movie.setCounter((long) serializer.pop());
@@ -324,9 +326,11 @@ public class Recommender {
 		ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
 		ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
+		System.out.println("Load " + watch.elapsedTime());
 	}	
 	
 	public void store() throws Exception {
+		Stopwatch watch = new Stopwatch();
 		serializer.push(ratingsDB);
 		serializer.push(ratingsSorted);
 		serializer.push(ratings);
@@ -337,5 +341,6 @@ public class Recommender {
 		serializer.push(Movie.getCounter());
 		serializer.push(User.getCounter());
 		serializer.write();
+		System.out.println("Store: " + watch.elapsedTime());
 	}
 }

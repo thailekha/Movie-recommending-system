@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.swing.plaf.synth.SynthSeparatorUI;
 
+import com.google.common.base.Objects;
+
 import asg.cliche.Command;
 import asg.cliche.Param;
 import asg.cliche.Shell;
@@ -19,12 +21,17 @@ import models.Fixtures;
 import models.Movie;
 import models.Rating;
 import models.User;
+import utils.CSVLoader;
 
 public class Driver {
 
 	private Recommender recommender;
 
 	public Driver() throws Exception {
+//		new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
+//				"data_movieLens/ratings.dat")
+//		new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
+//				"small_data/ratings5.dat")
 		recommender = new Recommender();
 //		User[] users = Fixtures.getSimilarUsers();
 //
@@ -39,10 +46,10 @@ public class Driver {
 	}
 
 	public static void main(String[] agrs) throws Exception {
-		Driver main = new Driver();
-		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
-				main);
-		shell.commandLoop();
+//		Driver main = new Driver();
+//		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
+//				main);
+//		shell.commandLoop();
 	}
 
 	@Command(description = "Add a new User")
