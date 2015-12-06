@@ -22,6 +22,7 @@ import models.Movie;
 import models.Rating;
 import models.User;
 import utils.CSVLoader;
+import utils.JSONSerializer;
 
 public class Driver {
 
@@ -32,24 +33,16 @@ public class Driver {
 //				"data_movieLens/ratings.dat")
 //		new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
 //				"small_data/ratings5.dat")
-		recommender = new Recommender();
-//		User[] users = Fixtures.getSimilarUsers();
-//
-//		for (int i = 0; i < users.length; i++) {
-//			recommender.addUser(users[i]);
-//		}
-//
-//		Movie[] movies = Fixtures.getMovies();
-//		for (int i = 0; i < movies.length; i++) {
-//			recommender.addMovie(movies[i]);
-//		}
+		File datastore = new File("datastore/store.json");
+		recommender = new Recommender(new JSONSerializer(datastore),new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
+				"data_movieLens/ratings.dat"));
 	}
 
 	public static void main(String[] agrs) throws Exception {
-//		Driver main = new Driver();
-//		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
-//				main);
-//		shell.commandLoop();
+		Driver main = new Driver();
+		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
+				main);
+		shell.commandLoop();
 	}
 
 	@Command(description = "Add a new User")
@@ -169,5 +162,20 @@ public class Driver {
 	@Command(description = "prime")
 	public void prime() throws Exception {
 		recommender.prime();
+	}
+	
+	@Command(description = "Load")
+	public void load() throws Exception {
+		recommender.load();
+	}
+	
+	@Command(description = "Store")
+	public void store() throws Exception {
+		recommender.store();
+	}
+	
+	@Command(description = "System Info")
+	public void systemInfo() throws Exception {
+		System.out.println(recommender.info());
 	}
 }

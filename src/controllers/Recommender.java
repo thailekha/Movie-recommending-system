@@ -24,7 +24,8 @@ public class Recommender {
 	private HashMap<Long, User> users = new HashMap<>();
 	private HashMap<Long, Movie> movies = new HashMap<>();
 	private ArrayList<Long> userIdList = new ArrayList<>();
-	private ArrayList<Long> movieIdList = new ArrayList<>();
+	private ArrayList<Long> movieIdList = new ArrayList<>(); //sequence of movies in order of the titles
+	private ArrayList<Long> movieARList = new ArrayList<>(); //sequence of movies in order of the average ratings
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private HashBasedTable<Long, Long, Rating> ratingsDB = HashBasedTable.create(); // userid,movieid,rating
@@ -235,14 +236,16 @@ public class Recommender {
 	public HashSet<Movie> getTopTenMovies() {
 		HashSet<Movie> topten = new HashSet<>();
 		if (movies.size() > 10) {
-			if (!ratingsSorted) {
-				sortRatings();
-			}
-			for (int i = ratings.size() - 1; i >= ratings.size() - 10; i--) {
-				Rating r = ratings.get(i);
-				if (r.getRating() > 0)
-					topten.add(movies.get(r.getMovieId()));
-			}
+//			if (!ratingsSorted) {
+//				sortRatings();
+//			}
+//			for (int i = ratings.size() - 1; i >= ratings.size() - 10; i--) {
+//				Rating r = ratings.get(i);
+//				if (r.getRating() > 0)
+//					topten.add(movies.get(r.getMovieId()));
+//			}
+			
+			
 		}
 		return topten;
 	}
@@ -316,6 +319,7 @@ public class Recommender {
 	
 	public void load() throws Exception {
 		Stopwatch watch = new Stopwatch();
+		System.out.println("Loading from datastore...");
 		serializer.read();
 		User.setCounter((long) serializer.pop());
 		Movie.setCounter((long) serializer.pop());
@@ -326,11 +330,12 @@ public class Recommender {
 		ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
 		ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
-		System.out.println("Load " + watch.elapsedTime());
+		System.out.println("Completed, " + watch.elapsedTime()+ " seconds");
 	}	
 	
 	public void store() throws Exception {
 		Stopwatch watch = new Stopwatch();
+		System.out.println("Saving to datastore...");
 		serializer.push(ratingsDB);
 		serializer.push(ratingsSorted);
 		serializer.push(ratings);
@@ -341,6 +346,10 @@ public class Recommender {
 		serializer.push(Movie.getCounter());
 		serializer.push(User.getCounter());
 		serializer.write();
-		System.out.println("Store: " + watch.elapsedTime());
+		System.out.println("Completed, " + watch.elapsedTime()+ " seconds");
+	}
+	
+	public String info() {
+		return "Users: " + users.size() + "$ Movies: " + movies.size() + "$ Ratings: " + ratings.size();
 	}
 }
