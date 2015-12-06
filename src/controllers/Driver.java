@@ -29,13 +29,14 @@ public class Driver {
 	private Recommender recommender;
 
 	public Driver() throws Exception {
-//		new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
-//				"data_movieLens/ratings.dat")
-//		new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
-//				"small_data/ratings5.dat")
+		// new CSVLoader("data_movieLens/users.dat",
+		// "data_movieLens/newItems.dat",
+		// "data_movieLens/ratings.dat")
+		// new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
+		// "small_data/ratings5.dat")
 		File datastore = new File("datastore/store.json");
-		recommender = new Recommender(new JSONSerializer(datastore),new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
-				"data_movieLens/ratings.dat"));
+		recommender = new Recommender(new JSONSerializer(datastore),
+				new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat"));
 	}
 
 	public static void main(String[] agrs) throws Exception {
@@ -92,6 +93,11 @@ public class Driver {
 		}
 	}
 
+	@Command(description = "Get user details")
+	public void getUserDetails(@Param(name = "User ID") long userId) {
+		System.out.println(recommender.getUser(userId).info());
+	}
+
 	@Command(description = "Look up user(s)")
 	public void userLookup(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
 			@Param(name = "age") int age) throws Exception {
@@ -115,7 +121,7 @@ public class Driver {
 			for (Comparable item : found) {
 				Movie m = (Movie) item;
 				System.out.println(m.info());
-				//System.out.println(item.hashCode());
+				// System.out.println(item.hashCode());
 			}
 		}
 	}
@@ -155,7 +161,7 @@ public class Driver {
 		else
 			System.out.println("Top ten movies:");
 
-		for(Movie m: topten)
+		for (Movie m : topten)
 			System.out.println("~~> " + m.info());
 		System.out.println(topten.size());
 	}
@@ -164,19 +170,28 @@ public class Driver {
 	public void prime() throws Exception {
 		recommender.prime();
 	}
-	
+
 	@Command(description = "Load")
 	public void load() throws Exception {
 		recommender.load();
 	}
-	
+
 	@Command(description = "Store")
 	public void store() throws Exception {
 		recommender.store();
 	}
-	
+
 	@Command(description = "System Info")
 	public void systemInfo() throws Exception {
 		System.out.println(recommender.info());
+	}
+
+	@Command(description = "Get recommendations for a user")
+	public void getUserRecommendations(@Param(name = "User ID") long userID) {
+		ArrayList<Movie> movies = recommender.recommend(userID);
+		for (Movie movie : movies) {
+			double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
+			System.out.println(movie.getTitle() + ", point: " + roundedPoint + ", Movie ID: " + movie.getMovieId());
+		}
 	}
 }

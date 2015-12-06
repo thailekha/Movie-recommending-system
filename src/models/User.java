@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
@@ -115,13 +116,25 @@ public class User implements Comparable<User> {
 //		}
 //	}
 	
+	public HashSet<Long> getPositiveRatedMovieIds() {
+		HashSet<Long> rateds = new HashSet<>();
+		Iterator<Long> ite = ratings.keySet().iterator();
+		while (ite.hasNext()) {
+			long id = ite.next();
+			if(ratings.get(id) > 0) {
+				rateds.add(id);
+			}
+		}
+		return rateds;
+	}
+	
 	public String toString() {
 		return new ToJsonString(getClass(), this).toString();
 	}
 
 	public String info() {
-		return userId + " - " + firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", "
-				+ zip;
+		return firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", "
+				+ zip + ", Rated " + ratings.size() + " movies " + " $$ ID: " + userId;
 	}
 
 	//ID has affect on the Set contains method

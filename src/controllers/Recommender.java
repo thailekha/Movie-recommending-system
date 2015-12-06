@@ -18,6 +18,7 @@ import models.Movie;
 import models.Rating;
 import models.User;
 import utils.CSVLoader;
+import utils.Matrix;
 import utils.Serializer;
 
 public class Recommender {
@@ -25,24 +26,26 @@ public class Recommender {
 	private HashMap<Long, User> users = new HashMap<>();
 	private HashMap<Long, Movie> movies = new HashMap<>();
 	private ArrayList<Long> userIdList = new ArrayList<>();
-	private ArrayList<Long> movieIdList = new ArrayList<>(); //sequence of movies in order of the titles
-	private ArrayList<Long> movieARList = new ArrayList<>(); //sequence of movies in order of the average ratings
+	private ArrayList<Long> movieIdList = new ArrayList<>(); // sequence of
+																// movies in
+																// order of the
+																// titles
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private HashBasedTable<Long, Long, Rating> ratingsDB = HashBasedTable.create(); // userid,movieid,rating
 	private CSVLoader primer;
 
 	private Serializer serializer;
-	
+
 	public Recommender() {
 
 	}
-	
-	public Recommender(Serializer s,CSVLoader primer) {
+
+	public Recommender(Serializer s, CSVLoader primer) {
 		this.primer = primer;
 		serializer = s;
 	}
-	
+
 	public void addUser(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
 		// TODO Auto-generated method stub
@@ -75,11 +78,11 @@ public class Recommender {
 	public ArrayList<Long> getMovieIdList() {
 		return movieIdList;
 	}
-	
+
 	public boolean ratingsSorted() {
 		return ratingsSorted;
 	}
-	
+
 	public ArrayList<Rating> getRatings() {
 		return ratings;
 	}
@@ -190,20 +193,20 @@ public class Recommender {
 
 	public void addRating(long userId, long movieId, int rating) throws Exception {
 		if (users.containsKey(userId) && movies.containsKey(movieId)) {
-			//User user = users.get(userId);
+			// User user = users.get(userId);
 			Rating r = new Rating(userId, movieId, rating);
-//			Rating put = ratingsDB.put(userId, movieId, r); // the previous
-//															// value, if
-//															// replaced
-//			if (put != null) {
-//				while (ratings.contains(put))
-//					ratings.remove(put);
-//				user.removeRating(put);
-//			}
-//			
-//			ratings.add(r);
-//			user.addRating(r);
-//			ratingsSorted = false;
+			// Rating put = ratingsDB.put(userId, movieId, r); // the previous
+			// // value, if
+			// // replaced
+			// if (put != null) {
+			// while (ratings.contains(put))
+			// ratings.remove(put);
+			// user.removeRating(put);
+			// }
+			//
+			// ratings.add(r);
+			// user.addRating(r);
+			// ratingsSorted = false;
 			putRating(r);
 		}
 	}
@@ -221,12 +224,12 @@ public class Recommender {
 		long uId = r.getUserId();
 		long mId = r.getMovieId();
 		ratings.add(r);
-		ratingsDB.put(uId,mId, r);
+		ratingsDB.put(uId, mId, r);
 		users.get(uId).addRating(r);
 		movies.get(mId).addRating(r);
 		ratingsSorted = false;
 	}
-	
+
 	public Rating getRating(long userId, long movieId) {
 		return ratingsDB.get(userId, movieId);
 	}
@@ -246,32 +249,32 @@ public class Recommender {
 	public List<Movie> getTopTenMovies() {
 		List<Movie> topten = new ArrayList<>();
 		if (movies.size() > 10) {
-//			if (!ratingsSorted) {
-//				sortRatings();
-//			}
-//			for (int i = ratings.size() - 1; i >= ratings.size() - 10; i--) {
-//				Rating r = ratings.get(i);
-//				if (r.getRating() > 0)
-//					topten.add(movies.get(r.getMovieId()));
-//			}
-			
+			// if (!ratingsSorted) {
+			// sortRatings();
+			// }
+			// for (int i = ratings.size() - 1; i >= ratings.size() - 10; i--) {
+			// Rating r = ratings.get(i);
+			// if (r.getRating() > 0)
+			// topten.add(movies.get(r.getMovieId()));
+			// }
+
 			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>(movies.values());
 			Collections.sort(movieByAvrRatingPoint, new Comparator<Movie>() {
-				@Override //descending order
+				@Override // descending order
 				public int compare(Movie m1, Movie m2) {
-					if(m1.getAveragePoint() < m2.getAveragePoint())
+					if (m1.getAveragePoint() < m2.getAveragePoint())
 						return 1;
-					if(m1.getAveragePoint() > m2.getAveragePoint())
+					if (m1.getAveragePoint() > m2.getAveragePoint())
 						return -1;
 					return 0;
 				}
-		    });
-			for(int i = 0; i < movieByAvrRatingPoint.size(); i++) {
-					if(i > 9)
-						break;
-					Movie mov = movieByAvrRatingPoint.get(i);
-					if(mov.getAveragePoint() > 0)
-						topten.add(mov);
+			});
+			for (int i = 0; i < movieByAvrRatingPoint.size(); i++) {
+				if (i > 9)
+					break;
+				Movie mov = movieByAvrRatingPoint.get(i);
+				if (mov.getAveragePoint() > 0)
+					topten.add(mov);
 			}
 		}
 		return topten;
@@ -288,13 +291,13 @@ public class Recommender {
 		while (movies.hasNext()) {
 			addMovie(movies.next());
 		}
-		
+
 		Iterator<Rating> ratings = primer.loadRatings().iterator();
 		while (ratings.hasNext()) {
 			Rating nextR = ratings.next();
-//			if(this.movies.containsKey(nextR.getMovieId())){
-//				System.out.println("flaw");
-//			}
+			// if(this.movies.containsKey(nextR.getMovieId())){
+			// System.out.println("flaw");
+			// }
 			addRating(nextR);
 		}
 
@@ -343,7 +346,56 @@ public class Recommender {
 	private boolean less(Comparable p, Comparable q) {
 		return p.compareTo(q) < 0;
 	}
-	
+
+	public ArrayList<Movie> recommend(long userId) {
+		ArrayList<Movie> recommendedMovies = new ArrayList<>();
+		HashSet<Long> similarUsersId = new HashSet<>();
+		User user = users.get(userId);
+		HashMap<Long, Integer> rated = user.getRatings();
+		Iterator<Long> ite = rated.keySet().iterator();
+		while (ite.hasNext()) {
+			long movieId = ite.next();
+			int point = rated.get(movieId);
+			if (point > 0) {
+				HashMap<Integer, HashSet<Long>> raters = movies.get(movieId).getPositiveRaters();
+				HashSet<Long> similarRaters = raters.get(point);
+				similarUsersId.addAll(similarRaters);
+			}
+			similarUsersId.remove(userId); // make sure the user looking for
+											// recommendation isn't in this set
+		}
+		if (similarUsersId.size() > 0) {
+			User mostSimilar = null;
+			double min = Double.MAX_VALUE;
+			Iterator<Long> iteSim = similarUsersId.iterator();
+			while (iteSim.hasNext()) {
+				User other = users.get(iteSim.next());
+				double similarity = Matrix.similarityInRadian(movieIdList, rated, other.getRatings());
+				if (similarity < min) {
+					min = similarity;
+					mostSimilar = other;
+				}
+			}
+			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
+					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
+			Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
+			while (ids.hasNext()) {
+				recommendedMovies.add(movies.get(ids.next()));
+			}
+			Collections.sort(recommendedMovies, new Comparator<Movie>() {
+				@Override // descending order
+				public int compare(Movie m1, Movie m2) {
+					if (m1.getAveragePoint() < m2.getAveragePoint())
+						return 1;
+					if (m1.getAveragePoint() > m2.getAveragePoint())
+						return -1;
+					return 0;
+				}
+			});
+		}
+		return recommendedMovies;
+	}
+
 	public void load() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Loading from datastore...");
@@ -357,9 +409,9 @@ public class Recommender {
 		ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
 		ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
-		System.out.println("Completed, " + watch.elapsedTime()+ " seconds");
-	}	
-	
+		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
+	}
+
 	public void store() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Saving to datastore...");
@@ -373,9 +425,9 @@ public class Recommender {
 		serializer.push(Movie.getCounter());
 		serializer.push(User.getCounter());
 		serializer.write();
-		System.out.println("Completed, " + watch.elapsedTime()+ " seconds");
+		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
 	}
-	
+
 	public String info() {
 		return "Users: " + users.size() + "$ Movies: " + movies.size() + "$ Ratings: " + ratings.size();
 	}
