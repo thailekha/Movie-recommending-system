@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import org.junit.After;
@@ -166,26 +167,32 @@ public class RecommenderTest {
 			Rating fromDB = r.getRating(1, 2);
 			User rater = r.getUser((long) 1);
 			Movie rated = r.getMovie((long) 2);
-			ArrayList<Rating> ratingsFromUser = rater.getRatings();
-			Rating fromUser = ratingsFromUser.get(0);
+			
+			assertEquals(rater.getRatings().size(), 1);
+			assertEquals(rated.getRatings().size(),1);
+			//HashMap<Long,Integer> ratingsFromUser = rater.getRatings();
+			int fromUser = rater.getRatings().get(mirrorMovieId);
+			int fromMovie = rated.getRatings().get(mirrorUserId);
+			assertEquals(fromUser,5);
+			assertEquals(fromMovie,5);			
 			
 			assertEquals(mirrorUserId,1);
 			assertEquals(mirrorMovieId,2);
 			assertEquals(r.getRatingsDB().size(),1);
 			assertEquals(r.getRatings().size(), 1);
 			assertNotNull(fromDB);
-			assertNotNull(fromUser);
-			assertEquals(ratingsFromUser.size(), 1);
+			//assertNotNull(fromUser);
+			
 
 			assertEquals(fromDB.getUserId(), rater.getUserId());
 			assertEquals(fromDB.getMovieId(), rated.getMovieId());
 			assertEquals(fromDB.getRating(), 5);
 
-			assertEquals(fromUser.getUserId(), rater.getUserId());
-			assertEquals(fromUser.getMovieId(), rated.getMovieId());
-			assertEquals(fromUser.getRating(), 5);
-
-			assertEquals(fromDB, fromUser);
+//			assertEquals(fromUser.getUserId(), rater.getUserId());
+//			assertEquals(fromUser.getMovieId(), rated.getMovieId());
+//			assertEquals(fromUser.getRating(), 5);
+//
+//			assertEquals(fromDB, fromUser);
 
 		} catch (Exception e) {
 			fail("Exception thrown");
@@ -207,39 +214,33 @@ public class RecommenderTest {
 			r.addRating(1, 2, 5); // A
 			r.addRating(1, 3, -3); // B
 			r.addRating(2, 3, 1); // C
-
-			Rating fromDBA = r.getRating(1, 2);
-			Rating fromDBB = r.getRating(1, 3);
-			Rating fromDBC = r.getRating(2, 3);
-
-			User user1 = r.getUser((long) 1);
-			User user2 = r.getUser((long) 2);
-			ArrayList<Rating> ratingsFromUser1 = user1.getRatings();
-			ArrayList<Rating> ratingsFromUser2 = user2.getRatings();
-			
-			Rating mirrorA = ratingsFromUser1.get(0);
-			Rating mirrorB = ratingsFromUser1.get(1);
-			Rating mirrorC = ratingsFromUser2.get(0);
-
 			assertEquals(r.getRatingsDB().size(),3);
 			assertEquals(r.getRatings().size(),3);
 			
+			Rating fromDBA = r.getRating(1, 2);
+			Rating fromDBB = r.getRating(1, 3);
+			Rating fromDBC = r.getRating(2, 3);
 			assertEquals(fromDBA.getMovieId(),2);
 			assertEquals(fromDBB.getMovieId(),3);
 			assertEquals(fromDBC.getMovieId(),3);
 			
-			assertEquals(fromDBA.getUserId(),mirrorB.getUserId());
-			
-			assertEquals(mirrorA.getRating(),5);
-			assertEquals(mirrorB.getRating(),-3);
-			assertEquals(mirrorC.getRating(),1);
-			
+			User user1 = r.getUser((long) 1);
+			User user2 = r.getUser((long) 2);
+			HashMap<Long,Integer> ratingsFromUser1 = user1.getRatings();
+			HashMap<Long,Integer> ratingsFromUser2 = user2.getRatings();
 			assertEquals(ratingsFromUser1.size(),2);
 			assertEquals(ratingsFromUser2.size(),1);
 			
-			assertEquals(fromDBA,mirrorA);
-			assertEquals(fromDBB,mirrorB);
-			assertEquals(fromDBC,mirrorC);
+			int mirrorA = ratingsFromUser1.get((long)2);
+			int mirrorB = ratingsFromUser1.get((long)3);
+			int mirrorC = ratingsFromUser2.get((long)3);
+			assertEquals(mirrorA,5);
+			assertEquals(mirrorB,-3);
+			assertEquals(mirrorC,1);
+			assertEquals(fromDBA.getRating(),mirrorA);
+			assertEquals(fromDBB.getRating(),mirrorB);
+			assertEquals(fromDBC.getRating(),mirrorC);
+			
 		} catch (Exception e) {
 			fail("Exception thrown");
 		}

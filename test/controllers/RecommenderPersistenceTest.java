@@ -98,7 +98,7 @@ public class RecommenderPersistenceTest {
 
 			assertEquals(u, mirrorU);
 			assertEquals(m, mirrorM);
-			assertTrue(u.getRatings().contains(rate));
+			assertTrue(u.getRatings().containsValue(rate.getRating()));
 			assertTrue(r2.getRatingsDB().containsValue(ratings.next()));
 		}
 
