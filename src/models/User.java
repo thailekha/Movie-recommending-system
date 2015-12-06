@@ -21,8 +21,10 @@ public class User implements Comparable<User> {
 	private long userId;
 	private String firstName, lastName, gender, occupation, zip;
 	private int age;
-	//private HashMap<Long,Rating> ratings = new HashMap<>(); //quicker to check duplicate ratings
-	private ArrayList<Rating> ratings = new ArrayList<>(); 
+	
+	//Map movie and rating point
+	private HashMap<Long,Integer> ratings = new HashMap<>(); //quicker to check duplicate ratings
+	//private ArrayList<Rating> ratings = new ArrayList<>(); 
 
 	public User(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
@@ -81,7 +83,11 @@ public class User implements Comparable<User> {
 		return zip;
 	}
 
-	public ArrayList<Rating> getRatings() {
+//	public ArrayList<Rating> getRatings() {
+//		return ratings;
+//	}
+	
+	public HashMap<Long,Integer> getRatings() {
 		return ratings;
 	}
 	
@@ -92,23 +98,28 @@ public class User implements Comparable<User> {
 //		
 //	}
 	
+//	public void addRating(Rating r) {
+//		if(r != null && !ratings.contains(r))
+//			ratings.add(r);
+//	}
+	
 	public void addRating(Rating r) {
-		if(r != null && !ratings.contains(r))
-			ratings.add(r);
+		if(r != null && Rating.checkRating(r.getRating()))
+			ratings.put(r.getMovieId(), r.getRating());
 	}
 	
-	public void removeRating(Rating r) {
-		if(r != null) {
-			while(ratings.contains(r))
-				ratings.remove(r);
-		}
-	}
+//	public void removeRating(Rating r) {
+//		if(r != null) {
+//			while(ratings.contains(r))
+//				ratings.remove(r);
+//		}
+//	}
 	
-	public String toJsonString() {
+	public String toString() {
 		return new ToJsonString(getClass(), this).toString();
 	}
 
-	public String toString() {
+	public String info() {
 		return userId + " - " + firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", "
 				+ zip;
 	}

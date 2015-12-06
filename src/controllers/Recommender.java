@@ -3,6 +3,7 @@ package controllers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,7 +35,7 @@ public class Recommender {
 	private Serializer serializer;
 	
 	public Recommender() {
-		
+
 	}
 	
 	public Recommender(Serializer s,CSVLoader primer) {
@@ -189,19 +190,21 @@ public class Recommender {
 
 	public void addRating(long userId, long movieId, int rating) throws Exception {
 		if (users.containsKey(userId) && movies.containsKey(movieId)) {
-			User user = users.get(userId);
+			//User user = users.get(userId);
 			Rating r = new Rating(userId, movieId, rating);
-			Rating put = ratingsDB.put(userId, movieId, r); // the previous
-															// value, if
-															// replaced
-			if (put != null) {
-				while (ratings.contains(put))
-					ratings.remove(put);
-				user.removeRating(put);
-			}
-			ratings.add(r);
-			user.addRating(r);
-			ratingsSorted = false;
+//			Rating put = ratingsDB.put(userId, movieId, r); // the previous
+//															// value, if
+//															// replaced
+//			if (put != null) {
+//				while (ratings.contains(put))
+//					ratings.remove(put);
+//				user.removeRating(put);
+//			}
+//			
+//			ratings.add(r);
+//			user.addRating(r);
+//			ratingsSorted = false;
+			putRating(r);
 		}
 	}
 
@@ -210,13 +213,20 @@ public class Recommender {
 		long mId = r.getMovieId();
 		if (users.containsKey(uId) && movies.containsKey(mId) && r.getTime() >= 0
 				&& Rating.checkRating(r.getRating())) {
-			ratings.add(r);
-			ratingsDB.put(r.getUserId(), r.getMovieId(), r);
-			users.get(uId).addRating(r);
-			ratingsSorted = false;
+			putRating(r);
 		}
 	}
 
+	private void putRating(Rating r) {
+		long uId = r.getUserId();
+		long mId = r.getMovieId();
+		ratings.add(r);
+		ratingsDB.put(uId,mId, r);
+		users.get(uId).addRating(r);
+		movies.get(mId).addRating(r);
+		ratingsSorted = false;
+	}
+	
 	public Rating getRating(long userId, long movieId) {
 		return ratingsDB.get(userId, movieId);
 	}
@@ -233,8 +243,8 @@ public class Recommender {
 		return movies;
 	}
 
-	public HashSet<Movie> getTopTenMovies() {
-		HashSet<Movie> topten = new HashSet<>();
+	public List<Movie> getTopTenMovies() {
+		List<Movie> topten = new ArrayList<>();
 		if (movies.size() > 10) {
 //			if (!ratingsSorted) {
 //				sortRatings();
@@ -245,7 +255,24 @@ public class Recommender {
 //					topten.add(movies.get(r.getMovieId()));
 //			}
 			
-			
+			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>(movies.values());
+			Collections.sort(movieByAvrRatingPoint, new Comparator<Movie>() {
+				@Override //descending order
+				public int compare(Movie m1, Movie m2) {
+					if(m1.getAveragePoint() < m2.getAveragePoint())
+						return 1;
+					if(m1.getAveragePoint() > m2.getAveragePoint())
+						return -1;
+					return 0;
+				}
+		    });
+			for(int i = 0; i < movieByAvrRatingPoint.size(); i++) {
+					if(i > 9)
+						break;
+					Movie mov = movieByAvrRatingPoint.get(i);
+					if(mov.getAveragePoint() > 0)
+						topten.add(mov);
+			}
 		}
 		return topten;
 	}

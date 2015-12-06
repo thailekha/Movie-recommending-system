@@ -6,6 +6,8 @@ import java.util.HashSet;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 
+import utils.ToJsonString;
+
 public class Rating implements Comparable<Rating> {
 
 	private static final HashSet<Integer> validRatings = Sets.newHashSet(-5, -3, -1, 0, 1, 3, 5);
@@ -62,9 +64,13 @@ public class Rating implements Comparable<Rating> {
 		return 0;
 	}
 
-	public String toString() {
+	public String info() {
 		return "User ID: " + userId + ", " + "Movie ID: " + movieId + ", " + "Rating: " + rating + ", " + "Timestamp: "
 				+ timestamp;
+	}
+	
+	public String toString() {
+		return new ToJsonString(getClass(), this).toString();
 	}
 
 	public boolean equals(final Object obj) {

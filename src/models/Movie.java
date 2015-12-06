@@ -1,14 +1,17 @@
 package models;
 
+import java.util.HashMap;
+
 import com.google.common.base.Objects;
+import com.google.common.math.DoubleMath;
 
 import utils.ToJsonString;
-import utils.Valid;
 
 public class Movie implements Comparable<Movie> {
 	private static long counter = 1;
 	private long movieId;
 	private String title, releaseDate, url, genreCode;
+	private HashMap<Long,Integer> ratings = new HashMap<>(); //Map user and rating point
 
 	public Movie(String title, String releaseDate, String url, String genreCode) throws Exception {
 		if (str(title, 200) && str(releaseDate, 200) && str(url, 200) && str(genreCode, 19)
@@ -50,10 +53,27 @@ public class Movie implements Comparable<Movie> {
 		return genreCode;
 	}
 
+	public HashMap<Long,Integer> getRatings() {
+		return ratings;
+	} 
+	
+	public void addRating(Rating r) {
+		if(r != null && Rating.checkRating(r.getRating()))
+			ratings.put(r.getUserId(), r.getRating());
+	}
+	
+	public double getAveragePoint() {
+		return DoubleMath.mean(ratings.values());
+	}
+	
 	public String toString() {
 		return new ToJsonString(getClass(), this).toString();
 	}
 
+	public String info() {
+		return title + ", " + releaseDate + ", " + url + ", " + genreCode + ", " + getAveragePoint();
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.title, this.releaseDate, this.url, this.genreCode);
@@ -79,7 +99,7 @@ public class Movie implements Comparable<Movie> {
 			return 1;
 		return 0;
 	} 
-
+	
 	public static void resetCounter() {
 		counter = 1;
 	}

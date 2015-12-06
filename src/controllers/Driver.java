@@ -63,7 +63,7 @@ public class Driver {
 	public void getMovies() {
 		Iterator<Movie> movies = recommender.getMovies().values().iterator();
 		while (movies.hasNext()) {
-			System.out.println(movies.next().toString());
+			System.out.println(movies.next().info());
 		}
 		// ArrayList<Long> ids = recommender.getUserIdList();
 		// for(Long id: ids) {
@@ -77,7 +77,7 @@ public class Driver {
 		if (m == null)
 			System.out.println("Movie not found");
 		else
-			System.out.println(m);
+			System.out.println(m.info());
 	}
 
 	@Command(description = "Get all users details")
@@ -88,7 +88,7 @@ public class Driver {
 		// }
 		ArrayList<Long> ids = recommender.getUserIdList();
 		for (Long id : ids) {
-			System.out.println(recommender.getUser(id));
+			System.out.println(recommender.getUser(id).info());
 		}
 	}
 
@@ -100,7 +100,8 @@ public class Driver {
 			System.out.println("Not found");
 		} else {
 			for (Comparable item : found) {
-				System.out.println(item);
+				User u = (User) item;
+				System.out.println(u.info());
 			}
 		}
 	}
@@ -112,8 +113,9 @@ public class Driver {
 			System.out.println("Not found");
 		} else {
 			for (Comparable item : found) {
-				System.out.println(item);
-				System.out.println(item.hashCode());
+				Movie m = (Movie) item;
+				System.out.println(m.info());
+				//System.out.println(item.hashCode());
 			}
 		}
 	}
@@ -142,7 +144,7 @@ public class Driver {
 
 	@Command(description = "Get top ten movies")
 	public void getTopten() {
-		HashSet<Movie> topten = recommender.getTopTenMovies();
+		List<Movie> topten = recommender.getTopTenMovies();
 		if (topten.size() == 0) {
 			System.out.println("Unavailable");
 			return;
@@ -153,9 +155,8 @@ public class Driver {
 		else
 			System.out.println("Top ten movies:");
 
-		Iterator<Movie> ite = topten.iterator();
-		while (ite.hasNext())
-			System.out.println(ite.next());
+		for(Movie m: topten)
+			System.out.println("~~> " + m.info());
 		System.out.println(topten.size());
 	}
 
