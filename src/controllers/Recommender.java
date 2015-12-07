@@ -134,15 +134,13 @@ public class Recommender {
 		return search(movies, movieIdList, new Movie(title));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private ArrayList<Comparable> search(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids,
-			Comparable query) {
-		ArrayList<Comparable> results = new ArrayList<>();
-
+	private int search(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query,
+			boolean sorting) {
+		int foundPos = -1;
+		int left = -1;
 		if (map.size() > 0) {
 			// long id = -1;
-			boolean found = false;
-			int foundPos = -1;
+			// boolean found = false;
 			int lo = 0;
 			int hi = ids.size() - 1;
 			while (lo <= hi) {
@@ -152,41 +150,51 @@ public class Recommender {
 				int result = midObject.compareTo(query);
 				if (result > 0)
 					hi = mid - 1;
-				else if (result < 0)
+				else if (result < 0) {
 					lo = mid + 1;
-				else {
+					left = lo;
+				} else {
 					foundPos = mid;
-					found = true;
+					// found = true;
 					break;
 				}
 			}
+		}
+		if (sorting)
+			return left;
+		else
+			return foundPos;
+	}
 
-			// System.out.println("Got here");
+	// @SuppressWarnings({ "rawtypes", "unchecked" })
+	private ArrayList<Comparable> rippleSearch(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids,
+			Comparable query, int foundPos) {
+		ArrayList<Comparable> results = new ArrayList<>();
 
+		if (map.size() > 0 && foundPos >= 0 && foundPos < map.size()) {
 			// ripple
-			if (found) {
-				Comparable thisObject = map.get(ids.get(foundPos));
-				results.add(thisObject);
-				// left
-				for (int i = foundPos - 1; i >= 0; i--) {
-					long objID = ids.get(i);
-					Comparable that = map.get(objID);
-					if (thisObject.compareTo(that) == 0)
-						results.add(that);
-					else
-						break;
-				}
-
-				// right
-				for (int i = foundPos + 1; i < ids.size(); i++) {
-					long objID = ids.get(i);
-					Comparable that = map.get(objID);
-					if (thisObject.compareTo(that) == 0)
-						results.add(that);
-					else
-						break;
-				}
+			Comparable thisObject = map.get(ids.get(foundPos));
+			results.add(thisObject);
+			// left
+			for (int i = foundPos - 1; i >= 0; i--) {
+				long objID = ids.get(i);
+				Comparable that = map.get(objID);
+				if (thisObject.compareTo(that) == 0)
+					results.add(that);
+				else
+					break;
 			}
+
+			// right
+			for (int i = foundPos + 1; i < ids.size(); i++) {
+				long objID = ids.get(i);
+				Comparable that = map.get(objID);
+				if (thisObject.compareTo(that) == 0)
+					results.add(that);
+				else
+					break;
+			}
+
 		}
 		return results;
 	}
@@ -282,7 +290,7 @@ public class Recommender {
 
 	public void prime() throws Exception {
 		System.out.println("Loading...");
-		HashMap<Integer,String> genres = primer.loadGenres();
+		HashMap<Integer, String> genres = primer.loadGenres();
 		Movie.setGenres(genres);
 		Iterator<User> users = primer.loadUsers().iterator();
 		while (users.hasNext()) {
@@ -351,10 +359,12 @@ public class Recommender {
 
 	public ArrayList<Movie> recommend(long userId) {
 		ArrayList<Movie> recommendedMovies = new ArrayList<>();
-		
+
 		HashSet<Long> similarUsersId = new HashSet<>();
 		User user = users.get(userId);
 		HashSet<String> favoriteGenres = Matrix.getAllContents(movies, user.getPositiveRatedMovieIds());
+
+		// Find users that also like the same movies
 		HashMap<Long, Integer> rated = user.getRatings();
 		Iterator<Long> ite = rated.keySet().iterator();
 		while (ite.hasNext()) {
@@ -368,38 +378,40 @@ public class Recommender {
 			similarUsersId.remove(userId); // make sure the user looking for
 											// recommendation isn't in this set
 		}
-		
+
 		if (similarUsersId.size() > 0) {
 			User mostSimilar = null;
-			double min = Double.MAX_VALUE;
+			double min = Double.MAX_VALUE * (-1);
 			Iterator<Long> iteSim = similarUsersId.iterator();
 			while (iteSim.hasNext()) {
-				User other = users.get(iteSim.next());				
+				User other = users.get(iteSim.next());
 				double similarity = Matrix.similarityInRadian(movieIdList, rated, other.getRatings());
-				if (similarity < min) {
+				if (similarity > min) {
 					min = similarity;
 					mostSimilar = other;
 				}
 			}
 			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
 					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
-			
+
 			Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 			while (ids.hasNext()) {
 				long nextId = ids.next();
-				if(!rated.containsKey(nextId)) { //only take movies that user hasn't seen yet into account
+				if (!rated.containsKey(nextId)) { // only take movies that user
+													// hasn't seen yet into
+													// account
 					Movie m = movies.get(nextId);
-					//Content-based filter
+					// Content-based filter
 					HashSet<String> movieGenre = m.getIndivGenre();
 					boolean flag = true;
 					Iterator<String> genreIte = movieGenre.iterator();
-					while(genreIte.hasNext()) {
-						if(!favoriteGenres.contains(genreIte.next())) {
+					while (genreIte.hasNext()) {
+						if (!favoriteGenres.contains(genreIte.next())) {
 							flag = false;
 							break;
 						}
 					}
-					if(flag) {
+					if (flag) {
 						recommendedMovies.add(movies.get(nextId));
 					}
 				}
@@ -417,7 +429,7 @@ public class Recommender {
 		}
 		return recommendedMovies;
 	}
-	
+
 	public void load() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Loading from datastore...");

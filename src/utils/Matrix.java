@@ -58,7 +58,7 @@ public class Matrix {
 			int uVal = u[count];
 			int vVal = v[count];
 			squaredNormU += (uVal * uVal);
-			squaredNormV =+ (vVal * vVal);
+			squaredNormV += (vVal * vVal);
 			dotProduct += (uVal * vVal);
 			count++;
 		}
@@ -67,7 +67,8 @@ public class Matrix {
 		double normV = Math.sqrt(squaredNormV);
 		
 		double cos = dotProduct / (normU * normV);
-		double angleInRadian = Math.acos(cos);
-		return Math.abs(angleInRadian);
+//		double angleInRadian = Math.acos(cos);
+//		return Math.abs(angleInRadian);
+		return cos;
 	}
 }
