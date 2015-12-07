@@ -51,8 +51,8 @@ public class Matrix {
 		double normV = Math.sqrt(squaredNormV);
 		
 		double cos = dotProduct / (normU * normV);
-//		double angleInRadian = Math.acos(cos);
-//		return Math.abs(angleInRadian);
-		return cos;
+		double angleInRadian = Math.acos(cos);
+		return Math.abs(angleInRadian);
+		//return cos;
 	}
 }
