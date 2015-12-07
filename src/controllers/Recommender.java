@@ -409,6 +409,7 @@ public class Recommender {
 		User user = users.get(userId);
 		// Find users that also like the same movies
 		HashSet<Long> similarUsersId = findSimilarUsers(user);
+		System.out.println("Similar users: " + similarUsersId.size());
 		if (similarUsersId.size() > 0) {
 			User mostSimilar = findMostSimilarUSer(user,similarUsersId);
 			appendRecommendedMovies(user, mostSimilar, recommendedMovies);
@@ -436,6 +437,7 @@ public class Recommender {
 			int point = rated.get(movieId);
 			if (point > 0) // if user rated it positively (likes it)
 			{
+				// this maps a particular rating point (either 1,3, or 5) with a group of users
 				HashMap<Integer, HashSet<Long>> raters = movies.get(movieId).getPositiveRaters(); // get
 																									// users
 																									// that
@@ -445,8 +447,7 @@ public class Recommender {
 																									// movie
 																									// either
 																									// (1,3,5)
-				// this maps a particular rating point (either 1,3, or 5) with a
-				// group of users
+				
 				HashSet<Long> similarRaters = raters.get(point); // get users
 																	// that also
 																	// rated the
@@ -484,7 +485,16 @@ public class Recommender {
 	}
 	
 	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies) {
-		HashSet<String> favoriteGenres = Matrix.getAllContents(movies, user.getPositiveRatedMovieIds());
+		HashSet<String> favoriteGenres = Movie.getGenresFromMoviesGroup(movies, user.getPositiveRatedMovieIds());
+		String genres = "[";
+		Iterator<String> ite = favoriteGenres.iterator();
+		while(ite.hasNext()) {
+			genres += ite.next();
+			if(ite.hasNext())
+				genres += ",";
+		}
+		genres += "]";
+		System.out.println("Your favorite genres (" + favoriteGenres.size() + "): " + genres);
 		HashMap<Long, Integer> rated = user.getRatings();
 		Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 		while (ids.hasNext()) {
@@ -493,13 +503,13 @@ public class Recommender {
 												// hasn't seen yet into
 												// account
 				Movie m = movies.get(nextId);
-				// Content-based filter
+				// Content-based filter on genres
 				HashSet<String> movieGenre = m.getIndivGenre();
-				boolean flag = true;
+				boolean flag = false;
 				Iterator<String> genreIte = movieGenre.iterator();
 				while (genreIte.hasNext()) {
-					if (!favoriteGenres.contains(genreIte.next())) {
-						flag = false;
+					if (favoriteGenres.contains(genreIte.next())) {
+						flag = true;
 						break;
 					}
 				}

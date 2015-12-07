@@ -220,7 +220,7 @@ public class User implements Comparable<User> {
 		String result = toCheck.trim();
 		return result.length() > 0 && result.length() <= length;
 	}
-
+	
 	// private String identifyOccupation(String oc) {
 	// switch(oc.toLowerCase()) {
 	//

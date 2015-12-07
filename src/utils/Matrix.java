@@ -9,22 +9,6 @@ import models.Movie;
 
 public class Matrix {
 	
-	public static HashSet<String> getAllContents(HashMap<Long,Movie> movies,HashSet<Long> ids) {
-		HashSet<String> genres = new HashSet<>();
-		Iterator<Long> ite = ids.iterator();
-		while(ite.hasNext()) {
-			Movie m = movies.get(ite.next());
-			String genreCode = m.getGenreCode();
-			for(int i = 0; i < genreCode.length(); i++) {
-				int bit = (int) genreCode.charAt(i);
-				if(bit == 1) {
-					genres.add(Movie.getGenres().get(bit));
-				}
-			}
-		}
-		return genres;
-	}
-	
 	public static double similarityInRadian(ArrayList<Long> movieIds, HashMap<Long, Integer> ratingsA,
 			HashMap<Long, Integer> ratingsB) {
 		//First: make them aligned

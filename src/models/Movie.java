@@ -90,6 +90,12 @@ public class Movie implements Comparable<Movie> {
 	}
 
 	public String info() {
+		double roundedPoint = ((int) getAveragePoint() * 10) / 10;
+		return title + ", " + releaseDate + ", " + url + ", "
+				+ "\nGenre(s): " + printGenre() + "\nAverage point: " + roundedPoint;
+	}
+
+	public String printGenre() {
 		String genre = "[";
 		Iterator<String> ite = getIndivGenre().iterator();
 		while(ite.hasNext()) {
@@ -98,11 +104,9 @@ public class Movie implements Comparable<Movie> {
 				genre += ",";
 		}
 		genre += "]";
-		double roundedPoint = ((int) getAveragePoint() * 10) / 10;
-		return title + ", " + releaseDate + ", " + url + ", "
-				+ "\nGenre(s): " + genre + "\nAverage point: " + roundedPoint;
+		return genre;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.title, this.releaseDate, this.url, this.genreCode);
@@ -209,5 +213,16 @@ public class Movie implements Comparable<Movie> {
 		} else {
 			return genres;
 		}
+	}
+	
+	
+	public static HashSet<String> getGenresFromMoviesGroup(HashMap<Long,Movie> movies,HashSet<Long> ids) {
+		HashSet<String> genres = new HashSet<>();
+		Iterator<Long> ite = ids.iterator();
+		while(ite.hasNext()) {
+			Movie m = movies.get(ite.next());
+			genres.addAll(m.getIndivGenre());
+		}
+		return genres;
 	}
 }

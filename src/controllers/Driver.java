@@ -197,7 +197,8 @@ public class Driver {
 		System.out.println(movies.size() + " recommended movies");
 		for (Movie movie : movies) {
 			double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
-			System.out.println(movie.getTitle() + ", point: " + roundedPoint + ", Movie ID: " + movie.getMovieId());
+			System.out.println("~> " + movie.getTitle() + ", genres: " + movie.printGenre() + ", average point: " + roundedPoint
+					+ ", Movie ID: " + movie.getMovieId());
 		}
 	}
 }
