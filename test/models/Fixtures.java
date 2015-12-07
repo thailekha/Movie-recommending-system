@@ -13,8 +13,12 @@ public class Fixtures {
 
 	public static User[] getUsersForSort() throws Exception {
 		return new User[] { new User("x", "y", 17, "M", "student", "123456"),
-				new User("asd", "dsa", 19, "M", "student", "78990"), 
+				new User("asd", "dsa", 19, "M", "student", "78990"),
+				new User("asd", "ds", 19, "M", "student", "78990"),
+				new User("asd", "dsa", 18, "M", "student", "78990"),
+				new User("asd", "dsa", 17, "M", "student", "78990"),
 				new User("Pink", "Panther", 99, "M", "other", "890111"),
+				new User("Pink", "Panther", 90, "M", "other", "890111"),
 				new User("0123456", "0", 99, "M", "other", "345456"),
 				new User("Tom", "Jerry", 99, "M", "other", "456567"), };
 	}

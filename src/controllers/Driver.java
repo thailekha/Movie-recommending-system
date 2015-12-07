@@ -17,6 +17,7 @@ import asg.cliche.Param;
 import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
 import edu.princeton.cs.introcs.In;
+import edu.princeton.cs.introcs.Stopwatch;
 import models.Fixtures;
 import models.Movie;
 import models.Rating;
@@ -105,6 +106,7 @@ public class Driver {
 		if (found.size() == 0) {
 			System.out.println("Not found");
 		} else {
+			System.out.println("Found user(s):");
 			for (Comparable item : found) {
 				User u = (User) item;
 				System.out.println(u.info());
@@ -118,6 +120,7 @@ public class Driver {
 		if (found.size() == 0) {
 			System.out.println("Not found");
 		} else {
+			System.out.println("Found movie(s):");
 			for (Comparable item : found) {
 				Movie m = (Movie) item;
 				System.out.println(m.info());
@@ -168,7 +171,9 @@ public class Driver {
 
 	@Command(description = "prime")
 	public void prime() throws Exception {
+		Stopwatch watch = new Stopwatch();
 		recommender.prime();
+		System.out.println(watch.elapsedTime() + " seconds");
 	}
 
 	@Command(description = "Load")

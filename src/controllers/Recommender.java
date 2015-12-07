@@ -55,16 +55,25 @@ public class Recommender {
 		}
 	}
 
-	public void addUser(User user) {
+	public void addUser(User user) throws Exception {
 		if (!users.containsKey(user.getUserId()) && !users.containsValue(user)) {
 			putUser(user);
 		}
 	}
 
-	private void putUser(User user) {
+	private void putUser(User user) throws Exception {
+
+		// userIdList.add(user.getUserId());
+		// addSort(userIdList, users);
+
+		int pos = newPos(users, userIdList, user);
+		if (pos > userIdList.size())
+			userIdList.add(user.getUserId());
+		else
+			userIdList.add(pos, user.getUserId());
 		users.put(user.getUserId(), user);
-		userIdList.add(user.getUserId());
-		addSort(userIdList, users);
+		if (users.size() != userIdList.size())
+			throw new Exception();
 	}
 
 	public HashMap<Long, User> getUsers() {
@@ -99,16 +108,25 @@ public class Recommender {
 		}
 	}
 
-	public void addMovie(Movie movie) {
+	public void addMovie(Movie movie) throws Exception {
 		if (!movies.containsKey(movie.getMovieId()) && !movies.containsValue(movie)) {
 			putMovie(movie);
 		}
 	}
 
-	private void putMovie(Movie movie) {
+	private void putMovie(Movie movie) throws Exception {
 		movies.put(movie.getMovieId(), movie);
-		movieIdList.add(movie.getMovieId());
-		addSort(movieIdList, movies);
+		// movieIdList.add(movie.getMovieId());
+		// addSort(movieIdList, movies);
+
+		int pos = newPos(movies, movieIdList, movie);
+		if (pos > movieIdList.size())
+			movieIdList.add(movie.getMovieId());
+		else
+			movieIdList.add(pos, movie.getMovieId());
+
+		if (movies.size() != movieIdList.size())
+			throw new Exception();
 	}
 
 	public User getUser(Long id) {
@@ -126,21 +144,31 @@ public class Recommender {
 
 	@SuppressWarnings("rawtypes")
 	public ArrayList<Comparable> searchUser(String firstName, String lastName, int age) throws Exception {
-		return search(users, userIdList, new User(firstName, lastName, age));
+		User query =  new User(firstName, lastName, age);
+		int position =  search(users, userIdList,query);
+		return rippleSearch(users, userIdList, query,position);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public ArrayList<Comparable> searchMovie(String title) throws Exception {
-		return search(movies, movieIdList, new Movie(title));
+		Movie query = new Movie(title);
+		int position  = search(movies,movieIdList,query);
+		return rippleSearch(movies, movieIdList, query,position);
 	}
 
-	private int search(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query,
-			boolean sorting) {
-		int foundPos = -1;
-		int left = -1;
-		if (map.size() > 0) {
-			// long id = -1;
-			// boolean found = false;
+	private int newPos(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query) throws Exception {
+		int pos = 0;
+		if (ids.size() == 0 && map.size() == 0)
+			return pos;
+		if (ids.size() == 1 && map.size() == 1) {
+			Comparable presentObject = map.values().iterator().next();
+			int result = query.compareTo(presentObject);
+			// if the new one is "smaller" than currently present object, add to
+			// left of the current object
+			// else add to right (normally add)
+			if (result > 0)
+				pos = 1;
+		} else {
 			int lo = 0;
 			int hi = ids.size() - 1;
 			while (lo <= hi) {
@@ -152,21 +180,39 @@ public class Recommender {
 					hi = mid - 1;
 				else if (result < 0) {
 					lo = mid + 1;
-					left = lo;
+				}
+			}
+//			if(lo != hi)
+//				throw new Exception();
+			pos = lo;
+		}
+		return pos;
+	}
+
+	private int search(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query) {
+		int foundPos = -1;
+		if (map.size() > 0) {
+			int lo = 0;
+			int hi = ids.size() - 1;
+			while (lo <= hi) {
+				int mid = (lo + hi) / 2;
+				long midId = ids.get(mid);
+				Comparable midObject = map.get(midId);
+				int result = midObject.compareTo(query);
+				if (result > 0)
+					hi = mid - 1;
+				else if (result < 0) {
+					lo = mid + 1;
 				} else {
 					foundPos = mid;
-					// found = true;
 					break;
 				}
 			}
 		}
-		if (sorting)
-			return left;
-		else
-			return foundPos;
+		return foundPos;
 	}
 
-	// @SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private ArrayList<Comparable> rippleSearch(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids,
 			Comparable query, int foundPos) {
 		ArrayList<Comparable> results = new ArrayList<>();

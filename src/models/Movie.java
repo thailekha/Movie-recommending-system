@@ -74,11 +74,12 @@ public class Movie implements Comparable<Movie> {
 	}
 
 	public HashSet<String> getIndivGenre() {
+		HashMap<Integer,String> toLookup = getGenres();
 		HashSet<String> genres = new HashSet<>();
 		for(int i = 0; i < genreCode.length(); i++) {
-			int bit = (int) genreCode.charAt(i);
-			if(bit == 1) {
-				genres.add(Movie.getGenres().get(bit));
+			char bit = genreCode.charAt(i);
+			if(bit == '1') {
+				genres.add(toLookup.get(i));
 			}
 		}
 		return genres;
@@ -89,7 +90,17 @@ public class Movie implements Comparable<Movie> {
 	}
 
 	public String info() {
-		return title + ", " + releaseDate + ", " + url + ", " + genreCode + ", " + getAveragePoint();
+		String genre = "[";
+		Iterator<String> ite = getIndivGenre().iterator();
+		while(ite.hasNext()) {
+			genre += ite.next();
+			if(ite.hasNext())
+				genre += ",";
+		}
+		genre += "]";
+		double roundedPoint = ((int) getAveragePoint() * 10) / 10;
+		return title + ", " + releaseDate + ", " + url + ", "
+				+ "\nGenre(s): " + genre + "\nAverage point: " + roundedPoint;
 	}
 
 	@Override
