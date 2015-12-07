@@ -58,7 +58,7 @@ public class RecommenderPersistenceTest {
 		Serializer serializer = new JSONSerializer(new File(datastoreFile));
 
 		r = new Recommender(serializer, new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
-				"small_data/ratings5.dat", "small_data/genres.dat"));
+				"small_data/ratings5.dat", "small_data/genre.dat"));
 		r.prime();
 		r.store();
 		long uCount = User.getCounter();

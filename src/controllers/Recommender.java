@@ -144,19 +144,20 @@ public class Recommender {
 
 	@SuppressWarnings("rawtypes")
 	public ArrayList<Comparable> searchUser(String firstName, String lastName, int age) throws Exception {
-		User query =  new User(firstName, lastName, age);
-		int position =  search(users, userIdList,query);
-		return rippleSearch(users, userIdList, query,position);
+		User query = new User(firstName, lastName, age);
+		int position = search(users, userIdList, query);
+		return rippleSearch(users, userIdList, query, position);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public ArrayList<Comparable> searchMovie(String title) throws Exception {
 		Movie query = new Movie(title);
-		int position  = search(movies,movieIdList,query);
-		return rippleSearch(movies, movieIdList, query,position);
+		int position = search(movies, movieIdList, query);
+		return rippleSearch(movies, movieIdList, query, position);
 	}
 
-	private int newPos(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query) throws Exception {
+	private int newPos(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query)
+			throws Exception {
 		int pos = 0;
 		if (ids.size() == 0 && map.size() == 0)
 			return pos;
@@ -182,8 +183,8 @@ public class Recommender {
 					lo = mid + 1;
 				}
 			}
-//			if(lo != hi)
-//				throw new Exception();
+			// if(lo != hi)
+			// throw new Exception();
 			pos = lo;
 		}
 		return pos;
@@ -405,63 +406,12 @@ public class Recommender {
 
 	public ArrayList<Movie> recommend(long userId) {
 		ArrayList<Movie> recommendedMovies = new ArrayList<>();
-
-		HashSet<Long> similarUsersId = new HashSet<>();
 		User user = users.get(userId);
-		HashSet<String> favoriteGenres = Matrix.getAllContents(movies, user.getPositiveRatedMovieIds());
-
 		// Find users that also like the same movies
-		HashMap<Long, Integer> rated = user.getRatings();
-		Iterator<Long> ite = rated.keySet().iterator();
-		while (ite.hasNext()) {
-			long movieId = ite.next();
-			int point = rated.get(movieId);
-			if (point > 0) {
-				HashMap<Integer, HashSet<Long>> raters = movies.get(movieId).getPositiveRaters();
-				HashSet<Long> similarRaters = raters.get(point);
-				similarUsersId.addAll(similarRaters);
-			}
-			similarUsersId.remove(userId); // make sure the user looking for
-											// recommendation isn't in this set
-		}
-
+		HashSet<Long> similarUsersId = findSimilarUsers(user);
 		if (similarUsersId.size() > 0) {
-			User mostSimilar = null;
-			double min = Double.MAX_VALUE * (-1);
-			Iterator<Long> iteSim = similarUsersId.iterator();
-			while (iteSim.hasNext()) {
-				User other = users.get(iteSim.next());
-				double similarity = Matrix.similarityInRadian(movieIdList, rated, other.getRatings());
-				if (similarity > min) {
-					min = similarity;
-					mostSimilar = other;
-				}
-			}
-			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
-					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
-
-			Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
-			while (ids.hasNext()) {
-				long nextId = ids.next();
-				if (!rated.containsKey(nextId)) { // only take movies that user
-													// hasn't seen yet into
-													// account
-					Movie m = movies.get(nextId);
-					// Content-based filter
-					HashSet<String> movieGenre = m.getIndivGenre();
-					boolean flag = true;
-					Iterator<String> genreIte = movieGenre.iterator();
-					while (genreIte.hasNext()) {
-						if (!favoriteGenres.contains(genreIte.next())) {
-							flag = false;
-							break;
-						}
-					}
-					if (flag) {
-						recommendedMovies.add(movies.get(nextId));
-					}
-				}
-			}
+			User mostSimilar = findMostSimilarUSer(user,similarUsersId);
+			appendRecommendedMovies(user, mostSimilar, recommendedMovies);
 			Collections.sort(recommendedMovies, new Comparator<Movie>() {
 				@Override // descending order
 				public int compare(Movie m1, Movie m2) {
@@ -474,6 +424,90 @@ public class Recommender {
 			});
 		}
 		return recommendedMovies;
+	}
+
+	private HashSet<Long> findSimilarUsers(User user) {
+		HashSet<Long> similarUsersId = new HashSet<>();
+		HashMap<Long, Integer> rated = user.getRatings(); // get all movies
+															// rated by user
+		Iterator<Long> ite = rated.keySet().iterator();
+		while (ite.hasNext()) {
+			long movieId = ite.next();
+			int point = rated.get(movieId);
+			if (point > 0) // if user rated it positively (likes it)
+			{
+				HashMap<Integer, HashSet<Long>> raters = movies.get(movieId).getPositiveRaters(); // get
+																									// users
+																									// that
+																									// also
+																									// rated
+																									// the
+																									// movie
+																									// either
+																									// (1,3,5)
+				// this maps a particular rating point (either 1,3, or 5) with a
+				// group of users
+				HashSet<Long> similarRaters = raters.get(point); // get users
+																	// that also
+																	// rated the
+																	// movie
+																	// with the
+																	// same
+																	// point
+				similarUsersId.addAll(similarRaters);
+			}
+			similarUsersId.remove(user.getUserId()); // make sure the user
+														// looking for
+			// recommendation isn't in this set
+		}
+		return similarUsersId;
+	}
+
+	private User findMostSimilarUSer(User user, HashSet<Long> similarUsersId) {
+		User mostSimilar = null;
+		HashMap<Long, Integer> rated = user.getRatings();
+		double min = Double.MAX_VALUE * (-1);
+		Iterator<Long> iteSim = similarUsersId.iterator();
+		while (iteSim.hasNext()) {
+			User other = users.get(iteSim.next());
+			double similarity = Matrix.similarityInRadian(movieIdList, rated, other.getRatings());
+			if (similarity > min) {
+				min = similarity;
+				mostSimilar = other;
+			}
+		}
+		if (mostSimilar != null) {
+			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
+					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
+		}
+		return mostSimilar;
+	}
+	
+	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies) {
+		HashSet<String> favoriteGenres = Matrix.getAllContents(movies, user.getPositiveRatedMovieIds());
+		HashMap<Long, Integer> rated = user.getRatings();
+		Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
+		while (ids.hasNext()) {
+			long nextId = ids.next();
+			if (!rated.containsKey(nextId)) { // only take movies that user
+												// hasn't seen yet into
+												// account
+				Movie m = movies.get(nextId);
+				// Content-based filter
+				HashSet<String> movieGenre = m.getIndivGenre();
+				boolean flag = true;
+				Iterator<String> genreIte = movieGenre.iterator();
+				while (genreIte.hasNext()) {
+					if (!favoriteGenres.contains(genreIte.next())) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) {
+					recommendedMovies.add(movies.get(nextId));
+				}
+			}
+		}
 	}
 
 	public void load() throws Exception {
