@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Sets;
 
 import models.Fixtures;
 import models.Movie;
@@ -25,13 +26,33 @@ public class CSVLoaderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		c = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat");
+		c = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat","data_movieLens/genre.dat");
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 
+	@Test
+	public void testLoadGenres() {
+		try {
+			HashSet<String> validGenres = Sets.newHashSet("unknown", "action", "adventure", "animation", "children's",
+					"comedy", "crime", "documentary", "drama", "fantasy", "film-noir", "horror", "musical", "mystery",
+					"romance", "sci-fi", "thriller", "war", "western");
+			HashMap<Integer,String> genres = c.loadGenres();
+			assertEquals(validGenres.size(),genres.size());
+			
+			for(int i = 0; i <= 18; i++) {
+				assertTrue(validGenres.contains(genres.get(i)));
+				genres.remove(i);
+			}
+			
+			assertEquals(genres.size(),0);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
 	@Test
 	public void testLoadUsers() {
 		try {

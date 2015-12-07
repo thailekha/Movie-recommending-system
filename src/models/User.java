@@ -121,7 +121,7 @@ public class User implements Comparable<User> {
 		Iterator<Long> ite = ratings.keySet().iterator();
 		while (ite.hasNext()) {
 			long id = ite.next();
-			if(ratings.get(id) > 0) {
+			if(ratings.get(id) > 3) {
 				rateds.add(id);
 			}
 		}

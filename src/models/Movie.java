@@ -6,11 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
 import com.google.common.math.DoubleMath;
 
 import utils.ToJsonString;
 
 public class Movie implements Comparable<Movie> {
+
+	private static HashMap<Integer, String> genres = new HashMap<>();
 	private static long counter = 1;
 	private long movieId;
 	private String title, releaseDate, url, genreCode;
@@ -56,7 +59,7 @@ public class Movie implements Comparable<Movie> {
 	public String getGenreCode() {
 		return genreCode;
 	}
-
+	
 	public HashMap<Long, Integer> getRatings() {
 		return ratings;
 	}
@@ -70,6 +73,17 @@ public class Movie implements Comparable<Movie> {
 		return DoubleMath.mean(ratings.values());
 	}
 
+	public HashSet<String> getIndivGenre() {
+		HashSet<String> genres = new HashSet<>();
+		for(int i = 0; i < genreCode.length(); i++) {
+			int bit = (int) genreCode.charAt(i);
+			if(bit == 1) {
+				genres.add(Movie.getGenres().get(bit));
+			}
+		}
+		return genres;
+	}
+	
 	public String toString() {
 		return new ToJsonString(getClass(), this).toString();
 	}
@@ -166,5 +180,23 @@ public class Movie implements Comparable<Movie> {
 			return false;
 		String result = toCheck.trim();
 		return result.length() > 0 && result.length() <= length;
+	}
+
+	public static void setGenres(HashMap<Integer, String> genres) {
+		Movie.genres = genres;
+	}
+
+	public static HashMap<Integer, String> getGenres() {
+		if (Movie.genres.size() == 0) {
+			HashMap<Integer, String> map = new HashMap<>();
+			String[] g = new String[]{"unknown", "action", "adventure", "animation", "children's",
+					"comedy", "crime", "documentary", "drama", "fantasy", "film-noir", "horror", "musical", "mystery",
+					"romance", "sci-fi", "thriller", "war", "western"};
+			for(int i = 0; i < g.length; i++)
+				map.put(i, g[i]);
+			return map;
+		} else {
+			return genres;
+		}
 	}
 }

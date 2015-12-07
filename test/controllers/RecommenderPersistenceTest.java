@@ -57,8 +57,8 @@ public class RecommenderPersistenceTest {
 
 		Serializer serializer = new JSONSerializer(new File(datastoreFile));
 
-		r = new Recommender(serializer,
-				new CSVLoader("small_data/users5.dat", "small_data/items5.dat", "small_data/ratings5.dat"));
+		r = new Recommender(serializer, new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
+				"small_data/ratings5.dat", "small_data/genres.dat"));
 		r.prime();
 		r.store();
 		long uCount = User.getCounter();
@@ -67,8 +67,8 @@ public class RecommenderPersistenceTest {
 		User.resetCounter();
 		Movie.resetCounter();
 
-		Recommender r2 = new Recommender(serializer,
-				new CSVLoader("small_data/users5.dat", "small_data/items5.dat", "small_data/ratings5.dat"));
+		Recommender r2 = new Recommender(serializer, new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
+				"small_data/ratings5.dat", "small_data/genre.dat"));
 		r2.load();
 
 		assertEquals(r.getUsersSize(), r2.getUsersSize());
@@ -123,7 +123,7 @@ public class RecommenderPersistenceTest {
 		r2.addUser(abitraryUser.getFirstName(), abitraryUser.getLastName(), abitraryUser.getAge(),
 				abitraryUser.getGender(), abitraryUser.getOccupation(), abitraryUser.getZip());
 		User mirrorMirror = r2.getUser(abitraryUser.getUserId());
-		assertEquals(abitraryUser,mirrorMirror);
+		assertEquals(abitraryUser, mirrorMirror);
 
 		deleteFile("testdatastore.json");
 	}

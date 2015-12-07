@@ -282,6 +282,8 @@ public class Recommender {
 
 	public void prime() throws Exception {
 		System.out.println("Loading...");
+		HashMap<Integer,String> genres = primer.loadGenres();
+		Movie.setGenres(genres);
 		Iterator<User> users = primer.loadUsers().iterator();
 		while (users.hasNext()) {
 			addUser(users.next());
@@ -349,8 +351,10 @@ public class Recommender {
 
 	public ArrayList<Movie> recommend(long userId) {
 		ArrayList<Movie> recommendedMovies = new ArrayList<>();
+		
 		HashSet<Long> similarUsersId = new HashSet<>();
 		User user = users.get(userId);
+		HashSet<String> favoriteGenres = Matrix.getAllContents(movies, user.getPositiveRatedMovieIds());
 		HashMap<Long, Integer> rated = user.getRatings();
 		Iterator<Long> ite = rated.keySet().iterator();
 		while (ite.hasNext()) {
@@ -364,12 +368,13 @@ public class Recommender {
 			similarUsersId.remove(userId); // make sure the user looking for
 											// recommendation isn't in this set
 		}
+		
 		if (similarUsersId.size() > 0) {
 			User mostSimilar = null;
 			double min = Double.MAX_VALUE;
 			Iterator<Long> iteSim = similarUsersId.iterator();
 			while (iteSim.hasNext()) {
-				User other = users.get(iteSim.next());
+				User other = users.get(iteSim.next());				
 				double similarity = Matrix.similarityInRadian(movieIdList, rated, other.getRatings());
 				if (similarity < min) {
 					min = similarity;
@@ -378,9 +383,26 @@ public class Recommender {
 			}
 			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
 					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
+			
 			Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 			while (ids.hasNext()) {
-				recommendedMovies.add(movies.get(ids.next()));
+				long nextId = ids.next();
+				if(!rated.containsKey(nextId)) { //only take movies that user hasn't seen yet into account
+					Movie m = movies.get(nextId);
+					//Content-based filter
+					HashSet<String> movieGenre = m.getIndivGenre();
+					boolean flag = true;
+					Iterator<String> genreIte = movieGenre.iterator();
+					while(genreIte.hasNext()) {
+						if(!favoriteGenres.contains(genreIte.next())) {
+							flag = false;
+							break;
+						}
+					}
+					if(flag) {
+						recommendedMovies.add(movies.get(nextId));
+					}
+				}
 			}
 			Collections.sort(recommendedMovies, new Comparator<Movie>() {
 				@Override // descending order
@@ -395,7 +417,7 @@ public class Recommender {
 		}
 		return recommendedMovies;
 	}
-
+	
 	public void load() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Loading from datastore...");

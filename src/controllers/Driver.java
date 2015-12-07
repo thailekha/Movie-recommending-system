@@ -35,8 +35,8 @@ public class Driver {
 		// new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
 		// "small_data/ratings5.dat")
 		File datastore = new File("datastore/store.json");
-		recommender = new Recommender(new JSONSerializer(datastore),
-				new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat"));
+		recommender = new Recommender(new JSONSerializer(datastore), new CSVLoader("data_movieLens/users.dat",
+				"data_movieLens/newItems.dat", "data_movieLens/ratings.dat", "data_movieLens/genre.dat"));
 	}
 
 	public static void main(String[] agrs) throws Exception {
@@ -189,6 +189,7 @@ public class Driver {
 	@Command(description = "Get recommendations for a user")
 	public void getUserRecommendations(@Param(name = "User ID") long userID) {
 		ArrayList<Movie> movies = recommender.recommend(userID);
+		System.out.println(movies.size() + " recommended movies");
 		for (Movie movie : movies) {
 			double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
 			System.out.println(movie.getTitle() + ", point: " + roundedPoint + ", Movie ID: " + movie.getMovieId());

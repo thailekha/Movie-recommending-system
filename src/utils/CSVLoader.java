@@ -13,12 +13,13 @@ import models.User;
 public class CSVLoader {
 	private HashMap<Long,Long> userIdTranlator = new HashMap<>();
 	private HashMap<Long,Long> movieIdTranlator = new HashMap<>();
-	private String users, movies, ratings;
+	private String users, movies, ratings, genres;
 
-	public CSVLoader(String users, String movies, String ratings) {
+	public CSVLoader(String users, String movies, String ratings, String genres) {
 		this.users = users;
 		this.movies = movies;
 		this.ratings = ratings;
+		this.genres = genres;
 	}
 
 	public HashMap<Long,Long> getUserIdTranlator() {
@@ -27,6 +28,29 @@ public class CSVLoader {
 	
 	public HashMap<Long,Long> getMovieIdTranlator() {
 		return movieIdTranlator;
+	}
+	
+	public HashMap<Integer,String> loadGenres() throws Exception {
+		File file = new File(genres);
+		In ins = new In(file);
+		try {
+			String delims = "[|]";
+			HashMap<Integer,String> result = new HashMap<>();
+			while (!ins.isEmpty()) {
+				String details = ins.readLine();
+				String[] tokens = details.split(delims);
+				if (tokens.length == 2) {
+					String genre = tokens[0].toLowerCase();
+					int id = Integer.parseInt(tokens[1]);
+					result.put(id, genre);
+				} else {
+					throw new Exception("Invalid member length: " + tokens.length);
+				}
+			}
+			return result;
+		} finally {
+			ins.close();
+		}
 	}
 	
 	public HashSet<User> loadUsers() throws Exception {
