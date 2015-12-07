@@ -429,12 +429,12 @@ public class Recommender {
 
 	private HashSet<Long> findSimilarUsers(User user) {
 		HashSet<Long> similarUsersId = new HashSet<>();
-		HashMap<Long, Integer> rated = user.getRatings(); // get all movies
+		HashMap<Long, Rating> rated = user.getRatings(); // get all movies
 															// rated by user
 		Iterator<Long> ite = rated.keySet().iterator();
 		while (ite.hasNext()) {
 			long movieId = ite.next();
-			int point = rated.get(movieId);
+			int point = rated.get(movieId).getRating();
 			if (point > 0) // if user rated it positively (likes it)
 			{
 				// this maps a particular rating point (either 1,3, or 5) with a group of users
@@ -466,7 +466,7 @@ public class Recommender {
 
 	private User findMostSimilarUSer(User user, HashSet<Long> similarUsersId) {
 		User mostSimilar = null;
-		HashMap<Long, Integer> rated = user.getRatings();
+		HashMap<Long, Rating> rated = user.getRatings();
 		double min = Double.MAX_VALUE;
 		Iterator<Long> iteSim = similarUsersId.iterator();
 		while (iteSim.hasNext()) {
@@ -495,7 +495,7 @@ public class Recommender {
 		}
 		genres += "]";
 		System.out.println("Your favorite genres (" + favoriteGenres.size() + "): " + genres);
-		HashMap<Long, Integer> rated = user.getRatings();
+		HashMap<Long, Rating> rated = user.getRatings();
 		Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 		while (ids.hasNext()) {
 			long nextId = ids.next();

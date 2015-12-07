@@ -24,7 +24,7 @@ public class User implements Comparable<User> {
 	private int age;
 	
 	//Map movie and rating point
-	private HashMap<Long,Integer> ratings = new HashMap<>(); //quicker to check duplicate ratings
+	private HashMap<Long,Rating> ratings = new HashMap<>(); //quicker to check duplicate ratings
 	//private ArrayList<Rating> ratings = new ArrayList<>(); 
 
 	public User(String firstName, String lastName, int age, String gender, String occupation, String zip)
@@ -88,7 +88,7 @@ public class User implements Comparable<User> {
 //		return ratings;
 //	}
 	
-	public HashMap<Long,Integer> getRatings() {
+	public HashMap<Long,Rating> getRatings() {
 		return ratings;
 	}
 	
@@ -106,7 +106,7 @@ public class User implements Comparable<User> {
 	
 	public void addRating(Rating r) {
 		if(r != null && Rating.checkRating(r.getRating()))
-			ratings.put(r.getMovieId(), r.getRating());
+			ratings.put(r.getMovieId(), r);
 	}
 	
 //	public void removeRating(Rating r) {
@@ -121,7 +121,7 @@ public class User implements Comparable<User> {
 		Iterator<Long> ite = ratings.keySet().iterator();
 		while (ite.hasNext()) {
 			long id = ite.next();
-			if(ratings.get(id) > 0) {
+			if(ratings.get(id).getRating() > 0) {
 				rateds.add(id);
 			}
 		}

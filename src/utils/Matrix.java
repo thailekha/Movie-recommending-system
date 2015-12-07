@@ -6,11 +6,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import models.Movie;
+import models.Rating;
 
 public class Matrix {
 	
-	public static double similarityInRadian(ArrayList<Long> movieIds, HashMap<Long, Integer> ratingsA,
-			HashMap<Long, Integer> ratingsB) {
+	public static double similarityInRadian(ArrayList<Long> movieIds, HashMap<Long, Rating> ratingsA,
+			HashMap<Long, Rating> ratingsB) {
 		//First: make them aligned
 		int[] u = new int[movieIds.size()];
 		int[] v = new int[movieIds.size()];
@@ -21,13 +22,13 @@ public class Matrix {
 		int countV = 0;
 		for(long id: movieIds) {
 			if(ratingsA.containsKey(id)) {
-				u[countU++] = ratingsA.get(id);
+				u[countU++] = ratingsA.get(id).getRating();
 			}
 			else {
 				countU++;
 			}
 			if(ratingsB.containsKey(id)) {
-				v[countV++] = ratingsB.get(id);
+				v[countV++] = ratingsB.get(id).getRating();
 			}
 			else {
 				countV++;
