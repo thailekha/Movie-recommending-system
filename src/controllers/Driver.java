@@ -194,11 +194,15 @@ public class Driver {
 	@Command(description = "Get recommendations for a user")
 	public void getUserRecommendations(@Param(name = "User ID") long userID) {
 		ArrayList<Movie> movies = recommender.recommend(userID);
-		System.out.println(movies.size() + " recommended movies");
-		for (Movie movie : movies) {
-			double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
-			System.out.println("~> " + movie.getTitle() + ", genres: " + movie.printGenre() + ", average point: " + roundedPoint
-					+ ", Movie ID: " + movie.getMovieId());
+		if (movies.size() == 0) {
+			System.out.println("Not available");
+		} else {
+			System.out.println(movies.size() + " recommended movies");
+			for (Movie movie : movies) {
+				double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
+				System.out.println("~> " + movie.getTitle() + ", genres: " + movie.printGenre() + ", average point: "
+						+ roundedPoint + ", Movie ID: " + movie.getMovieId());
+			}
 		}
 	}
 }

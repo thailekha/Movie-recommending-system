@@ -412,6 +412,8 @@ public class Recommender {
 		System.out.println("Similar users: " + similarUsersId.size());
 		if (similarUsersId.size() > 0) {
 			User mostSimilar = findMostSimilarUSer(user,similarUsersId);
+			if(mostSimilar == null)
+				return recommendedMovies;
 			appendRecommendedMovies(user, mostSimilar, recommendedMovies);
 			Collections.sort(recommendedMovies, new Comparator<Movie>() {
 				@Override // descending order
@@ -477,7 +479,9 @@ public class Recommender {
 				mostSimilar = other;
 			}
 		}
-		if (mostSimilar != null) {
+		if (mostSimilar == null || min >= Math.PI/2) 
+			return null;
+		else {
 			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
 					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
 		}
