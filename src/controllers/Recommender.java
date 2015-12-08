@@ -1,17 +1,13 @@
 package controllers;
 
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
-import com.google.common.collect.HashBasedTable;
 
 import edu.princeton.cs.introcs.Stopwatch;
 import models.Movie;
@@ -45,8 +41,10 @@ public class Recommender {
 
 	/**
 	 * full constructor
+	 * 
 	 * @param serializer
-	 * @param primer (representing CSV file manipulator) 
+	 * @param primer
+	 *            (representing CSV file manipulator)
 	 */
 	public Recommender(Serializer s, CSVLoader primer) {
 		this.primer = primer;
@@ -55,6 +53,7 @@ public class Recommender {
 
 	/**
 	 * get id-user map
+	 * 
 	 * @return map
 	 */
 	public HashMap<Long, User> getUsers() {
@@ -63,6 +62,7 @@ public class Recommender {
 
 	/**
 	 * get user ids sorted by user's name and age
+	 * 
 	 * @return user ids
 	 */
 	public ArrayList<Long> getUserIdList() {
@@ -71,18 +71,57 @@ public class Recommender {
 
 	/**
 	 * get movie ids sorted by movie's title
+	 * 
 	 * @return movie ids
 	 */
 	public ArrayList<Long> getMovieIdList() {
 		return movieIdList;
 	}
 
-//	public boolean ratingsSorted() {
-//		return ratingsSorted;
-//	}
+	// public boolean ratingsSorted() {
+	// return ratingsSorted;
+	// }
+
+	/**
+	 * get ratings made by a user
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public HashSet<Rating> getUserRatings(long userId) {
+		HashSet<Rating> ratings = new HashSet<>();
+		if (users.containsKey(userId)) {
+			User user = users.get(userId);
+			ratings.addAll(user.getRatings().values());
+		}
+		return ratings;
+	}
+
+	/**
+	 * get ratings made by a user in string
+	 * 
+	 * @param userId
+	 * @return string
+	 */
+	public String printUserRatings(long userId) {
+		String toPrint = "";
+		toPrint += users.get(userId).info() + "\n";
+		HashSet<Rating> ratings = getUserRatings(userId);
+		if (ratings.size() > 0) {
+			Iterator<Rating> ite = ratings.iterator();
+			while (ite.hasNext()) {
+				Rating r = ite.next();
+				toPrint += r.getRating() + " => " + movies.get(r.getMovieId()).info() + "\n";
+			}
+		} else {
+			toPrint += "Not available";
+		}
+		return toPrint;
+	}
 
 	/**
 	 * get ratings list
+	 * 
 	 * @return ratings list
 	 */
 	public ArrayList<Rating> getRatings() {
@@ -91,15 +130,16 @@ public class Recommender {
 
 	/**
 	 * get user size
+	 * 
 	 * @return user size
 	 */
 	public int getUsersSize() {
 		return users.size();
 	}
 
-
 	/**
 	 * add a user by fields
+	 * 
 	 * @param firstName
 	 * @param lastName
 	 * @param age
@@ -118,6 +158,7 @@ public class Recommender {
 
 	/**
 	 * add a user object
+	 * 
 	 * @param user
 	 * @throws Exception
 	 */
@@ -129,6 +170,7 @@ public class Recommender {
 
 	/**
 	 * put the new user object onto the global fields
+	 * 
 	 * @param user
 	 * @throws Exception
 	 */
@@ -145,6 +187,7 @@ public class Recommender {
 
 	/**
 	 * add a movie by fields
+	 * 
 	 * @param title
 	 * @param releaseDate
 	 * @param url
@@ -160,6 +203,7 @@ public class Recommender {
 
 	/**
 	 * add a movie by movie object
+	 * 
 	 * @param movie
 	 * @throws Exception
 	 */
@@ -171,6 +215,7 @@ public class Recommender {
 
 	/**
 	 * put the new movie object onto the global fields
+	 * 
 	 * @param movie
 	 * @throws Exception
 	 */
@@ -184,10 +229,12 @@ public class Recommender {
 		if (movies.size() != movieIdList.size())
 			throw new Exception();
 	}
-	
+
 	/**
 	 * get user
-	 * @param user id
+	 * 
+	 * @param user
+	 *            id
 	 * @return user
 	 */
 	public User getUser(Long id) {
@@ -196,22 +243,26 @@ public class Recommender {
 
 	/**
 	 * remove a user
-	 * @param user id
+	 * 
+	 * @param user
+	 *            id
 	 * @return removed user
 	 */
 	public User removeUser(long id) {
 		if (users.containsKey(id)) {
-			//System.out.println(users.size() == userIdList.size());
+			// System.out.println(users.size() == userIdList.size());
 			User user = users.get(id);
-			HashMap<Long,Rating> madeRatings = user.getRatings();
+			HashMap<Long, Rating> madeRatings = user.getRatings();
 			Iterator<Long> ite = user.getRatings().keySet().iterator();
-			while(ite.hasNext()) {
+			while (ite.hasNext()) {
 				long movieId = ite.next();
 				Movie ratedMovie = movies.get(movieId);
 				Rating rate = madeRatings.get(movieId);
-				
+
 				ratedMovie.removeRating(id);
-				this.ratings.remove(rate);
+				while (this.ratings.contains(rate)) {
+					this.ratings.remove(rate);
+				}
 			}
 			userIdList.remove(id);
 			return users.remove(id);
@@ -221,9 +272,11 @@ public class Recommender {
 
 	/**
 	 * add rating by fields
+	 * 
 	 * @param userId
 	 * @param movieId
-	 * @param rating point
+	 * @param rating
+	 *            point
 	 * @throws Exception
 	 */
 	public void addRating(long userId, long movieId, int rating) throws Exception {
@@ -236,7 +289,9 @@ public class Recommender {
 
 	/**
 	 * add rating by rating object
-	 * @param rating object
+	 * 
+	 * @param rating
+	 *            object
 	 */
 	public void addRating(Rating r) {
 		long uId = r.getUserId();
@@ -249,13 +304,14 @@ public class Recommender {
 
 	/**
 	 * add rating to system
+	 * 
 	 * @param rating
 	 */
 	private void putRating(Rating r) {
 		long uId = r.getUserId();
 		long mId = r.getMovieId();
 		ratings.add(r);
-		//ratingsDB.put(uId, mId, r);
+		// ratingsDB.put(uId, mId, r);
 		users.get(uId).addRating(r);
 		movies.get(mId).addRating(r);
 		ratingsSorted = false;
@@ -263,19 +319,22 @@ public class Recommender {
 
 	/**
 	 * get a rating
+	 * 
 	 * @param userId
 	 * @param movieId
 	 * @return rating
 	 */
 	public Rating getRating(long userId, long movieId) {
-		if(users.containsKey(userId) && movies.containsKey(movieId))
+		if (users.containsKey(userId) && movies.containsKey(movieId))
 			return users.get(userId).getRatings().get(movieId);
 		return null;
 	}
 
 	/**
 	 * get a movie
-	 * @param movie id
+	 * 
+	 * @param movie
+	 *            id
 	 * @return movie
 	 */
 	public Movie getMovie(Long id) {
@@ -284,6 +343,7 @@ public class Recommender {
 
 	/**
 	 * get id-movie map
+	 * 
 	 * @return map
 	 */
 	public HashMap<Long, Movie> getMovies() {
@@ -292,6 +352,7 @@ public class Recommender {
 
 	/**
 	 * search for a user
+	 * 
 	 * @param firstName
 	 * @param lastName
 	 * @param age
@@ -306,6 +367,7 @@ public class Recommender {
 
 	/**
 	 * search for a movie
+	 * 
 	 * @param title
 	 * @return movie
 	 * @throws Exception
@@ -315,9 +377,10 @@ public class Recommender {
 		int position = search(movies, movieIdList, query);
 		return rippleSearch(movies, movieIdList, query, position);
 	}
-	
+
 	/**
 	 * get top ten movies
+	 * 
 	 * @return list of top ten movies
 	 */
 	public List<Movie> getTopTenMovies() {
@@ -347,6 +410,7 @@ public class Recommender {
 
 	/**
 	 * load CSV file
+	 * 
 	 * @throws Exception
 	 */
 	public void prime() throws Exception {
@@ -375,6 +439,7 @@ public class Recommender {
 
 	/**
 	 * get a list of recommended movies for a user
+	 * 
 	 * @param userId
 	 * @return list of movies
 	 */
@@ -385,8 +450,8 @@ public class Recommender {
 		HashSet<Long> similarUsersId = findSimilarUsers(user);
 		System.out.println("Similar users: " + similarUsersId.size());
 		if (similarUsersId.size() > 0) {
-			User mostSimilar = findMostSimilarUSer(user,similarUsersId);
-			if(mostSimilar == null)
+			User mostSimilar = findMostSimilarUSer(user, similarUsersId);
+			if (mostSimilar == null)
 				return recommendedMovies;
 			appendRecommendedMovies(user, mostSimilar, recommendedMovies);
 			Collections.sort(recommendedMovies, new Comparator<Movie>() {
@@ -405,6 +470,7 @@ public class Recommender {
 
 	/**
 	 * find users that have similar behavior (rating) as a user
+	 * 
 	 * @param user
 	 * @return set of users
 	 */
@@ -418,7 +484,8 @@ public class Recommender {
 			int point = rated.get(movieId).getRating();
 			if (point > 0) // if user rated it positively (likes it)
 			{
-				// this maps a particular rating point (either 1,3, or 5) with a group of users
+				// this maps a particular rating point (either 1,3, or 5) with a
+				// group of users
 				HashMap<Integer, HashSet<Long>> raters = movies.get(movieId).getPositiveRaters(); // get
 																									// users
 																									// that
@@ -428,7 +495,7 @@ public class Recommender {
 																									// movie
 																									// either
 																									// (1,3,5)
-				
+
 				HashSet<Long> similarRaters = raters.get(point); // get users
 																	// that also
 																	// rated the
@@ -444,11 +511,15 @@ public class Recommender {
 		}
 		return similarUsersId;
 	}
-	
+
 	/**
-	 * find the user (from a list of users) that has the most similar behavior (rating) as the current user
-	 * @param current user
-	 * @param list of similar users' ids
+	 * find the user (from a list of users) that has the most similar behavior
+	 * (rating) as the current user
+	 * 
+	 * @param current
+	 *            user
+	 * @param list
+	 *            of similar users' ids
 	 * @return most similar behavior user
 	 */
 	private User findMostSimilarUSer(User user, HashSet<Long> similarUsersId) {
@@ -464,7 +535,7 @@ public class Recommender {
 				mostSimilar = other;
 			}
 		}
-		if (mostSimilar == null || min >= Math.PI/2) 
+		if (mostSimilar == null || min >= Math.PI / 2)
 			return null;
 		else {
 			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
@@ -472,20 +543,24 @@ public class Recommender {
 		}
 		return mostSimilar;
 	}
-	
+
 	/**
 	 * append movies from the most similar behavior user
-	 * @param current user
-	 * @param most similar user
-	 * @param list to append recommended movies
+	 * 
+	 * @param current
+	 *            user
+	 * @param most
+	 *            similar user
+	 * @param list
+	 *            to append recommended movies
 	 */
 	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies) {
 		HashSet<String> favoriteGenres = Movie.getGenresFromMoviesGroup(movies, user.getPositiveRatedMovieIds());
 		String genres = "[";
 		Iterator<String> ite = favoriteGenres.iterator();
-		while(ite.hasNext()) {
+		while (ite.hasNext()) {
 			genres += ite.next();
-			if(ite.hasNext())
+			if (ite.hasNext())
 				genres += ",";
 		}
 		genres += "]";
@@ -514,17 +589,19 @@ public class Recommender {
 			}
 		}
 	}
-	
+
 	/**
 	 * Current status of system
+	 * 
 	 * @return string
 	 */
 	public String info() {
 		return "Users: " + users.size() + "$ Movies: " + movies.size() + "$ Ratings: " + ratings.size();
 	}
-	
+
 	/**
 	 * load data from the serializer
+	 * 
 	 * @throws Exception
 	 */
 	public void load() throws Exception {
@@ -539,18 +616,19 @@ public class Recommender {
 		movieIdList = (ArrayList<Long>) serializer.pop();
 		ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
-		//ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
+		// ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
 		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
 	}
 
 	/**
 	 * store data into the serializer
+	 * 
 	 * @throws Exception
 	 */
 	public void store() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Saving to datastore...");
-		//serializer.push(ratingsDB);
+		// serializer.push(ratingsDB);
 		serializer.push(ratingsSorted);
 		serializer.push(ratings);
 		serializer.push(movieIdList);
@@ -564,7 +642,8 @@ public class Recommender {
 	}
 
 	/**
-	 * find the proper position to add a new item to the list 
+	 * find the proper position to add a new item to the list
+	 * 
 	 * @param map
 	 * @param ids
 	 * @param query
@@ -607,6 +686,7 @@ public class Recommender {
 
 	/**
 	 * retrieve a searching query's index (if available) in ids list
+	 * 
 	 * @param map
 	 * @param ids
 	 * @param query
@@ -636,7 +716,9 @@ public class Recommender {
 	}
 
 	/**
-	 * from a found position in a list, traverse left and right to collect similar items
+	 * from a found position in a list, traverse left and right to collect
+	 * similar items
+	 * 
 	 * @param map
 	 * @param ids
 	 * @param query

@@ -1,7 +1,4 @@
 package models;
-
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,7 +7,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 
 import utils.ToJsonString;
-import utils.Valid;
 
 //TODO: NAMES IN LOWER CASE ? / OCCUPATION
 public class User implements Comparable<User> {
@@ -27,6 +23,16 @@ public class User implements Comparable<User> {
 	private HashMap<Long,Rating> ratings = new HashMap<>(); //quicker to check duplicate ratings
 	//private ArrayList<Rating> ratings = new ArrayList<>(); 
 
+	/**
+	 * constructor
+	 * @param firstName
+	 * @param lastName
+	 * @param age
+	 * @param gender
+	 * @param occupation
+	 * @param zip
+	 * @throws Exception
+	 */
 	public User(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
 		if (str(firstName, 200) && str(lastName, 200) && str(gender, 1) && occupations.contains(occupation)
@@ -44,7 +50,13 @@ public class User implements Comparable<User> {
 		}
 	}
 
-	//For searching query
+	/**
+	 * query constructor (mainly for searching)
+	 * @param firstName
+	 * @param lastName
+	 * @param age
+	 * @throws Exception
+	 */
 	public User(String firstName, String lastName, int age) throws Exception {
 		if (str(firstName, 200) && str(lastName, 200) && age > 0 && age < 100) {
 			this.firstName = firstName;
@@ -56,38 +68,66 @@ public class User implements Comparable<User> {
 		}
 	}
 
+	/**
+	 * get user id
+	 * @return user id
+	 */
 	public long getUserId() {
 		return userId;
 	}
 
+	/**
+	 * get first name
+	 * @return firstname
+	 */
 	public String getFirstName() {
 		return firstName;
 	}
 
+	/**
+	 * get last name
+	 * @return lastname
+	 */
 	public String getLastName() {
 		return lastName;
 	}
 
+	/**
+	 * get age
+	 * @return age
+	 */
 	public int getAge() {
 		return age;
 	}
 
+	/**
+	 * get gender
+	 * @return gender
+	 */
 	public String getGender() {
 		return gender;
 	}
 
+	/**
+	 * get occupation
+	 * @return occupation
+	 */
 	public String getOccupation() {
 		return occupation;
 	}
 
+	/**
+	 * get zip code
+	 * @return zip code
+	 */
 	public String getZip() {
 		return zip;
 	}
-
-//	public ArrayList<Rating> getRatings() {
-//		return ratings;
-//	}
 	
+	/**
+	 * get movie-rating map
+	 * @return map
+	 */
 	public HashMap<Long,Rating> getRatings() {
 		return ratings;
 	}
@@ -104,6 +144,10 @@ public class User implements Comparable<User> {
 //			ratings.add(r);
 //	}
 	
+	/**
+	 * add a rating
+	 * @param rating
+	 */
 	public void addRating(Rating r) {
 		if(r != null && Rating.checkRating(r.getRating()))
 			ratings.put(r.getMovieId(), r);
@@ -116,6 +160,10 @@ public class User implements Comparable<User> {
 //		}
 //	}
 	
+	/**
+	 * get set of movie ids that are rated above 0
+	 * @return set if movies ids
+	 */
 	public HashSet<Long> getPositiveRatedMovieIds() {
 		HashSet<Long> rateds = new HashSet<>();
 		Iterator<Long> ite = ratings.keySet().iterator();
@@ -128,22 +176,35 @@ public class User implements Comparable<User> {
 		return rateds;
 	}
 	
+	/**
+	 * String representation in json
+	 */
 	public String toString() {
 		return new ToJsonString(getClass(), this).toString();
 	}
 
+	/**
+	 * string representation
+	 * @return
+	 */
 	public String info() {
 		return firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", "
 				+ zip + ", Rated " + ratings.size() + " movies " + " $$ ID: " + userId;
 	}
 
-	//ID has affect on the Set contains method
+	/**
+	 * ID is not included since it has affect on the Set.contains method
+	 * hash code of object
+	 */
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.lastName, this.firstName, this.gender, this.occupation, this.zip,
 				this.age);
 	}
 
+	/**
+	 * check equality with another user object
+	 */
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof User) {
@@ -156,15 +217,24 @@ public class User implements Comparable<User> {
 		}
 	}
 
+	/**
+	 * set id counter to 1
+	 */
 	public static void resetCounter() {
 		counter = 1;
 	}
 
+	/**
+	 * get id counter
+	 * @return id counter
+	 */
 	public static long getCounter() {
 		return counter;
 	}
 
-	// firstName, lastName, age, gender, occupation, zip
+	/**
+	 * compare user with another user in terms of name and age
+	 */
 	@Override
 	public int compareTo(User that) {
 		int compareFirstName = firstName.toLowerCase().compareTo(that.firstName.toLowerCase());
@@ -184,20 +254,28 @@ public class User implements Comparable<User> {
 		return 0;
 	}
 
-	// For testing
+	/**
+	 * Increment id counter by 1 (For testing)
+	 */
 	public static void incrementCounter() {
 		counter++;
 	}
-	
-//	public static void decrementCounter() {
-//		counter--;
-//	} 
 
+	/**
+	 * set id counter
+	 * @param new counter
+	 */
 	public static void setCounter(long counter) {
 		if(counter >= 1)
 			User.counter = counter;
 	}
 	
+	/**
+	 * general string checker
+	 * @param toCheck
+	 * @param  allowed length
+	 * @return true if valid
+	 */
 	private static boolean str(String toCheck, int length) {
 		if (toCheck == null)
 			return false;

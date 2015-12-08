@@ -10,6 +10,13 @@ import models.Rating;
 
 public class Matrix {
 	
+	/**
+	 * calculate similarity between 2 users
+	 * @param movieIds
+	 * @param ratings that user A made
+	 * @param ratings that user B made
+	 * @return similarity value
+	 */
 	public static double similarityInRadian(ArrayList<Long> movieIds, HashMap<Long, Rating> ratingsA,
 			HashMap<Long, Rating> ratingsB) {
 		//First: make them aligned

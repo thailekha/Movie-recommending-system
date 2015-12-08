@@ -1,12 +1,11 @@
 package models;
 
 import java.util.HashMap;
+
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Sets;
 import com.google.common.math.DoubleMath;
 
 import utils.ToJsonString;

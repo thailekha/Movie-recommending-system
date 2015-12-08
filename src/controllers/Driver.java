@@ -95,6 +95,11 @@ public class Driver {
 		}
 	}
 
+	@Command(description = "Get user ratings")
+	public void printUserRatings(@Param(name = "User ID") long userId) {
+		System.out.println(recommender.printUserRatings(userId));
+	}
+	
 	@Command(description = "Get user details")
 	public void getUserDetails(@Param(name = "User ID") long userId) {
 		System.out.println(recommender.getUser(userId).info());
@@ -145,12 +150,12 @@ public class Driver {
 		recommender.addRating(userId, movieId, rating);
 	}
 
-	@Command(description = "Get ratings")
-	public void getRatings() {
-		ArrayList<Rating> ratings = recommender.getRatings();
-		for (Rating r : ratings)
-			System.out.println(r);
-	}
+//	@Command(description = "Get ratings")
+//	public void getRatings() {
+//		ArrayList<Rating> ratings = recommender.getRatings();
+//		for (Rating r : ratings)
+//			System.out.println(r);
+//	}
 
 	@Command(description = "Get top ten movies")
 	public void getTopten() {

@@ -2,13 +2,12 @@ package models;
 
 import static org.junit.Assert.*;
 
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import utils.Valid;
 
 public class MovieTest {
 
@@ -69,13 +68,21 @@ public class MovieTest {
 	@Test
 	public void testCreateInvalidMovie() {
 		try {
-			String longStr = Valid.autoStr(' ', 10) + Valid.autoStr('a', 500) + Valid.autoStr(' ', 10);
-			Movie a = new Movie(null, "", longStr,Valid.autoStr('1', 20));
+			String longStr = autoStr(' ', 10) + autoStr('a', 500) + autoStr(' ', 10);
+			Movie a = new Movie(null, "", longStr,autoStr('1', 20));
 			
 			fail("Should have thrown an Exception");
 		} catch (Exception e) {
 			assertTrue(true);
 		}
 		
+	}
+	
+	private static String autoStr(char agent, int length) {
+		String result = "";
+		for(int i  = 0; i < length; i ++) {
+			result += agent;
+		}
+		return result;
 	}
 }
