@@ -28,6 +28,7 @@ import utils.JSONSerializer;
 public class Driver {
 
 	private Recommender recommender;
+	private boolean primeAble = true;
 
 	public Driver() throws Exception {
 		// new CSVLoader("data_movieLens/users.dat",
@@ -171,9 +172,15 @@ public class Driver {
 
 	@Command(description = "prime")
 	public void prime() throws Exception {
-		Stopwatch watch = new Stopwatch();
-		recommender.prime();
-		System.out.println(watch.elapsedTime() + " seconds");
+		if (primeAble) {
+			Stopwatch watch = new Stopwatch();
+			recommender.prime();
+			System.out.println(watch.elapsedTime() + " seconds");
+			primeAble = false;
+		}
+		else {
+			System.out.println("Error, you can only prime once");
+		}
 	}
 
 	@Command(description = "Load")

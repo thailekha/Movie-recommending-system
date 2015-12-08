@@ -26,7 +26,8 @@ public class CSVLoaderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		c = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat","data_movieLens/genre.dat");
+		c = new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat", "data_movieLens/ratings.dat",
+				"data_movieLens/genre.dat");
 	}
 
 	@After
@@ -39,20 +40,20 @@ public class CSVLoaderTest {
 			HashSet<String> validGenres = Sets.newHashSet("unknown", "action", "adventure", "animation", "children's",
 					"comedy", "crime", "documentary", "drama", "fantasy", "film-noir", "horror", "musical", "mystery",
 					"romance", "sci-fi", "thriller", "war", "western");
-			HashMap<Integer,String> genres = c.loadGenres();
-			assertEquals(validGenres.size(),genres.size());
-			
-			for(int i = 0; i <= 18; i++) {
+			HashMap<Integer, String> genres = c.loadGenres();
+			assertEquals(validGenres.size(), genres.size());
+
+			for (int i = 0; i <= 18; i++) {
 				assertTrue(validGenres.contains(genres.get(i)));
 				genres.remove(i);
 			}
-			
-			assertEquals(genres.size(),0);
+
+			assertEquals(genres.size(), 0);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testLoadUsers() {
 		try {
@@ -94,39 +95,18 @@ public class CSVLoaderTest {
 			HashSet<Rating> ratings = c.loadRatings();
 			assertNotNull(ratings);
 			assertEquals(ratings.size(), 99991);
-			
-			//HashBasedTable<Long, Long, Rating> temporaryDB = HashBasedTable.create();
-			Iterator<Rating> ite = ratings.iterator();
-			while(ite.hasNext()) {
-				Rating r = ite.next();
-				Rating put = temporaryDB.put(r.getUserId(), r.getMovieId(), r);
-//				if(put != null)
-//					fail("Duplicate detected");
+
+			Rating[] sampleRatings = Fixtures.sampleBigDataRatings();
+			for (int i = 0; i < sampleRatings.length; i++) {
+				Rating r = sampleRatings[i];
+				// Since ids are translated
+				Rating realRating = new Rating(c.getUserIdTranlator().get(r.getUserId()),
+						c.getMovieIdTranlator().get(r.getMovieId()), r.getRating(), r.getTime());
+				//System.out.println("case: " + sampleRatings[i]);
+				assertTrue(ratings.contains(realRating));
 			}
-			
-			HashMap<Long,Long> uTrans = c.getUserIdTranlator();
-			HashMap<Long,Long> mTrans = c.getMovieIdTranlator();
-			assertNotNull(uTrans);
-			assertNotNull(mTrans);
-			assertEquals(uTrans.size(),temporaryDB.rowKeySet().size());
-			assertEquals(mTrans.size(),temporaryDB.columnKeySet().size());
-			
-			Rating test1 = temporaryDB.get(uTrans.get((long) 196),mTrans.get((long) 242));
-			assertNotNull(test1);
-			assertEquals(test1.getRating(),1);
-			assertEquals(test1.getTime(),881250949);
-			
-			Rating test2 = temporaryDB.get(uTrans.get((long) 624), mTrans.get((long) 333));
-			assertNotNull(test2);
-			assertEquals(test2.getRating(),3);
-			assertEquals(test2.getTime(),879791884);
-			
-			Rating test3 = temporaryDB.get(uTrans.get((long) 12), mTrans.get((long) 203));
-			assertNotNull(test3);
-			assertEquals(test3.getRating(),1);
-			assertEquals(test3.getTime(),879959583);
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
