@@ -377,4 +377,8 @@ public class Movie implements Comparable<Movie> {
 			ratings.remove(userId);
 		}
 	}
+
+//	public static void decrementCounter() {
+//		counter--;
+//	}
 }

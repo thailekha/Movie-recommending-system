@@ -95,7 +95,7 @@ public class CSVLoaderTest {
 			assertNotNull(ratings);
 			assertEquals(ratings.size(), 99991);
 			
-			HashBasedTable<Long, Long, Rating> temporaryDB = HashBasedTable.create();
+			//HashBasedTable<Long, Long, Rating> temporaryDB = HashBasedTable.create();
 			Iterator<Rating> ite = ratings.iterator();
 			while(ite.hasNext()) {
 				Rating r = ite.next();

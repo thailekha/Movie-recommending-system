@@ -188,6 +188,10 @@ public class User implements Comparable<User> {
 	public static void incrementCounter() {
 		counter++;
 	}
+	
+//	public static void decrementCounter() {
+//		counter--;
+//	} 
 
 	public static void setCounter(long counter) {
 		if(counter >= 1)

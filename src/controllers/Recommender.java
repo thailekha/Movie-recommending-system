@@ -128,7 +128,7 @@ public class Recommender {
 		if (movies.size() != movieIdList.size())
 			throw new Exception();
 	}
-
+	
 	public User getUser(Long id) {
 		return users.get(id);
 	}
@@ -261,18 +261,6 @@ public class Recommender {
 		if (users.containsKey(userId) && movies.containsKey(movieId)) {
 			// User user = users.get(userId);
 			Rating r = new Rating(userId, movieId, rating);
-			// Rating put = ratingsDB.put(userId, movieId, r); // the previous
-			// // value, if
-			// // replaced
-			// if (put != null) {
-			// while (ratings.contains(put))
-			// ratings.remove(put);
-			// user.removeRating(put);
-			// }
-			//
-			// ratings.add(r);
-			// user.addRating(r);
-			// ratingsSorted = false;
 			putRating(r);
 		}
 	}
@@ -317,15 +305,6 @@ public class Recommender {
 	public List<Movie> getTopTenMovies() {
 		List<Movie> topten = new ArrayList<>();
 		if (movies.size() > 10) {
-			// if (!ratingsSorted) {
-			// sortRatings();
-			// }
-			// for (int i = ratings.size() - 1; i >= ratings.size() - 10; i--) {
-			// Rating r = ratings.get(i);
-			// if (r.getRating() > 0)
-			// topten.add(movies.get(r.getMovieId()));
-			// }
-
 			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>(movies.values());
 			Collections.sort(movieByAvrRatingPoint, new Comparator<Movie>() {
 				@Override // descending order
