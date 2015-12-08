@@ -135,7 +135,7 @@ public class Driver {
 		if (removed == null)
 			System.out.println("User not existed");
 		else
-			System.out.println("Deleted --> " + removed);
+			System.out.println("Deleted --> " + removed.info());
 	}
 
 	@Command(description = "Rate a movie")

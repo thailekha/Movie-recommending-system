@@ -32,7 +32,7 @@ public class Recommender {
 																// titles
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
-	private HashBasedTable<Long, Long, Rating> ratingsDB = HashBasedTable.create(); // userid,movieid,rating
+	//private HashBasedTable<Long, Long, Rating> ratingsDB = HashBasedTable.create(); // userid,movieid,rating
 	private CSVLoader primer;
 
 	private Serializer serializer;
@@ -135,7 +135,18 @@ public class Recommender {
 
 	public User removeUser(long id) {
 		if (users.containsKey(id)) {
-			System.out.println(users.size() == userIdList.size());
+			//System.out.println(users.size() == userIdList.size());
+			User user = users.get(id);
+			HashMap<Long,Rating> madeRatings = user.getRatings();
+			Iterator<Long> ite = user.getRatings().keySet().iterator();
+			while(ite.hasNext()) {
+				long movieId = ite.next();
+				Movie ratedMovie = movies.get(movieId);
+				Rating rate = madeRatings.get(movieId);
+				
+				ratedMovie.removeRating(id);
+				this.ratings.remove(rate);
+			}
 			userIdList.remove(id);
 			return users.remove(id);
 		}
@@ -279,19 +290,21 @@ public class Recommender {
 		long uId = r.getUserId();
 		long mId = r.getMovieId();
 		ratings.add(r);
-		ratingsDB.put(uId, mId, r);
+		//ratingsDB.put(uId, mId, r);
 		users.get(uId).addRating(r);
 		movies.get(mId).addRating(r);
 		ratingsSorted = false;
 	}
 
 	public Rating getRating(long userId, long movieId) {
-		return ratingsDB.get(userId, movieId);
+		if(users.containsKey(userId) && movies.containsKey(movieId))
+			return users.get(userId).getRatings().get(movieId);
+		return null;
 	}
-
-	public HashBasedTable<Long, Long, Rating> getRatingsDB() {
-		return ratingsDB;
-	}
+//
+//	public HashBasedTable<Long, Long, Rating> getRatingsDB() {
+//		return ratingsDB;
+//	}
 
 	public Movie getMovie(Long id) {
 		return movies.get(id);
@@ -359,7 +372,7 @@ public class Recommender {
 		}
 
 		System.out.println("Completed, " + this.users.size() + " users, " + this.movies.size() + " movies, "
-				+ this.ratings.size() + "/" + this.ratingsDB.size() + " ratings");
+				+ this.ratings.size() + "/" + this.ratings.size() + " ratings");
 	}
 
 	private void sortRatings() {
@@ -536,14 +549,14 @@ public class Recommender {
 		movieIdList = (ArrayList<Long>) serializer.pop();
 		ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
-		ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
+		//ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
 		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
 	}
 
 	public void store() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Saving to datastore...");
-		serializer.push(ratingsDB);
+		//serializer.push(ratingsDB);
 		serializer.push(ratingsSorted);
 		serializer.push(ratings);
 		serializer.push(movieIdList);

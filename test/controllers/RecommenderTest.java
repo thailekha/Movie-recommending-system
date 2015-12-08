@@ -242,8 +242,8 @@ public class RecommenderTest {
 			}
 
 			r.addRating(1, 2, 5);
-			long mirrorUserId = r.getRatingsDB().rowKeySet().iterator().next();
-			long mirrorMovieId = r.getRatingsDB().columnKeySet().iterator().next();
+			long mirrorUserId = r.getUsers().keySet().iterator().next();
+			long mirrorMovieId = r.getMovies().keySet().iterator().next();
 			Rating fromDB = r.getRating(1, 2);
 			User rater = r.getUser((long) 1);
 			Movie rated = r.getMovie((long) 2);
@@ -251,14 +251,14 @@ public class RecommenderTest {
 			assertEquals(rater.getRatings().size(), 1);
 			assertEquals(rated.getRatings().size(), 1);
 			// HashMap<Long,Integer> ratingsFromUser = rater.getRatings();
-			int fromUser = rater.getRatings().get(mirrorMovieId);
+			int fromUser = rater.getRatings().get(mirrorMovieId).getRating();
 			int fromMovie = rated.getRatings().get(mirrorUserId);
 			assertEquals(fromUser, 5);
 			assertEquals(fromMovie, 5);
 
 			assertEquals(mirrorUserId, 1);
 			assertEquals(mirrorMovieId, 2);
-			assertEquals(r.getRatingsDB().size(), 1);
+			//assertEquals(r.getRatingsDB().size(), 1);
 			assertEquals(r.getRatings().size(), 1);
 			assertNotNull(fromDB);
 			// assertNotNull(fromUser);
@@ -293,7 +293,7 @@ public class RecommenderTest {
 			r.addRating(1, 2, 5); // A
 			r.addRating(1, 3, -3); // B
 			r.addRating(2, 3, 1); // C
-			assertEquals(r.getRatingsDB().size(), 3);
+			//assertEquals(r.getRatingsDB().size(), 3);
 			assertEquals(r.getRatings().size(), 3);
 
 			Rating fromDBA = r.getRating(1, 2);
@@ -305,14 +305,14 @@ public class RecommenderTest {
 
 			User user1 = r.getUser((long) 1);
 			User user2 = r.getUser((long) 2);
-			HashMap<Long, Integer> ratingsFromUser1 = user1.getRatings();
-			HashMap<Long, Integer> ratingsFromUser2 = user2.getRatings();
+			HashMap<Long, Rating> ratingsFromUser1 = user1.getRatings();
+			HashMap<Long, Rating> ratingsFromUser2 = user2.getRatings();
 			assertEquals(ratingsFromUser1.size(), 2);
 			assertEquals(ratingsFromUser2.size(), 1);
 
-			int mirrorA = ratingsFromUser1.get((long) 2);
-			int mirrorB = ratingsFromUser1.get((long) 3);
-			int mirrorC = ratingsFromUser2.get((long) 3);
+			int mirrorA = ratingsFromUser1.get((long) 2).getRating();
+			int mirrorB = ratingsFromUser1.get((long) 3).getRating();
+			int mirrorC = ratingsFromUser2.get((long) 3).getRating();
 			assertEquals(mirrorA, 5);
 			assertEquals(mirrorB, -3);
 			assertEquals(mirrorC, 1);
@@ -334,7 +334,7 @@ public class RecommenderTest {
 			}
 			r.addRating(50, 1, 5);
 			assertEquals(r.getRatings().size(), 0);
-			assertEquals(r.getRatingsDB().size(), 0);
+			//assertEquals(r.getRatingsDB().size(), 0);
 		} catch (Exception e) {
 			fail("Exception thrown");
 		}
@@ -349,7 +349,7 @@ public class RecommenderTest {
 			}
 			r.addRating(1, 100, 5);
 			assertEquals(r.getRatings().size(), 0);
-			assertEquals(r.getRatingsDB().size(), 0);
+			//assertEquals(r.getRatingsDB().size(), 0);
 		} catch (Exception e) {
 			fail("Exception thrown");
 		}

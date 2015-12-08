@@ -184,26 +184,6 @@ public class User implements Comparable<User> {
 		return 0;
 	}
 
-	// public int compareTo(String firstName, String lastName, int age) {
-	// int compareFirstName =
-	// this.firstName.toLowerCase().compareTo(firstName.toLowerCase());
-	// int compareLastName =
-	// this.lastName.toLowerCase().compareTo(lastName.toLowerCase());
-	// if (compareFirstName < 0)
-	// return -1;
-	// if (compareFirstName > 0)
-	// return 1;
-	// if (compareLastName < 0)
-	// return -1;
-	// if (compareLastName > 0)
-	// return 1;
-	// if(this.age < age)
-	// return -1;
-	// if(this.age > age)
-	// return 1;
-	// return 0;
-	// }
-
 	// For testing
 	public static void incrementCounter() {
 		counter++;
@@ -220,10 +200,4 @@ public class User implements Comparable<User> {
 		String result = toCheck.trim();
 		return result.length() > 0 && result.length() <= length;
 	}
-	
-	// private String identifyOccupation(String oc) {
-	// switch(oc.toLowerCase()) {
-	//
-	// }
-	// }
 }

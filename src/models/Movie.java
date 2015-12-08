@@ -371,4 +371,10 @@ public class Movie implements Comparable<Movie> {
 		}
 		return genres;
 	}
+	
+	public void removeRating(long userId) {
+		if(ratings.containsKey(userId)) {
+			ratings.remove(userId);
+		}
+	}
 }
