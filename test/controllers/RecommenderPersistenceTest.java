@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.junit.After;
@@ -67,7 +68,7 @@ public class RecommenderPersistenceTest {
 		r.store();
 		long uCount = User.getCounter();
 		long mCount = Movie.getCounter();
-
+		
 		User.resetCounter();
 		Movie.resetCounter();
 

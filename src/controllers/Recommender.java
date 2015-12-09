@@ -570,8 +570,8 @@ public class Recommender {
 				mostSimilar = other;
 			}
 		}
-		// only allow an angle that is less than 60 degree (pi/3)
-		if (mostSimilar == null || min >= Math.PI / 3)
+		// only allow an angle that is less than 90 degree (pi/2)
+		if (mostSimilar == null || min >= Math.PI / 2)
 			return null;
 		System.out.println("Detected similarity: " + min);
 		return mostSimilar;
