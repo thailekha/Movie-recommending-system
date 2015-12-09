@@ -46,7 +46,7 @@ public class User implements Comparable<User>, Query<User> {
 			this.zip = zip.trim();
 			// System.out.println(this);
 		} else {
-			throw new Exception();
+			throw new Exception("Invalid arguments to construct user object");
 		}
 	}
 	
@@ -64,7 +64,7 @@ public class User implements Comparable<User>, Query<User> {
 			this.age = age;
 		}
 		else {
-			throw new Exception();
+			throw new Exception("Invalid arguments to construct user query");
 		}
 	}
 
@@ -241,7 +241,7 @@ public class User implements Comparable<User>, Query<User> {
 		int compareFirstName = firstName.toLowerCase().compareTo(that.firstName.toLowerCase());
 		int compareLastName = lastName.toLowerCase().compareTo(that.lastName.toLowerCase());
 		int compareGender = gender.toLowerCase().compareTo(that.gender.toLowerCase());
-		int compareOccu = occupation.toLowerCase().compareTo(that.occupation);
+		int compareOccu = occupation.toLowerCase().compareTo(that.occupation.toLowerCase());
 		int compareZip = zip.toLowerCase().compareTo(that.zip.toLowerCase());
 		if (compareFirstName < 0)
 			return -1;

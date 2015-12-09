@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import com.google.common.collect.HashBiMap;
 
+import edu.princeton.cs.introcs.In;
 import models.Movie;
 import models.Rating;
 import models.User;

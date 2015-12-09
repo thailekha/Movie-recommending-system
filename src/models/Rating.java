@@ -22,7 +22,7 @@ public class Rating implements Comparable<Rating> {
 			this.rating = rating;
 			this.timestamp = System.currentTimeMillis() * 1000;
 		} else
-			throw new Exception();
+			throw new Exception("Invalid arguments to construct rating object");
 	}
 
 	public Rating(long userId, long movieId, int rating, long timestamp) throws Exception {
@@ -36,7 +36,7 @@ public class Rating implements Comparable<Rating> {
 			this.rating = rating;
 			this.timestamp = timestamp;
 		} else
-			throw new Exception();
+			throw new Exception("Invalid arguments to construct rating object");
 	}
 
 	public long getUserId() {

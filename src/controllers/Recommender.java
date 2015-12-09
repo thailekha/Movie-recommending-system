@@ -27,7 +27,7 @@ public class Recommender {
 																// movies in
 																// order of the
 																// titles
-	private ArrayList<Rating> ratings = new ArrayList<>();
+	//private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private CSVLoader primer;
 	private Serializer serializer;
@@ -129,11 +129,16 @@ public class Recommender {
 	}
 
 	/**
-	 * get ratings list
+	 * get all ratings
 	 * 
-	 * @return ratings list
+	 * @return ratings set
 	 */
-	public ArrayList<Rating> getRatings() {
+	public HashSet<Rating> getRatings() {
+		HashSet<Rating> ratings = new HashSet<>();
+		Iterator<User> users = this.users.values().iterator();
+		while(users.hasNext()) {
+			ratings.addAll(users.next().getRatings().values());
+		}
 		return ratings;
 	}
 
@@ -191,7 +196,7 @@ public class Recommender {
 			userIdList.add(pos, user.getUserId());
 		users.put(user.getUserId(), user);
 		if (users.size() != userIdList.size())
-			throw new Exception();
+			throw new Exception("Error putting user to database");
 	}
 
 	/**
@@ -236,7 +241,7 @@ public class Recommender {
 			movieIdList.add(pos, movie.getMovieId());
 		movies.put(movie.getMovieId(), movie);
 		if (movies.size() != movieIdList.size())
-			throw new Exception();
+			throw new Exception("Error putting movie to database");
 	}
 
 	/**
@@ -259,21 +264,20 @@ public class Recommender {
 	 */
 	public User removeUser(long id) {
 		if (users.containsKey(id)) {
-			// System.out.println(users.size() == userIdList.size());
 			User user = users.get(id);
 			HashMap<Long, Rating> madeRatings = user.getRatings();
-			Iterator<Long> ite = user.getRatings().keySet().iterator();
+			Iterator<Long> ite = madeRatings.keySet().iterator();
 			while (ite.hasNext()) {
 				long movieId = ite.next();
 				Movie ratedMovie = movies.get(movieId);
-				Rating rate = madeRatings.get(movieId);
-
 				ratedMovie.removeRating(id);
-				while (this.ratings.contains(rate)) {
-					this.ratings.remove(rate);
-				}
+//				Rating rate = madeRatings.get(movieId);
+//				while (this.ratings.contains(rate)) {
+//					this.ratings.remove(rate);
+//				}
 			}
-			userIdList.remove(id);
+			while(userIdList.contains(id))
+				userIdList.remove(id);
 			return users.remove(id);
 		}
 		return null;
@@ -319,8 +323,7 @@ public class Recommender {
 	private void putRating(Rating r) {
 		long uId = r.getUserId();
 		long mId = r.getMovieId();
-		ratings.add(r);
-		// ratingsDB.put(uId, mId, r);
+		//ratings.add(r);
 		users.get(uId).addRating(r);
 		movies.get(mId).addRating(r);
 		ratingsSorted = false;
@@ -446,8 +449,9 @@ public class Recommender {
 			addRating(nextR);
 		}
 
+		int ratingsSize = getRatings().size();
 		System.out.println("Completed, " + this.users.size() + " users, " + this.movies.size() + " movies, "
-				+ this.ratings.size() + "/" + this.ratings.size() + " ratings");
+				+ ratingsSize + "/" + ratingsSize + " ratings");
 	}
 
 	/**
@@ -614,7 +618,7 @@ public class Recommender {
 	 * @return string
 	 */
 	public String info() {
-		return "Users: " + users.size() + "$ Movies: " + movies.size() + "$ Ratings: " + ratings.size();
+		return "Users: " + users.size() + " $ Movies: " + movies.size() + " $ Ratings: " + getRatings().size();
 	}
 
 	/**
@@ -632,7 +636,7 @@ public class Recommender {
 		movies = (HashMap<Long, Movie>) serializer.pop();
 		userIdList = (ArrayList<Long>) serializer.pop();
 		movieIdList = (ArrayList<Long>) serializer.pop();
-		ratings = (ArrayList<Rating>) serializer.pop();
+		//ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
 		// ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
 		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
@@ -648,7 +652,7 @@ public class Recommender {
 		System.out.println("Saving to datastore...");
 		// serializer.push(ratingsDB);
 		serializer.push(ratingsSorted);
-		serializer.push(ratings);
+		//serializer.push(ratings);
 		serializer.push(movieIdList);
 		serializer.push(userIdList);
 		serializer.push(movies);

@@ -41,7 +41,7 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 			this.url = url.trim();
 			this.genreCode = genreCode.trim();
 		} else {
-			throw new Exception();
+			throw new Exception("Invalid arguments to construct movie object");
 		}
 	}
 
@@ -56,7 +56,7 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 		if (str(title, 200))
 			this.title = title;
 		else
-			throw new Exception();
+			throw new Exception("Invalid arguments to construct movie query");
 	}
 
 	/**
