@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.plaf.synth.SynthSeparatorUI;
 
@@ -31,19 +33,34 @@ public class Driver {
 	private boolean primeAble = true;
 
 	public Driver() throws Exception {
-		// new CSVLoader("data_movieLens/users.dat",
-		// "data_movieLens/newItems.dat",
-		// "data_movieLens/ratings.dat")
-		// new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
-		// "small_data/ratings5.dat")
+		String bigU = "data_movieLens/users.dat";
+		String bigM = "data_movieLens/newItems.dat";
+		String bigR = "data_movieLens/ratings.dat";
+		String genre = "data_movieLens/genre.dat";
+		String smallU = "small_data/users5.dat";
+		String smallM = "small_data/items5.dat";
+		String smallR = "small_data/ratings5.dat";
 		File datastore = new File("datastore/store.json");
-		recommender = new Recommender(new JSONSerializer(datastore), new CSVLoader("data_movieLens/users.dat",
-				"data_movieLens/newItems.dat", "data_movieLens/ratings.dat", "data_movieLens/genre.dat"));
+		int choice = choose();
+		recommender = choice == 1
+				? new Recommender(new JSONSerializer(datastore), new CSVLoader(bigU, bigM, bigR, genre))
+				: new Recommender(new JSONSerializer(datastore), new CSVLoader(smallU, smallM, smallR, genre));
+	}
+
+	private int choose() {
+		Scanner s = new Scanner(System.in);
+		System.out.println("Big or small CSV data?\n1)Big\n2)Small\n==>");
+		int choice = s.nextInt();
+		while (choice != 1 && choice != 2) {
+			System.out.print("Not available, try again ==>");
+			choice = s.nextInt();
+		}
+		return choice;
 	}
 
 	public static void main(String[] agrs) throws Exception {
 		Driver main = new Driver();
-		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome to pacemaker-console - ?help for instructions",
+		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome - ?help for instructions",
 				main);
 		shell.commandLoop();
 	}
@@ -51,27 +68,34 @@ public class Driver {
 	@Command(description = "Add a new User")
 	public void createUser(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
 			@Param(name = "age") int age, @Param(name = "gender") String gender,
-			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) throws Exception {
-		recommender.addUser(firstName, lastName, age, gender, occupation, zip);
+			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) {
+		try {
+			recommender.addUser(firstName, lastName, age, gender, occupation, zip);
+		} catch (Exception e) {
+			System.out.println("Error.");
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@Command(description = "Add a new Movie")
 	public void createMovie(@Param(name = "Movie title") String title,
 			@Param(name = "Movie release date") String releaseDate, @Param(name = "Movie url") String url,
-			@Param(name = "Genre code") String genreCode) throws Exception {
-		recommender.addMovie(title, releaseDate, url, genreCode);
+			@Param(name = "Genre code") String genreCode) {
+		try {
+			recommender.addMovie(title, releaseDate, url, genreCode);
+		} catch (Exception e) {
+			System.out.println("Error.");
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@Command(description = "Get all movies details")
 	public void getMovies() {
-		Iterator<Movie> movies = recommender.getMovies().values().iterator();
-		while (movies.hasNext()) {
-			System.out.println(movies.next().info());
+		HashMap<Long, Movie> movies = recommender.getMovies();
+		ArrayList<Long> sequence = recommender.getMovieIdList();
+		for (long id : sequence) {
+			System.out.println(movies.get(id).info());
 		}
-		// ArrayList<Long> ids = recommender.getUserIdList();
-		// for(Long id: ids) {
-		// System.out.println(recommender.getUser(id));
-		// }
 	}
 
 	@Command(description = "Get a movie detals")
@@ -85,10 +109,6 @@ public class Driver {
 
 	@Command(description = "Get all users details")
 	public void getUsers() {
-		// Iterator<User> users = recommender.getUsers().values().iterator();
-		// while (users.hasNext()) {
-		// System.out.println(users.next().toString());
-		// }
 		ArrayList<Long> ids = recommender.getUserIdList();
 		for (Long id : ids) {
 			System.out.println(recommender.getUser(id).info());
@@ -99,7 +119,7 @@ public class Driver {
 	public void printUserRatings(@Param(name = "User ID") long userId) {
 		System.out.println(recommender.printUserRatings(userId));
 	}
-	
+
 	@Command(description = "Get user details")
 	public void getUserDetails(@Param(name = "User ID") long userId) {
 		System.out.println(recommender.getUser(userId).info());
@@ -107,32 +127,43 @@ public class Driver {
 
 	@Command(description = "Look up user(s)")
 	public void userLookup(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
-			@Param(name = "age") int age) throws Exception {
-		ArrayList<Comparable> found = recommender.searchUser(firstName, lastName, age);
-		if (found.size() == 0) {
-			System.out.println("Not found");
-		} else {
-			System.out.println("Found user(s):");
-			for (Comparable item : found) {
-				User u = (User) item;
-				System.out.println(u.info());
+			@Param(name = "age") int age) {
+		try {
+			ArrayList<Comparable> found = recommender.searchUser(firstName, lastName, age);
+			if (found.size() == 0) {
+				System.out.println("Not found");
+			} else {
+				System.out.println("Found user(s):");
+				for (Comparable item : found) {
+					User u = (User) item;
+					System.out.println(u.info());
+				}
 			}
+		} catch (Exception e) {
+			System.out.println("Error.");
+			System.out.println(e.getMessage());
 		}
+
 	}
 
 	@Command(description = "Look up movie(s)")
-	public void movieLookup(@Param(name = "movive title") String title) throws Exception {
-		ArrayList<Comparable> found = recommender.searchMovie(title);
-		if (found.size() == 0) {
-			System.out.println("Not found");
-		} else {
-			System.out.println("Found movie(s):");
-			for (Comparable item : found) {
-				Movie m = (Movie) item;
-				System.out.println(m.info());
-				// System.out.println(item.hashCode());
+	public void movieLookup(@Param(name = "movive title") String title) {
+		try {
+			ArrayList<Comparable> found = recommender.searchMovie(title);
+			if (found.size() == 0) {
+				System.out.println("Not found");
+			} else {
+				System.out.println("Found movie(s):");
+				for (Comparable item : found) {
+					Movie m = (Movie) item;
+					System.out.println(m.info());
+				}
 			}
+		} catch (Exception e) {
+			System.out.println("Error.");
+			System.out.println(e.getMessage());
 		}
+
 	}
 
 	@Command(description = "Remove a user")
@@ -146,16 +177,21 @@ public class Driver {
 
 	@Command(description = "Rate a movie")
 	public void rateMovie(@Param(name = "User ID") Long userId, @Param(name = "Movie ID") Long movieId,
-			@Param(name = "Rating") int rating) throws Exception {
-		recommender.addRating(userId, movieId, rating);
+			@Param(name = "Rating") int rating) {
+		try {
+			recommender.addRating(userId, movieId, rating);
+		} catch (Exception e) {
+			System.out.println("Error.");
+			System.out.println(e.getMessage());
+		}
 	}
 
-//	@Command(description = "Get ratings")
-//	public void getRatings() {
-//		ArrayList<Rating> ratings = recommender.getRatings();
-//		for (Rating r : ratings)
-//			System.out.println(r);
-//	}
+	// @Command(description = "Get ratings")
+	// public void getRatings() {
+	// ArrayList<Rating> ratings = recommender.getRatings();
+	// for (Rating r : ratings)
+	// System.out.println(r);
+	// }
 
 	@Command(description = "Get top ten movies")
 	public void getTopten() {
@@ -176,15 +212,19 @@ public class Driver {
 	}
 
 	@Command(description = "prime")
-	public void prime() throws Exception {
-		if (primeAble) {
-			Stopwatch watch = new Stopwatch();
-			recommender.prime();
-			System.out.println(watch.elapsedTime() + " seconds");
-			primeAble = false;
-		}
-		else {
-			System.out.println("Error, you can only prime once");
+	public void prime() {
+		try {
+			if (primeAble) {
+				Stopwatch watch = new Stopwatch();
+				recommender.prime();
+				System.out.println(watch.elapsedTime() + " seconds");
+				primeAble = false;
+			} else {
+				System.out.println("Error, you can only prime once");
+			}
+		} catch (Exception e) {
+			System.out.println("Error.");
+			System.out.println(e.getMessage());
 		}
 	}
 
@@ -199,21 +239,25 @@ public class Driver {
 	}
 
 	@Command(description = "System Info")
-	public void systemInfo() throws Exception {
+	public void systemInfo() {
 		System.out.println(recommender.info());
 	}
 
 	@Command(description = "Get recommendations for a user")
 	public void getUserRecommendations(@Param(name = "User ID") long userID) {
 		ArrayList<Movie> movies = recommender.recommend(userID);
-		if (movies.size() == 0) {
-			System.out.println("Not available");
-		} else {
-			System.out.println(movies.size() + " recommended movies");
-			for (Movie movie : movies) {
-				double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
-				System.out.println("~> " + movie.getTitle() + ", genres: " + movie.printGenre() + ", average point: "
-						+ roundedPoint + ", Movie ID: " + movie.getMovieId());
+		if (movies == null)
+			System.out.println("User not found");
+		else {
+			if (movies.size() == 0) {
+				System.out.println("Not available");
+			} else {
+				System.out.println(movies.size() + " recommended movies");
+				for (Movie movie : movies) {
+					double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
+					System.out.println("~> " + movie.getTitle() + ", genres: " + movie.printGenre()
+							+ ", average point: " + roundedPoint + ", Movie ID: " + movie.getMovieId());
+				}
 			}
 		}
 	}

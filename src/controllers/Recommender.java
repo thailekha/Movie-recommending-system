@@ -88,11 +88,21 @@ public class Recommender {
 	 * @param userId
 	 * @return
 	 */
-	public HashSet<Rating> getUserRatings(long userId) {
-		HashSet<Rating> ratings = new HashSet<>();
+	public ArrayList<Rating> getUserRatings(long userId) {
+		ArrayList<Rating> ratings = new ArrayList<>();
 		if (users.containsKey(userId)) {
 			User user = users.get(userId);
 			ratings.addAll(user.getRatings().values());
+			Collections.sort(ratings, new Comparator<Rating>() {
+				@Override
+				public int compare(Rating o1, Rating o2) {
+					if (o1.getRating() < o2.getRating())
+						return 1; //descending order
+					if (o1.getRating() > o2.getRating())
+						return -1;
+					return 0;
+				}
+			});
 		}
 		return ratings;
 	}
@@ -106,12 +116,11 @@ public class Recommender {
 	public String printUserRatings(long userId) {
 		String toPrint = "";
 		toPrint += users.get(userId).info() + "\n";
-		HashSet<Rating> ratings = getUserRatings(userId);
+		ArrayList<Rating> ratings = getUserRatings(userId);
 		if (ratings.size() > 0) {
-			Iterator<Rating> ite = ratings.iterator();
-			while (ite.hasNext()) {
-				Rating r = ite.next();
-				toPrint += r.getRating() + " => " + movies.get(r.getMovieId()).info() + "\n";
+			for (Rating r : ratings) {
+				toPrint += r.getRating() + " => " + "<Movie ID - " + r.getMovieId() + "> " + movies.get(r.getMovieId()).info()
+						+ "\n";
 			}
 		} else {
 			toPrint += "Not available";
@@ -445,7 +454,11 @@ public class Recommender {
 	 */
 	public ArrayList<Movie> recommend(long userId) {
 		ArrayList<Movie> recommendedMovies = new ArrayList<>();
-		User user = users.get(userId);
+		User user = null;
+		if (users.containsKey(userId))
+			user = users.get(userId);
+		else
+			return null;
 		// Find users that also like the same movies
 		HashSet<Long> similarUsersId = findSimilarUsers(user);
 		System.out.println("Similar users: " + similarUsersId.size());
@@ -556,15 +569,16 @@ public class Recommender {
 	 */
 	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies) {
 		HashSet<String> favoriteGenres = Movie.getGenresFromMoviesGroup(movies, user.getPositiveRatedMovieIds());
-		String genres = "[";
-		Iterator<String> ite = favoriteGenres.iterator();
-		while (ite.hasNext()) {
-			genres += ite.next();
-			if (ite.hasNext())
-				genres += ",";
-		}
-		genres += "]";
-		System.out.println("Your favorite genres (" + favoriteGenres.size() + "): " + genres);
+		// String genres = "[";
+		// Iterator<String> ite = favoriteGenres.iterator();
+		// while (ite.hasNext()) {
+		// genres += ite.next();
+		// if (ite.hasNext())
+		// genres += ",";
+		// }
+		// genres += "]";
+		// System.out.println("Your favorite genres (" + favoriteGenres.size() +
+		// "): " + genres);
 		HashMap<Long, Rating> rated = user.getRatings();
 		Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 		while (ids.hasNext()) {

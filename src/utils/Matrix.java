@@ -32,6 +32,7 @@ public class Matrix {
 				u[countU++] = ratingsA.get(id).getRating();
 			}
 			else {
+				//automatically 0
 				countU++;
 			}
 			if(ratingsB.containsKey(id)) {
