@@ -401,7 +401,7 @@ public class Recommender {
 	 */
 	public List<Movie> getTopTenMovies() {
 		List<Movie> topten = new ArrayList<>();
-		if (movies.size() > 10) {
+		if (movies.size() > 0) {
 			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>(movies.values());
 			Collections.sort(movieByAvrRatingPoint, new Comparator<Movie>() {
 				@Override // descending order
@@ -417,7 +417,7 @@ public class Recommender {
 				if (i > 9)
 					break;
 				Movie mov = movieByAvrRatingPoint.get(i);
-				if (mov.getAveragePoint() > 0)
+				if (mov.getAveragePoint() >= 1)
 					topten.add(mov);
 			}
 		}
@@ -469,22 +469,30 @@ public class Recommender {
 			return null;
 		// Find users that also like the same movies
 		HashSet<Long> similarUsersId = findSimilarUsers(user);
-		System.out.println("Similar users: " + similarUsersId.size());
+		// System.out.println("Potential similar users: " +
+		// similarUsersId.size());
 		if (similarUsersId.size() > 0) {
 			User mostSimilar = findMostSimilarUSer(user, similarUsersId);
 			if (mostSimilar == null)
 				return recommendedMovies;
-			appendRecommendedMovies(user, mostSimilar, recommendedMovies, mood);
-			Collections.sort(recommendedMovies, new Comparator<Movie>() {
-				@Override // descending order
-				public int compare(Movie m1, Movie m2) {
-					if (m1.getAveragePoint() < m2.getAveragePoint())
-						return 1;
-					if (m1.getAveragePoint() > m2.getAveragePoint())
-						return -1;
-					return 0;
-				}
-			});
+			appendRecommendedMovies(user, mostSimilar,recommendedMovies, mood);
+			if (recommendedMovies.size() > 1) {
+				Collections.sort(recommendedMovies, new Comparator<Movie>() {
+					@Override // descending order
+					public int compare(Movie m1, Movie m2) {
+						if (m1.getAveragePoint() < m2.getAveragePoint())
+							return 1;
+						if (m1.getAveragePoint() > m2.getAveragePoint())
+							return -1;
+						return 0;
+					}
+				});
+			}
+			if (recommendedMovies.size() > 0) {
+				System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
+						+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + ")");
+			}
+
 		}
 		return recommendedMovies;
 	}
@@ -563,12 +571,10 @@ public class Recommender {
 				mostSimilar = other;
 			}
 		}
-		if (mostSimilar == null || min >= Math.PI / 2)
+		// only allow an angle that is less than 60 degree (pi/3)
+		if (mostSimilar == null || min >= Math.PI / 3)
 			return null;
-		else {
-			System.out.println("Recommendation is retrieved from " + mostSimilar.getFirstName() + " "
-					+ mostSimilar.getLastName() + " (User ID: " + mostSimilar.getUserId() + "), similarity: " + min);
-		}
+		System.out.println("Detected similarity: " + min);
 		return mostSimilar;
 	}
 
@@ -582,23 +588,28 @@ public class Recommender {
 	 * @param list
 	 *            to append recommended movies
 	 */
-	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies,
+	private ArrayList<Movie> appendRecommendedMovies(User user, User mostSimilar,ArrayList<Movie> rMovies,
 			boolean mood) {
 		HashSet<String> favoriteGenres = new HashSet<>();
 		if (mood) {
-			favoriteGenres = movies.get(user.getHighestRatedMovieRecently()).getIndivGenre();
+			long recMovie = user.getHighestRatedMovieRecently();
+			if(recMovie == -1)
+				return rMovies;
+			favoriteGenres = movies.get(recMovie).getIndivGenre();
+			//System.out.println(favoriteGenres);
+			// String genres = "[";
+			// Iterator<String> ite = favoriteGenres.iterator();
+			// while (ite.hasNext()) {
+			// genres += ite.next();
+			// if (ite.hasNext())
+			// genres += ",";
+			// }
+			// genres += "]";
+			// System.out.println("desired genres (" + favoriteGenres.size() +
+			// "): " + genres);
 		} else {
 			favoriteGenres = Movie.getGenresFromMoviesGroup(movies, user.getPositiveRatedMovieIds());
 		}
-		String genres = "[";
-		Iterator<String> ite = favoriteGenres.iterator();
-		while (ite.hasNext()) {
-			genres += ite.next();
-			if (ite.hasNext())
-				genres += ",";
-		}
-		genres += "]";
-		System.out.println("desired genres (" + favoriteGenres.size() + "): " + genres);
 		HashMap<Long, Rating> rated = user.getRatings();
 		Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 		while (ids.hasNext()) {
@@ -607,6 +618,7 @@ public class Recommender {
 												// hasn't seen yet into
 												// account
 				Movie m = movies.get(nextId);
+				
 				// Content-based filter on genres
 				HashSet<String> movieGenre = m.getIndivGenre();
 				boolean flag = false;
@@ -618,10 +630,11 @@ public class Recommender {
 					}
 				}
 				if (flag) {
-					recommendedMovies.add(movies.get(nextId));
+					rMovies.add(m);
 				}
 			}
 		}
+		return rMovies;
 	}
 
 	/**

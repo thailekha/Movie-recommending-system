@@ -24,10 +24,8 @@ public class Fixtures {
 
 	public static User[] getUsersForSort2() throws Exception {
 		return new User[] { new User("x", "y", 17, "M", "student", "123456"),
-				new User("y", "dsa", 19, "M", "student", "78990"), 
-				new User("d", "bla", 99, "M", "other", "234567"),
-				new User("c", "Panther", 99, "M", "other", "890111"), 
-				new User("b", "0", 99, "M", "other", "345456"),
+				new User("y", "dsa", 19, "M", "student", "78990"), new User("d", "bla", 99, "M", "other", "234567"),
+				new User("c", "Panther", 99, "M", "other", "890111"), new User("b", "0", 99, "M", "other", "345456"),
 				new User("a", "Jerry", 99, "M", "other", "456567"), };
 	}
 
@@ -115,7 +113,7 @@ public class Fixtures {
 		return new Movie[] { new Movie("a", "01-Jan-1995", "http://", "0001110000000000000"),
 				new Movie("b", "01-Jan-1995", "http://", "0110000000000000100"),
 				new Movie("c", "01-Jan-1995", "http://", "0000000000000000100"),
-				
+
 				new Movie("d", "01-Jan-1995", "http://", "0100010010000000000"),
 				new Movie("e", "01-Jan-1995", "http://", "0000000010000000000"),
 				new Movie("f", "01-Jan-1995", "http://", "0001110000000000000"),
@@ -127,6 +125,14 @@ public class Fixtures {
 				new Movie("l", "01-Jan-1995", "http://", "0110000000000000100"),
 				new Movie("m", "01-Jan-1995", "http://", "0000000000000000100"),
 				new Movie("n", "01-Jan-1995", "http://", "0100010010000000000"),
-				new Movie("o", "01-Jan-1995", "http://", "0000000010000000000"),};
+				new Movie("o", "01-Jan-1995", "http://", "0000000010000000000"), };
+	}
+
+	public static Rating[] getRatingsQuickRecommend() throws Exception {
+		return new Rating[] { new Rating(1, 1, 5, 100), new Rating(5, 1, 5, 200), new Rating(3, 1, 5, 300),
+				new Rating(2, 1, 5, 400), new Rating(4, 1, 5, 500), new Rating(6, 1, 5, 600), new Rating(1, 2, 3, 700),
+				new Rating(5, 2, 1, 800), new Rating(3, 2, -5, 900), new Rating(2, 2, -3, 1000),
+				new Rating(4, 2, -1, 1100), new Rating(5, 3, 3, 1200), new Rating(5, 5, 5, 1300),
+				new Rating(5, 12, 1, 1400) };
 	}
 }

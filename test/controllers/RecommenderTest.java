@@ -46,6 +46,7 @@ public class RecommenderTest {
 
 	@After
 	public void tearDown() throws Exception {
+		r = null;
 	}
 
 	/**
@@ -776,35 +777,21 @@ public class RecommenderTest {
 				r.addMovie(movies[i]);
 			}
 
-			// Note:from here, user and movie is identified by id, eg. user 1 =
-			// user has
-			// ID 1.
+			// same sequence of rating as testGetRecommendation()
+			Rating[] ratings = Fixtures.getRatingsQuickRecommend();
+			for (int i = 0; i < ratings.length; i++)
+				r.addRating(ratings[i]);
 
-			// user 1, 3 and 5 rate movie 1 the same point (5); since user 1
-			// likes movie 1 and 2 his/her favorite genres are [comedy,
-			// animation, children's] and [adventure, thriller, action] (Note:
-			// user 7 hasn't rated anything/neutral)
-			r.addRating(1, 1, 5);
-			r.addRating(5, 1, 5);
-			r.addRating(3, 1, 5);
-			r.addRating(2, 1, 5);
-			r.addRating(4, 1, 5);
-			r.addRating(6, 1, 5);
+			// note that the timestamp of the above ratings are given statically
+			// because if they're added too fast, a few of them can happen
+			// within the same millisecond (timestamp in Rating class can be
+			// setup by System.currentTimeMillis() or a given argument). This
+			// issue has caused the test to sometimes give freaking red and
+			// sometimes give freaking green !!!!!!!!!
 
-			// user 1, 5 likes movie 2 while other users hate it or neutral
-			// (user 6 and 7)
-			r.addRating(1, 2, 3);
-			r.addRating(5, 2, 1);
-			r.addRating(3, 2, -5);
-			r.addRating(2, 2, -3);
-			r.addRating(4, 2, -1);
-
-			// user 5 also likes movie 3, 5 and 12
-			r.addRating(5, 3, 3);
-			r.addRating(5, 5, 5);
-			r.addRating(5, 12, 1);
-
-			// now user movie 9, so he/she is in the mood of watching [adventure] 
+			// now user likes movie 9, so he/she is in the mood of watching
+			// [adventure] (this rating will be collected as the most recently
+			// and highest rated rating)
 			r.addRating(1, 9, 5);
 
 			// so user 1 should get recommendation from user 5, particularly
@@ -813,7 +800,6 @@ public class RecommenderTest {
 			// action], and movie 4's are [drama]. So only movie 12 will
 			// be recommended because it has [adventure]
 			ArrayList<Movie> rMovies = r.recommend((long) 1, true);
-			System.out.println(rMovies.size());
 			assertEquals(rMovies.size(), 1);
 
 			assertEquals(rMovies.get(0).getTitle(), movies[11].getTitle());

@@ -202,7 +202,7 @@ public class Driver {
 		}
 
 		if (topten.size() < 10)
-			System.out.println("There are less than 10 movies that are top\nTop movies:");
+			System.out.println("Top movies:");
 		else
 			System.out.println("Top ten movies:");
 

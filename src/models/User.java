@@ -381,7 +381,7 @@ public class User implements Comparable<User>, Query<User> {
 	 */
 	public Long getHighestRatedMovieRecently() {
 		long maxTimestamp = 0;
-		Long toReturn = null;
+		long toReturn = -1;
 		Iterator<Long> ite = ratings.keySet().iterator();
 		while (ite.hasNext()) {
 			long nextId = ite.next();
