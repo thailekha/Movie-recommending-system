@@ -46,6 +46,9 @@ public class RecommenderTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * right and cardinality
+	 */
 	@Test
 	public void testAddUser() {
 		try {
@@ -64,6 +67,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * right and cardinality
+	 */
 	@Test
 	public void testAddManyUser() {
 		try {
@@ -96,29 +102,89 @@ public class RecommenderTest {
 
 	}
 
-	// TODO: not finished
+	/**
+	 * right
+	 */
 	@Test
 	public void testSortUsers() {
 		try {
-			User[] users = Fixtures.getUsersForSort();
+			User[] users = Fixtures.getUsersForSort2();
 			for (int i = 0; i < users.length; i++) {
-				if (users[i].getFirstName().compareTo("asd") == 0 && users[i].getLastName().compareTo("dsa") == 0
-						&& users[i].getAge() == 19) {
-					System.out.println();
-				}
 				r.addUser(users[i]);
 			}
 			ArrayList<Long> ids = r.getUserIdList();
 			assertEquals(ids.size(), r.getUsersSize());
 
-			for (int i = 0; i < ids.size(); i++) {
-				System.out.println(r.getUsers().get(ids.get(i)).info());
-			}
+			assertEquals(r.getUser(ids.get(0)).getFirstName(),"a");
+			assertEquals(r.getUser(ids.get(1)).getFirstName(),"b");
+			assertEquals(r.getUser(ids.get(2)).getFirstName(),"c");
+			assertEquals(r.getUser(ids.get(3)).getFirstName(),"d");
+			assertEquals(r.getUser(ids.get(4)).getFirstName(),"x");
+			assertEquals(r.getUser(ids.get(5)).getFirstName(),"y");
 		} catch (Exception e) {
 			fail("Exception thrown");
 		}
 	}
 
+	/**
+	 * right and conformance
+	 */
+	@Test
+	public void testSearch() {
+		try {
+			User[] users = Fixtures.getUsers();
+			for (int i = 0; i < users.length; i++) {
+				r.addUser(users[i]);
+			}
+			ArrayList<Comparable> searchU = r.searchUser("tom", "cat", 99);
+			assertNotNull(searchU);
+			assertEquals(searchU.size(),1);
+			assertTrue(searchU.get(0) instanceof User);
+			assertEquals((User) searchU.get(0),users[2]);
+			
+			Movie[] movies = Fixtures.getMovies();
+			for (int i = 0; i < movies.length; i++) {
+				r.addMovie(movies[i]);
+			}
+			ArrayList<Comparable> searchM = r.searchMovie("Get Shorty (1995)");
+			assertNotNull(searchM);
+			assertEquals(searchM.size(),1);
+			assertTrue(searchM.get(0) instanceof Movie);
+			assertEquals((Movie) searchM.get(0),movies[3]);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	/**
+	 * right and cardinality
+	 */
+	@Test
+	public void testRippleSearch() {
+		try {
+			User[] users = Fixtures.getSimilarUsers();
+			for (int i = 0; i < users.length; i++) {
+				r.addUser(users[i]);
+			}
+			ArrayList<Comparable> searchU = r.searchUser("tom", "cat", 99);
+			assertNotNull(searchU);
+			assertEquals(searchU.size(),5);
+			
+			Movie[] movies = Fixtures.getSimilarMovies();
+			for (int i = 0; i < movies.length; i++) {
+				r.addMovie(movies[i]);
+			}
+			ArrayList<Comparable> searchM = r.searchMovie("Get Shorty (1995)");
+			assertNotNull(searchM);
+			assertEquals(searchM.size(),3);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	/**
+	 *  Cross-check Using Other Means
+	 */
 	@Test
 	public void testSortUsersVsQuickSort() {
 		Recommender r2 = new Recommender(null, new CSVLoader("data_movieLens/users.dat", "data_movieLens/newItems.dat",
@@ -190,6 +256,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * right
+	 */
 	@Test
 	public void testRemoveUser() {
 		try {
@@ -210,6 +279,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * right
+	 */
 	@Test
 	public void testGetMovie() {
 		Movie[] movies;
@@ -229,6 +301,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * right
+	 */
 	@Test
 	public void testAddRating() {
 		try {
@@ -278,6 +353,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * right and cardinality
+	 */
 	@Test
 	public void testAddManyRating() {
 		try {
@@ -325,6 +403,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * test error
+	 */
 	@Test
 	public void testAddRatingUserNotExisted() {
 		try {
@@ -340,6 +421,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * test error
+	 */
 	@Test
 	public void testAddRatingMovieNotExisted() {
 		try {
@@ -355,6 +439,9 @@ public class RecommenderTest {
 		}
 	}
 
+	/**
+	 * test error
+	 */
 	@Test
 	public void testAddRatingInvalid() {
 		try {

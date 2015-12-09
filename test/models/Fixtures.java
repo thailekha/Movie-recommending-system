@@ -55,6 +55,20 @@ public class Fixtures {
 						"0000000010000000000")};
 	}
 	
+	public static Movie[] getSimilarMovies() throws Exception {
+		return new Movie[] {
+				new Movie("Toy Story (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)",
+						"0001110000000000000"),
+				new Movie("GoldenEye (1995)", "01-Jan-1995", "us.imdb.com/M/title-exact?GoldenEye%20(1995)",
+						"0110000000000000100"),
+				new Movie("GoldenEye (1995)", "01-Jan-1995", "http://us.imdb.com/M/",
+						"0110000000000000100"),
+				new Movie("GoldenEye (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?GoldenEye%20(1995)",
+						"0110000000000000100") ,
+				new Movie("Shanghai Triad (Yao a yao yao dao waipo qiao) (1995)", "01-Jan-1995", "http://us.imdb.com/Title?Yao+a+yao+yao+dao+waipo+qiao+(1995)",
+						"0000000010000000000")};
+	}
+	
 	public static User[] sampleDataUsers() throws Exception {
 		return new User[]{
 				new User("Leonard", "Hernandez", 24, "M", "technician", "85711"),

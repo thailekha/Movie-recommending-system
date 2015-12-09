@@ -33,6 +33,10 @@ public class RatingTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * right
+	 * @throws Exception
+	 */
 	@Test
 	public void testCreateRating() throws Exception {
 		Rating r = new Rating(1,2,0);
@@ -44,6 +48,9 @@ public class RatingTest {
 		assertEquals(r,mirror);
 	}
 	
+	/**
+	 * test error
+	 */
 	@Test
 	public void testCreateRatingInvalidUserId() {
 		try {
@@ -54,6 +61,9 @@ public class RatingTest {
 		}
 	}
 
+	/**
+	 * test error
+	 */
 	@Test
 	public void testCreateRatingInvalidMovieId() {
 		try {
@@ -64,6 +74,9 @@ public class RatingTest {
 		}
 	}
 	
+	/**
+	 * test error
+	 */
 	@Test
 	public void testCreateRatingInvalidRating() {
 		try {
@@ -74,6 +87,9 @@ public class RatingTest {
 		}
 	}
 	
+	/**
+	 * test error
+	 */
 	@Test
 	public void testCreateRatingInvalidAll() {
 		try {

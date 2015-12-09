@@ -130,7 +130,7 @@ public class Driver {
 			@Param(name = "age") int age) {
 		try {
 			ArrayList<Comparable> found = recommender.searchUser(firstName, lastName, age);
-			if (found.size() == 0) {
+			if (found == null || found.size() == 0) {
 				System.out.println("Not found");
 			} else {
 				System.out.println("Found user(s):");
@@ -150,7 +150,7 @@ public class Driver {
 	public void movieLookup(@Param(name = "movive title") String title) {
 		try {
 			ArrayList<Comparable> found = recommender.searchMovie(title);
-			if (found.size() == 0) {
+			if (found == null || found.size() == 0) {
 				System.out.println("Not found");
 			} else {
 				System.out.println("Found movie(s):");

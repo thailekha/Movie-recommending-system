@@ -29,7 +29,6 @@ public class Recommender {
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private CSVLoader primer;
-
 	private Serializer serializer;
 
 	/**
@@ -371,6 +370,8 @@ public class Recommender {
 	public ArrayList<Comparable> searchUser(String firstName, String lastName, int age) throws Exception {
 		User query = new User(firstName, lastName, age);
 		int position = search(users, userIdList, query);
+		if(position == -1)
+			return null;
 		return rippleSearch(users, userIdList, query, position);
 	}
 
@@ -384,6 +385,8 @@ public class Recommender {
 	public ArrayList<Comparable> searchMovie(String title) throws Exception {
 		Movie query = new Movie(title);
 		int position = search(movies, movieIdList, query);
+		if(position == -1)
+			return null;
 		return rippleSearch(movies, movieIdList, query, position);
 	}
 

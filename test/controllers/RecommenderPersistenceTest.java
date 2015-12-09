@@ -50,6 +50,10 @@ public class RecommenderPersistenceTest {
 		Movie.resetCounter();
 	}
 
+	/**
+	 * Right
+	 * @throws Exception
+	 */
 	@Test
 	public void testJSONSerializer() throws Exception {
 		String datastoreFile = "testdatastore.json";
@@ -73,34 +77,24 @@ public class RecommenderPersistenceTest {
 
 		assertEquals(r.getUsersSize(), r2.getUsersSize());
 		assertEquals(r.getMovies().size(), r2.getMovies().size());
-		//assertEquals(r.getRatingsDB().size(), r.getRatingsDB().size());
 
 		// Test static fields
 		assertEquals(User.getCounter(), uCount);
 		assertEquals(Movie.getCounter(), mCount);
 
-		// Test maps and table
-		Iterator<User> users = r.getUsers().values().iterator();
+		// Test maps
+		Iterator<Long> users = r.getUsers().keySet().iterator();
 		while (users.hasNext()) {
-			assertTrue(r2.getUsers().containsValue(users.next()));
+			long id = users.next();
+			assertTrue(r2.getUsers().containsKey(id));
+			assertEquals(r.getUsers().get(id),r2.getUsers().get(id));
 		}
-		Iterator<Movie> movies = r.getMovies().values().iterator();
+		Iterator<Long> movies = r.getMovies().keySet().iterator();
 		while (movies.hasNext()) {
-			assertTrue(r2.getMovies().containsValue(movies.next()));
+			long id = movies.next();
+			assertTrue(r2.getMovies().containsKey(id));
+			assertEquals(r.getMovies().get(id),r2.getMovies().get(id));
 		}
-//		Iterator<Rating> ratings = r.getRatingsDB().values().iterator();
-//		while (ratings.hasNext()) {
-//			Rating rate = ratings.next();
-//			User u = r.getUser(rate.getUserId());
-//			User mirrorU = r2.getUser(rate.getUserId());
-//			Movie m = r.getMovie(rate.getMovieId());
-//			Movie mirrorM = r2.getMovie(rate.getMovieId());
-//
-//			assertEquals(u, mirrorU);
-//			assertEquals(m, mirrorM);
-//			assertTrue(u.getRatings().containsValue(rate.getRating()));
-//			assertTrue(r2.getRatingsDB().containsValue(ratings.next()));
-//		}
 
 		// Test other fields
 		assertEquals(r.getUserIdList().size(), r2.getUserIdList().size());
@@ -116,14 +110,6 @@ public class RecommenderPersistenceTest {
 			assertTrue(r2.getRatings().contains(rating));
 		}
 		//assertEquals(r.ratingsSorted(), r2.ratingsSorted());
-
-		User abitraryUser = r.getUser(r.getUserIdList().get(0));
-		User mirrorU = r2.getUser(abitraryUser.getUserId());
-		assertEquals(abitraryUser, mirrorU);
-		r2.addUser(abitraryUser.getFirstName(), abitraryUser.getLastName(), abitraryUser.getAge(),
-				abitraryUser.getGender(), abitraryUser.getOccupation(), abitraryUser.getZip());
-		User mirrorMirror = r2.getUser(abitraryUser.getUserId());
-		assertEquals(abitraryUser, mirrorMirror);
 
 		deleteFile("testdatastore.json");
 	}

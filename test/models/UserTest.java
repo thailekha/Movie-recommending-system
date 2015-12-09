@@ -21,6 +21,9 @@ public class UserTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * right
+	 */
 	@Test
 	public void testCreateUser() {
 		try {
@@ -43,6 +46,9 @@ public class UserTest {
 		}
 	}
 
+	/**
+	 * right
+	 */
 	@Test
 	public void testCreateManyUser() {
 		try {
@@ -68,6 +74,9 @@ public class UserTest {
 		}
 	}
 
+	/**
+	 * test error
+	 */
 	@Test
 	public void testCreateInvalidUser() {
 		try {
