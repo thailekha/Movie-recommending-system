@@ -24,6 +24,7 @@ import models.User;
 import utils.CSVLoader;
 import utils.JSONSerializer;
 import utils.Serializer;
+import utils.XMLSerializer;
 
 /**
  * @author HP
@@ -52,11 +53,77 @@ public class RecommenderPersistenceTest {
 	}
 
 	/**
+	 * right
+	 * @throws Exception
+	 */
+	@Test
+	public void testXMLSerializer() throws Exception {
+		System.out.println("XML");
+		String datastoreFile = "testdatastore.xml";
+		deleteFile(datastoreFile);
+
+		Serializer serializer = new XMLSerializer(new File(datastoreFile));
+
+		r = new Recommender(serializer, new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
+				"small_data/ratings5.dat", "small_data/genre.dat"));
+		r.prime();
+		r.store();
+		long uCount = User.getCounter();
+		long mCount = Movie.getCounter();
+		
+		User.resetCounter();
+		Movie.resetCounter();
+
+		Recommender r2 = new Recommender(serializer, new CSVLoader("small_data/users5.dat", "small_data/items5.dat",
+				"small_data/ratings5.dat", "small_data/genre.dat"));
+		r2.load();
+
+		assertEquals(r.getUsersSize(), r2.getUsersSize());
+		assertEquals(r.getMovies().size(), r2.getMovies().size());
+
+		// Test static fields
+		assertEquals(User.getCounter(), uCount);
+		assertEquals(Movie.getCounter(), mCount);
+
+		// Test maps
+		Iterator<Long> users = r.getUsers().keySet().iterator();
+		while (users.hasNext()) {
+			long id = users.next();
+			assertTrue(r2.getUsers().containsKey(id));
+			assertEquals(r.getUsers().get(id),r2.getUsers().get(id));
+		}
+		Iterator<Long> movies = r.getMovies().keySet().iterator();
+		while (movies.hasNext()) {
+			long id = movies.next();
+			assertTrue(r2.getMovies().containsKey(id));
+			assertEquals(r.getMovies().get(id),r2.getMovies().get(id));
+		}
+
+		// Test other fields
+		assertEquals(r.getUserIdList().size(), r2.getUserIdList().size());
+		for (long id : r.getUserIdList()) {
+			assertTrue(r2.getUserIdList().contains(id));
+		}
+		assertEquals(r.getMovieIdList().size(), r2.getMovieIdList().size());
+		for (long id : r.getMovieIdList()) {
+			assertTrue(r2.getMovieIdList().contains(id));
+		}
+		assertEquals(r.getRatings().size(), r2.getRatings().size());
+		for (Rating rating : r.getRatings()) {
+			assertTrue(r2.getRatings().contains(rating));
+		}
+		//assertEquals(r.ratingsSorted(), r2.ratingsSorted());
+
+		deleteFile("testdatastore.xml");
+	}
+	
+	/**
 	 * Right
 	 * @throws Exception
 	 */
 	@Test
 	public void testJSONSerializer() throws Exception {
+		System.out.println("JSON");
 		String datastoreFile = "testdatastore.json";
 		deleteFile(datastoreFile);
 

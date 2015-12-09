@@ -27,6 +27,7 @@ import models.Rating;
 import models.User;
 import utils.CSVLoader;
 import utils.JSONSerializer;
+import utils.XMLSerializer;
 
 public class Driver {
 
@@ -41,16 +42,23 @@ public class Driver {
 		String smallU = "small_data/users5.dat";
 		String smallM = "small_data/items5.dat";
 		String smallR = "small_data/ratings5.dat";
-		File datastore = new File("datastore/store.json");
-		int choice = choose();
-		recommender = choice == 1
-				? new Recommender(new JSONSerializer(datastore), new CSVLoader(bigU, bigM, bigR, genre))
-				: new Recommender(new JSONSerializer(datastore), new CSVLoader(smallU, smallM, smallR, genre));
+		File jsonDatastore = new File("datastore/store.json");
+		File xmlDatastote = new File("datastore/store.xml");
+		
+		CSVLoader bigCSV = new CSVLoader(bigU, bigM, bigR, genre);
+		CSVLoader smallCSV = new CSVLoader(smallU, smallM, smallR, genre);
+		JSONSerializer json = new JSONSerializer(jsonDatastore);
+		XMLSerializer xml = new XMLSerializer(xmlDatastote);
+		
+		int csv = choose("Big or small CSV data?\n1)Big\n2)Small\n==>");
+		int seri = choose("JSON or XML?\n1)JSON\n2)XML\n==>");
+		
+		recommender = new Recommender(seri == 1 ? json : xml, csv == 1 ? bigCSV : smallCSV);
 	}
 
-	private int choose() {
+	private int choose(String msg) {
 		Scanner s = new Scanner(System.in);
-		System.out.println("Big or small CSV data?\n1)Big\n2)Small\n==>");
+		System.out.println(msg);
 		int choice = s.nextInt();
 		while (choice != 1 && choice != 2) {
 			System.out.print("Not available, try again ==>");

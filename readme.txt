@@ -18,7 +18,7 @@ Recommendation algorithm, eg. get recommendation for user A:
 ->from each rating, find the movie and check whether user B has rated the movie. If yes, get the rating point, otherwise the rating point will be considered 0. This creates another vector, called vector V
 (doing this ensures that every element in vector U corresponds to the right element in vector V, and the size of these two are equal)
 3) Now that U and V are in the same dimension, work out the angle between U and V
-4) Doing step 3 results in a set of angles, pick out the minimum angle (should be between 0 and 60 degree), indicating a pair of vectors that more or less point to the same direction
+4) Doing step 3 results in a set of angles, pick out the minimum angle (should be less than 90 degree, which is orthogonal) indicating a pair of vectors that more or less point to the same direction
 5) Doing step 4 will get to the most similar user to user A. Retrieve all positive ratings and get all movies from those ratings from this user and use the favorite genres of user A (collected in step 1) to filter movies to achieve a smaller set
 6) Return the set, which contains the recommended movies
 

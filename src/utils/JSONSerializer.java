@@ -19,7 +19,6 @@ import com.thoughtworks.xstream.converters.DataHolder;
 import com.thoughtworks.xstream.converters.reflection.SerializableConverter;
 
 public class JSONSerializer implements Serializer {
-	//MOVIE
 	private Stack buffer = new Stack();
 	private File file;
 

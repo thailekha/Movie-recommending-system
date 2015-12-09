@@ -95,7 +95,9 @@ public class Recommender {
 						return 1; // descending order
 					if (o1.getRating() > o2.getRating())
 						return -1;
-					return 0;
+					Movie m1 = movies.get(o1.getMovieId());
+					Movie m2 = movies.get(o2.getMovieId());
+					return m1.compareTo(m2);
 				}
 			});
 		}
@@ -481,7 +483,7 @@ public class Recommender {
 							return 1;
 						if (m1.getAveragePoint() > m2.getAveragePoint())
 							return -1;
-						return 0;
+						return m1.compareTo(m2);
 					}
 				});
 			}
