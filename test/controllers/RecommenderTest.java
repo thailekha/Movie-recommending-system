@@ -171,7 +171,7 @@ public class RecommenderTest {
 			r.addRating(11, ((Movie) r.searchMovie("k").get(0)).getMovieId(), 3);
 			r.addRating(12, ((Movie) r.searchMovie("l").get(0)).getMovieId(), 3);
 			r.addRating(13, ((Movie) r.searchMovie("m").get(0)).getMovieId(), 3);
-			
+
 			assertEquals(r.info(), "Users: 15 $ Movies: 15 $ Ratings: 10");
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -361,17 +361,17 @@ public class RecommenderTest {
 			}
 
 			r.addRating(1, 2, 5);
-			r.addRating(1,3,1);
-			r.addRating(1,1,-3);
-			
+			r.addRating(1, 3, 1);
+			r.addRating(1, 1, -3);
+
 			Movie ratedMovie1 = r.getMovie((long) 1);
 			Movie ratedMovie2 = r.getMovie((long) 2);
 			Movie ratedMovie3 = r.getMovie((long) 3);
-			
-			assertEquals(ratedMovie1.getRatings().size(),1);
-			assertEquals(ratedMovie2.getRatings().size(),1);
-			assertEquals(ratedMovie3.getRatings().size(),1);
-			
+
+			assertEquals(ratedMovie1.getRatings().size(), 1);
+			assertEquals(ratedMovie2.getRatings().size(), 1);
+			assertEquals(ratedMovie3.getRatings().size(), 1);
+
 			long id = User.getCounter() - 1;
 			int size = r.getUsersSize();
 			for (int i = r.getUsersSize(); i > 0; i--) {
@@ -381,12 +381,12 @@ public class RecommenderTest {
 				id--;
 			}
 			assertEquals(r.getUsersSize(), 0);
-			
-			//check that ratings made by user are gone
-			assertEquals(ratedMovie1.getRatings().size(),0);
-			assertEquals(ratedMovie2.getRatings().size(),0);
-			assertEquals(ratedMovie3.getRatings().size(),0);
-			
+
+			// check that ratings made by user are gone
+			assertEquals(ratedMovie1.getRatings().size(), 0);
+			assertEquals(ratedMovie2.getRatings().size(), 0);
+			assertEquals(ratedMovie3.getRatings().size(), 0);
+
 		} catch (Exception e) {
 			fail("Exception thrown");
 		}
@@ -579,9 +579,10 @@ public class RecommenderTest {
 					+ "01-Jan-1995, http://, \nGenre(s): [comedy,animation,children's]\nAverage point: -1.0\n-3 "
 					+ "=> <Movie ID - 7> g, 01-Jan-1995, http://, \nGenre(s): [adventure,thriller,action]\n"
 					+ "Average point: -3.0\n-5 => <Movie ID - 3> c, 01-Jan-1995, http://, \nGenre(s): [thriller]\nAverage point: -5.0\n");
-			
+
 			r.addUser("T", "C", 9, "M", "other", "234567");
-			assertEquals(r.printUserRatings((long) 2), "T C, 9, M, other, 234567, Rated 0 movies  $$ ID: 2\nNot available");
+			assertEquals(r.printUserRatings((long) 2),
+					"T C, 9, M, other, 234567, Rated 0 movies  $$ ID: 2\nNot available");
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -693,6 +694,69 @@ public class RecommenderTest {
 		} catch (Exception e) {
 			assertTrue(true);
 		}
+	}
+	
+	/**
+	 * right
+	 */
+	@Test
+	public void testGetRecommendation() {
+		try {
+			User[] users = Fixtures.getUsersForSort2();
+			for (int i = 0; i < users.length; i++) {
+				r.addUser(users[i]);
+			}
 
+			Movie[] movies = Fixtures.getToptenMovies();
+			for (int i = 0; i < movies.length; i++) {
+				r.addMovie(movies[i]);
+			}
+
+			// Note:from here, user and movie is identified by id, eg. user 1 =
+			// user has
+			// ID 1.
+
+			// user 1, 3 and 5 rate movie 1 the same point (5); since user 1
+			// likes movie 1 and 2 his/her favorite genres are [comedy,
+			// animation, children's] and [adventure, thriller, action] (Note:
+			// user 7 hasn't rated anything/neutral)
+			r.addRating(1, 1, 5);
+			r.addRating(5, 1, 5);
+			r.addRating(3, 1, 5);
+			r.addRating(2, 1, 5);
+			r.addRating(4, 1, 5);
+			r.addRating(6, 1, 5);
+
+			// user 1, 5 likes movie 2 while other users hate it or neutral
+			// (user 6 and 7)
+			r.addRating(1, 2, 3);
+			r.addRating(5, 2, 1);
+			r.addRating(3, 2, -5);
+			r.addRating(2, 2, -3);
+			r.addRating(4, 2, -1);
+
+			// user 5 also likes movie 3, 5 and 12
+			r.addRating(5, 3, 3);
+			r.addRating(5, 5, 5);
+			r.addRating(5, 12, 1);
+
+			// so user 1 should get recommendation from user 5, particularly
+			// movies 3,5,12 since user 1 hasn't rated them. However, the genres
+			// of movie 3 is [thriller] and movie 12 are [adventure, thriller,
+			// action], those are among of user 1's favorite
+			// genres, while movie 4's are [drama]. So only movie 3 and 12 will
+			// be recommended
+			ArrayList<Movie> rMovies = r.recommend((long) 1);
+			assertEquals(rMovies.size(), 2);
+
+			// test using only title here because movies in movies list aren't
+			// rated yet (note that rMovies are in order of the average rating
+			// point)
+			assertEquals(rMovies.get(0).getTitle(), movies[2].getTitle());
+			assertEquals(rMovies.get(1).getTitle(), movies[11].getTitle());
+
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 }

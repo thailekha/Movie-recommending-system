@@ -1,4 +1,5 @@
 package models;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,13 +19,16 @@ public class User implements Comparable<User>, Query<User> {
 	private long userId;
 	private String firstName, lastName, gender, occupation, zip;
 	private int age;
-	
-	//Map movie and rating point
-	private HashMap<Long,Rating> ratings = new HashMap<>(); //quicker to check duplicate ratings
-	//private ArrayList<Rating> ratings = new ArrayList<>(); 
+
+	// Map movie and rating point
+	private HashMap<Long, Rating> ratings = new HashMap<>(); // quicker to check
+																// duplicate
+																// ratings
+	// private ArrayList<Rating> ratings = new ArrayList<>();
 
 	/**
 	 * constructor
+	 * 
 	 * @param firstName
 	 * @param lastName
 	 * @param age
@@ -49,9 +53,10 @@ public class User implements Comparable<User>, Query<User> {
 			throw new Exception("Invalid arguments to construct user object");
 		}
 	}
-	
+
 	/**
 	 * query constructor (mainly for searching)
+	 * 
 	 * @param firstName
 	 * @param lastName
 	 * @param age
@@ -62,14 +67,14 @@ public class User implements Comparable<User>, Query<User> {
 			this.firstName = firstName;
 			this.lastName = lastName;
 			this.age = age;
-		}
-		else {
+		} else {
 			throw new Exception("Invalid arguments to construct user query");
 		}
 	}
 
 	/**
 	 * get user id
+	 * 
 	 * @return user id
 	 */
 	public long getUserId() {
@@ -78,6 +83,7 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get first name
+	 * 
 	 * @return firstname
 	 */
 	public String getFirstName() {
@@ -86,6 +92,7 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get last name
+	 * 
 	 * @return lastname
 	 */
 	public String getLastName() {
@@ -94,6 +101,7 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get age
+	 * 
 	 * @return age
 	 */
 	public int getAge() {
@@ -102,6 +110,7 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get gender
+	 * 
 	 * @return gender
 	 */
 	public String getGender() {
@@ -110,6 +119,7 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get occupation
+	 * 
 	 * @return occupation
 	 */
 	public String getOccupation() {
@@ -118,50 +128,55 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get zip code
+	 * 
 	 * @return zip code
 	 */
 	public String getZip() {
 		return zip;
 	}
-	
+
 	/**
 	 * get movie-rating map
+	 * 
 	 * @return map
 	 */
-	public HashMap<Long,Rating> getRatings() {
+	public HashMap<Long, Rating> getRatings() {
 		return ratings;
 	}
-	
-	//What to return if: new, duplicate. If duplicate, recommender need to find and replace
-//	public Rating addRating(long movieId, int rating) throws Exception {
-//		Rating r = new Rating(userId,movieId,rating);
-//		ratings.put(movieId, r);
-//		
-//	}
-	
-//	public void addRating(Rating r) {
-//		if(r != null && !ratings.contains(r))
-//			ratings.add(r);
-//	}
-	
+
+	// What to return if: new, duplicate. If duplicate, recommender need to find
+	// and replace
+	// public Rating addRating(long movieId, int rating) throws Exception {
+	// Rating r = new Rating(userId,movieId,rating);
+	// ratings.put(movieId, r);
+	//
+	// }
+
+	// public void addRating(Rating r) {
+	// if(r != null && !ratings.contains(r))
+	// ratings.add(r);
+	// }
+
 	/**
 	 * add a rating
+	 * 
 	 * @param rating
 	 */
 	public void addRating(Rating r) {
-		if(r != null && Rating.checkRating(r.getRating()))
+		if (r != null && Rating.checkRating(r.getRating()))
 			ratings.put(r.getMovieId(), r);
 	}
-	
-//	public void removeRating(Rating r) {
-//		if(r != null) {
-//			while(ratings.contains(r))
-//				ratings.remove(r);
-//		}
-//	}
-	
+
+	// public void removeRating(Rating r) {
+	// if(r != null) {
+	// while(ratings.contains(r))
+	// ratings.remove(r);
+	// }
+	// }
+
 	/**
 	 * get set of movie ids that are rated above 0
+	 * 
 	 * @return set if movies ids
 	 */
 	public HashSet<Long> getPositiveRatedMovieIds() {
@@ -169,13 +184,13 @@ public class User implements Comparable<User>, Query<User> {
 		Iterator<Long> ite = ratings.keySet().iterator();
 		while (ite.hasNext()) {
 			long id = ite.next();
-			if(ratings.get(id).getRating() > 1) {
+			if (ratings.get(id).getRating() > 0) {
 				rateds.add(id);
 			}
 		}
 		return rateds;
 	}
-	
+
 	/**
 	 * String representation in json
 	 */
@@ -185,21 +200,21 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * string representation
+	 * 
 	 * @return
 	 */
 	public String info() {
-		return firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", "
-				+ zip + ", Rated " + ratings.size() + " movies " + " $$ ID: " + userId;
+		return firstName + " " + lastName + ", " + age + ", " + gender + ", " + occupation + ", " + zip + ", Rated "
+				+ ratings.size() + " movies " + " $$ ID: " + userId;
 	}
 
 	/**
-	 * ID is not included since it has affect on the Set.contains method
-	 * hash code of object
+	 * ID is not included since it has affect on the Set.contains method hash
+	 * code of object
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.lastName, this.firstName, this.gender, this.occupation, this.zip,
-				this.age);
+		return Objects.hashCode(this.lastName, this.firstName, this.gender, this.occupation, this.zip, this.age);
 	}
 
 	/**
@@ -226,18 +241,19 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * get id counter
+	 * 
 	 * @return id counter
 	 */
 	public static long getCounter() {
 		return counter;
 	}
-	
+
 	/**
 	 * make comparison
 	 */
 	@Override
 	public int compareTo(User that) {
-		//firstName, lastName, gender, occupation, zip
+		// firstName, lastName, gender, occupation, zip
 		int compareFirstName = firstName.toLowerCase().compareTo(that.firstName.toLowerCase());
 		int compareLastName = lastName.toLowerCase().compareTo(that.lastName.toLowerCase());
 		int compareGender = gender.toLowerCase().compareTo(that.gender.toLowerCase());
@@ -279,17 +295,21 @@ public class User implements Comparable<User>, Query<User> {
 
 	/**
 	 * set id counter
-	 * @param new counter
+	 * 
+	 * @param new
+	 *            counter
 	 */
 	public static void setCounter(long counter) {
-		if(counter >= 1)
+		if (counter >= 1)
 			User.counter = counter;
 	}
-	
+
 	/**
 	 * general string checker
+	 * 
 	 * @param toCheck
-	 * @param  allowed length
+	 * @param allowed
+	 *            length
 	 * @return true if valid
 	 */
 	private static boolean str(String toCheck, int length) {
@@ -298,7 +318,6 @@ public class User implements Comparable<User>, Query<User> {
 		String result = toCheck.trim();
 		return result.length() > 0 && result.length() <= length;
 	}
-	
 
 	/**
 	 * compare user with another user in terms of name and age
@@ -320,5 +339,35 @@ public class User implements Comparable<User>, Query<User> {
 		if (age > that.age)
 			return 1;
 		return 0;
+	}
+
+	/**
+	 * check if user hasn't rated anything or all of the ratings are 0
+	 * 
+	 * @return boolean
+	 */
+	public boolean isNeutral() {
+		boolean neutral = true;
+		Iterator<Rating> ite = ratings.values().iterator();
+		while (ite.hasNext()) {
+			if (ite.next().getRating() != 0) {
+				neutral = false;
+				break;
+			}
+		}
+		return neutral;
+	}
+
+	public HashMap<Long, Rating> getRatingsNoNeutral() {
+		HashMap<Long, Rating> rates = new HashMap<>();
+		Iterator<Long> ite = ratings.keySet().iterator();
+		while (ite.hasNext()) {
+			long nextId = ite.next();
+			Rating r =  ratings.get(nextId);
+			if (r.getRating() != 0) {
+				rates.put(nextId, r);
+			}
+		}
+		return rates;
 	}
 }

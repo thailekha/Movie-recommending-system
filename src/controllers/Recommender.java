@@ -545,12 +545,18 @@ public class Recommender {
 	 */
 	private User findMostSimilarUSer(User user, HashSet<Long> similarUsersId) {
 		User mostSimilar = null;
-		HashMap<Long, Rating> rated = user.getRatings();
+		HashMap<Long, Rating> rated = user.getRatingsNoNeutral();
 		double min = Double.MAX_VALUE;
 		Iterator<Long> iteSim = similarUsersId.iterator();
 		while (iteSim.hasNext()) {
 			User other = users.get(iteSim.next());
-			double similarity = Matrix.similarityInRadian(movieIdList, rated, other.getRatings());
+//			if(other.isNeutral()) {
+//				continue;
+//			}
+			double similarity = Matrix.similarityInRadian(rated, other.getRatings());
+			if(similarity == -999)
+				continue;
+			//System.out.println(user.getUserId() + " and " + other.getUserId() +": " + similarity);
 			if (similarity < min) {
 				min = similarity;
 				mostSimilar = other;

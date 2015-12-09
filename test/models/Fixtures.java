@@ -11,7 +11,7 @@ public class Fixtures {
 				new User("Spike", "Dog", 99, "M", "other", "456567") };
 	}
 
-	public static User[] getUsersForSort() throws Exception {
+	public static User[] getUsers2() throws Exception {
 		return new User[] { new User("x", "y", 17, "M", "student", "123456"),
 				new User("asd", "dsa", 19, "M", "student", "78990"), new User("asd", "ds", 19, "M", "student", "78990"),
 				new User("asd", "dsa", 18, "M", "student", "78990"),
@@ -24,8 +24,10 @@ public class Fixtures {
 
 	public static User[] getUsersForSort2() throws Exception {
 		return new User[] { new User("x", "y", 17, "M", "student", "123456"),
-				new User("y", "dsa", 19, "M", "student", "78990"), new User("d", "bla", 99, "M", "other", "234567"),
-				new User("c", "Panther", 99, "M", "other", "890111"), new User("b", "0", 99, "M", "other", "345456"),
+				new User("y", "dsa", 19, "M", "student", "78990"), 
+				new User("d", "bla", 99, "M", "other", "234567"),
+				new User("c", "Panther", 99, "M", "other", "890111"), 
+				new User("b", "0", 99, "M", "other", "345456"),
 				new User("a", "Jerry", 99, "M", "other", "456567"), };
 	}
 
@@ -113,6 +115,7 @@ public class Fixtures {
 		return new Movie[] { new Movie("a", "01-Jan-1995", "http://", "0001110000000000000"),
 				new Movie("b", "01-Jan-1995", "http://", "0110000000000000100"),
 				new Movie("c", "01-Jan-1995", "http://", "0000000000000000100"),
+				
 				new Movie("d", "01-Jan-1995", "http://", "0100010010000000000"),
 				new Movie("e", "01-Jan-1995", "http://", "0000000010000000000"),
 				new Movie("f", "01-Jan-1995", "http://", "0001110000000000000"),
