@@ -61,8 +61,7 @@ public class Driver {
 
 	public static void main(String[] agrs) throws Exception {
 		Driver main = new Driver();
-		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome - ?help for instructions",
-				main);
+		Shell shell = ShellFactory.createConsoleShell("pm", "Welcome - ?help for instructions", main);
 		shell.commandLoop();
 	}
 
@@ -246,12 +245,32 @@ public class Driver {
 
 	@Command(description = "Get recommendations for a user")
 	public void getUserRecommendations(@Param(name = "User ID") long userID) {
-		ArrayList<Movie> movies = recommender.recommend(userID);
+		ArrayList<Movie> movies = recommender.recommend(userID, false);
 		if (movies == null)
 			System.out.println("User not found");
 		else {
 			if (movies.size() == 0) {
-				System.out.println("Not available");
+				getTopten(); //hasn't rated anything
+			} else {
+				System.out.println(movies.size() + " recommended movies");
+				for (Movie movie : movies) {
+					double roundedPoint = ((int) movie.getAveragePoint() * 10) / 10;
+					System.out.println("~> " + movie.getTitle() + ", genres: " + movie.printGenre()
+							+ ", average point: " + roundedPoint + ", Movie ID: " + movie.getMovieId());
+				}
+			}
+		}
+	}
+
+	@Command(description = "Get recommendations for a user basing on his/her most recently "
+			+ "positive rating, implying that the user is in the mood to watch such genres from that rating")
+	public void quickRecommendations(@Param(name = "User ID") long userID) {
+		ArrayList<Movie> movies = recommender.recommend(userID, true);
+		if (movies == null)
+			System.out.println("User not found");
+		else {
+			if (movies.size() == 0) {
+				getTopten(); //hasn't rated anything
 			} else {
 				System.out.println(movies.size() + " recommended movies");
 				for (Movie movie : movies) {

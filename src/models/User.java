@@ -358,6 +358,10 @@ public class User implements Comparable<User>, Query<User> {
 		return neutral;
 	}
 
+	/**
+	 * retrieve all ratings of user, excluding those having rating point 0
+	 * @return
+	 */
 	public HashMap<Long, Rating> getRatingsNoNeutral() {
 		HashMap<Long, Rating> rates = new HashMap<>();
 		Iterator<Long> ite = ratings.keySet().iterator();
@@ -369,5 +373,24 @@ public class User implements Comparable<User>, Query<User> {
 			}
 		}
 		return rates;
+	}
+	
+	/**
+	 * get highest rated movie recently
+	 * @return movie id
+	 */
+	public Long getHighestRatedMovieRecently() {
+		long maxTimestamp = 0;
+		Long toReturn = null;
+		Iterator<Long> ite = ratings.keySet().iterator();
+		while (ite.hasNext()) {
+			long nextId = ite.next();
+			Rating r =  ratings.get(nextId);
+			if (r.getRating() == 5 && r.getTime() > maxTimestamp) {
+				toReturn = r.getMovieId();
+				maxTimestamp = r.getTime();
+			}
+		}
+		return toReturn;
 	}
 }

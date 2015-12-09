@@ -695,7 +695,7 @@ public class RecommenderTest {
 			assertTrue(true);
 		}
 	}
-	
+
 	/**
 	 * right
 	 */
@@ -746,7 +746,7 @@ public class RecommenderTest {
 			// action], those are among of user 1's favorite
 			// genres, while movie 4's are [drama]. So only movie 3 and 12 will
 			// be recommended
-			ArrayList<Movie> rMovies = r.recommend((long) 1);
+			ArrayList<Movie> rMovies = r.recommend((long) 1, false);
 			assertEquals(rMovies.size(), 2);
 
 			// test using only title here because movies in movies list aren't
@@ -758,5 +758,69 @@ public class RecommenderTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+
+	/**
+	 * right
+	 */
+	@Test
+	public void testQuickRecommendation() {
+		try {
+			User[] users = Fixtures.getUsersForSort2();
+			for (int i = 0; i < users.length; i++) {
+				r.addUser(users[i]);
+			}
+
+			Movie[] movies = Fixtures.getToptenMovies();
+			for (int i = 0; i < movies.length; i++) {
+				r.addMovie(movies[i]);
+			}
+
+			// Note:from here, user and movie is identified by id, eg. user 1 =
+			// user has
+			// ID 1.
+
+			// user 1, 3 and 5 rate movie 1 the same point (5); since user 1
+			// likes movie 1 and 2 his/her favorite genres are [comedy,
+			// animation, children's] and [adventure, thriller, action] (Note:
+			// user 7 hasn't rated anything/neutral)
+			r.addRating(1, 1, 5);
+			r.addRating(5, 1, 5);
+			r.addRating(3, 1, 5);
+			r.addRating(2, 1, 5);
+			r.addRating(4, 1, 5);
+			r.addRating(6, 1, 5);
+
+			// user 1, 5 likes movie 2 while other users hate it or neutral
+			// (user 6 and 7)
+			r.addRating(1, 2, 3);
+			r.addRating(5, 2, 1);
+			r.addRating(3, 2, -5);
+			r.addRating(2, 2, -3);
+			r.addRating(4, 2, -1);
+
+			// user 5 also likes movie 3, 5 and 12
+			r.addRating(5, 3, 3);
+			r.addRating(5, 5, 5);
+			r.addRating(5, 12, 1);
+
+			// now user movie 9, so he/she is in the mood of watching [adventure] 
+			r.addRating(1, 9, 5);
+
+			// so user 1 should get recommendation from user 5, particularly
+			// movies 3,5,12 since user 1 hasn't rated them. However, the genres
+			// of movie 3 is [thriller], movie 12 are [adventure, thriller,
+			// action], and movie 4's are [drama]. So only movie 12 will
+			// be recommended because it has [adventure]
+			ArrayList<Movie> rMovies = r.recommend((long) 1, true);
+			System.out.println(rMovies.size());
+			assertEquals(rMovies.size(), 1);
+
+			assertEquals(rMovies.get(0).getTitle(), movies[11].getTitle());
+
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
 	}
 }

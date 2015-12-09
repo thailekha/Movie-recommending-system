@@ -27,7 +27,7 @@ public class Recommender {
 																// movies in
 																// order of the
 																// titles
-	//private ArrayList<Rating> ratings = new ArrayList<>();
+	// private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private CSVLoader primer;
 	private Serializer serializer;
@@ -97,7 +97,7 @@ public class Recommender {
 				@Override
 				public int compare(Rating o1, Rating o2) {
 					if (o1.getRating() < o2.getRating())
-						return 1; //descending order
+						return 1; // descending order
 					if (o1.getRating() > o2.getRating())
 						return -1;
 					return 0;
@@ -119,8 +119,8 @@ public class Recommender {
 		ArrayList<Rating> ratings = getUserRatings(userId);
 		if (ratings.size() > 0) {
 			for (Rating r : ratings) {
-				toPrint += r.getRating() + " => " + "<Movie ID - " + r.getMovieId() + "> " + movies.get(r.getMovieId()).info()
-						+ "\n";
+				toPrint += r.getRating() + " => " + "<Movie ID - " + r.getMovieId() + "> "
+						+ movies.get(r.getMovieId()).info() + "\n";
 			}
 		} else {
 			toPrint += "Not available";
@@ -136,7 +136,7 @@ public class Recommender {
 	public HashSet<Rating> getRatings() {
 		HashSet<Rating> ratings = new HashSet<>();
 		Iterator<User> users = this.users.values().iterator();
-		while(users.hasNext()) {
+		while (users.hasNext()) {
 			ratings.addAll(users.next().getRatings().values());
 		}
 		return ratings;
@@ -271,12 +271,12 @@ public class Recommender {
 				long movieId = ite.next();
 				Movie ratedMovie = movies.get(movieId);
 				ratedMovie.removeRating(id);
-//				Rating rate = madeRatings.get(movieId);
-//				while (this.ratings.contains(rate)) {
-//					this.ratings.remove(rate);
-//				}
+				// Rating rate = madeRatings.get(movieId);
+				// while (this.ratings.contains(rate)) {
+				// this.ratings.remove(rate);
+				// }
 			}
-			while(userIdList.contains(id))
+			while (userIdList.contains(id))
 				userIdList.remove(id);
 			return users.remove(id);
 		}
@@ -323,7 +323,7 @@ public class Recommender {
 	private void putRating(Rating r) {
 		long uId = r.getUserId();
 		long mId = r.getMovieId();
-		//ratings.add(r);
+		// ratings.add(r);
 		users.get(uId).addRating(r);
 		movies.get(mId).addRating(r);
 		ratingsSorted = false;
@@ -374,7 +374,7 @@ public class Recommender {
 	public ArrayList<Query> searchUser(String firstName, String lastName, int age) throws Exception {
 		User query = new User(firstName, lastName, age);
 		int position = search(users, userIdList, query);
-		if(position == -1)
+		if (position == -1)
 			return null;
 		return rippleSearch(users, userIdList, query, position);
 	}
@@ -389,7 +389,7 @@ public class Recommender {
 	public ArrayList<Query> searchMovie(String title) throws Exception {
 		Movie query = new Movie(title);
 		int position = search(movies, movieIdList, query);
-		if(position == -1)
+		if (position == -1)
 			return null;
 		return rippleSearch(movies, movieIdList, query, position);
 	}
@@ -460,7 +460,7 @@ public class Recommender {
 	 * @param userId
 	 * @return list of movies
 	 */
-	public ArrayList<Movie> recommend(long userId) {
+	public ArrayList<Movie> recommend(long userId, boolean mood) {
 		ArrayList<Movie> recommendedMovies = new ArrayList<>();
 		User user = null;
 		if (users.containsKey(userId))
@@ -474,7 +474,7 @@ public class Recommender {
 			User mostSimilar = findMostSimilarUSer(user, similarUsersId);
 			if (mostSimilar == null)
 				return recommendedMovies;
-			appendRecommendedMovies(user, mostSimilar, recommendedMovies);
+			appendRecommendedMovies(user, mostSimilar, recommendedMovies, mood);
 			Collections.sort(recommendedMovies, new Comparator<Movie>() {
 				@Override // descending order
 				public int compare(Movie m1, Movie m2) {
@@ -550,13 +550,14 @@ public class Recommender {
 		Iterator<Long> iteSim = similarUsersId.iterator();
 		while (iteSim.hasNext()) {
 			User other = users.get(iteSim.next());
-//			if(other.isNeutral()) {
-//				continue;
-//			}
+			// if(other.isNeutral()) {
+			// continue;
+			// }
 			double similarity = Matrix.similarityInRadian(rated, other.getRatings());
-			if(similarity == -999)
+			if (similarity == -999)
 				continue;
-			//System.out.println(user.getUserId() + " and " + other.getUserId() +": " + similarity);
+			// System.out.println(user.getUserId() + " and " + other.getUserId()
+			// +": " + similarity);
 			if (similarity < min) {
 				min = similarity;
 				mostSimilar = other;
@@ -581,18 +582,23 @@ public class Recommender {
 	 * @param list
 	 *            to append recommended movies
 	 */
-	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies) {
-		HashSet<String> favoriteGenres = Movie.getGenresFromMoviesGroup(movies, user.getPositiveRatedMovieIds());
-		// String genres = "[";
-		// Iterator<String> ite = favoriteGenres.iterator();
-		// while (ite.hasNext()) {
-		// genres += ite.next();
-		// if (ite.hasNext())
-		// genres += ",";
-		// }
-		// genres += "]";
-		// System.out.println("Your favorite genres (" + favoriteGenres.size() +
-		// "): " + genres);
+	private void appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> recommendedMovies,
+			boolean mood) {
+		HashSet<String> favoriteGenres = new HashSet<>();
+		if (mood) {
+			favoriteGenres = movies.get(user.getHighestRatedMovieRecently()).getIndivGenre();
+		} else {
+			favoriteGenres = Movie.getGenresFromMoviesGroup(movies, user.getPositiveRatedMovieIds());
+		}
+		String genres = "[";
+		Iterator<String> ite = favoriteGenres.iterator();
+		while (ite.hasNext()) {
+			genres += ite.next();
+			if (ite.hasNext())
+				genres += ",";
+		}
+		genres += "]";
+		System.out.println("desired genres (" + favoriteGenres.size() + "): " + genres);
 		HashMap<Long, Rating> rated = user.getRatings();
 		Iterator<Long> ids = mostSimilar.getPositiveRatedMovieIds().iterator();
 		while (ids.hasNext()) {
@@ -642,7 +648,7 @@ public class Recommender {
 		movies = (HashMap<Long, Movie>) serializer.pop();
 		userIdList = (ArrayList<Long>) serializer.pop();
 		movieIdList = (ArrayList<Long>) serializer.pop();
-		//ratings = (ArrayList<Rating>) serializer.pop();
+		// ratings = (ArrayList<Rating>) serializer.pop();
 		ratingsSorted = (boolean) serializer.pop();
 		// ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
 		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
@@ -658,7 +664,7 @@ public class Recommender {
 		System.out.println("Saving to datastore...");
 		// serializer.push(ratingsDB);
 		serializer.push(ratingsSorted);
-		//serializer.push(ratings);
+		// serializer.push(ratings);
 		serializer.push(movieIdList);
 		serializer.push(userIdList);
 		serializer.push(movies);
@@ -703,23 +709,22 @@ public class Recommender {
 					hi = mid - 1;
 				else if (result < 0) {
 					lo = mid + 1;
-				}
-				else {
-					//left
-					for(int i = mid - 1; i >= 0; i--) {
+				} else {
+					// left
+					for (int i = mid - 1; i >= 0; i--) {
 						Comparable left = map.get(ids.get(i));
-						if(left.compareTo(midObject) != 0)
+						if (left.compareTo(midObject) != 0)
 							return i;
 					}
-					
-					//right
-					for(int i = mid + 1; i < ids.size(); i++) {
+
+					// right
+					for (int i = mid + 1; i < ids.size(); i++) {
 						Comparable right = map.get(ids.get(i));
-						if(right.compareTo(midObject) != 0)
+						if (right.compareTo(midObject) != 0)
 							return i;
 					}
-					
-					//getting to this point is an error
+
+					// getting to this point is an error
 					throw new Exception("Error searching position");
 				}
 			}
@@ -771,8 +776,8 @@ public class Recommender {
 	 * @param foundPos
 	 * @return list of similar items
 	 */
-	private ArrayList<Query> rippleSearch(HashMap<Long, ? extends Query> map, ArrayList<Long> ids,
-			Query query, int foundPos) {
+	private ArrayList<Query> rippleSearch(HashMap<Long, ? extends Query> map, ArrayList<Long> ids, Query query,
+			int foundPos) {
 		ArrayList<Query> results = new ArrayList<>();
 
 		if (map.size() > 0 && foundPos >= 0 && foundPos < map.size()) {
