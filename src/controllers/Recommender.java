@@ -27,7 +27,6 @@ public class Recommender {
 																// movies in
 																// order of the
 																// titles
-	// private ArrayList<Rating> ratings = new ArrayList<>();
 	private boolean ratingsSorted = false;
 	private CSVLoader primer;
 	private Serializer serializer;
@@ -78,15 +77,11 @@ public class Recommender {
 		return movieIdList;
 	}
 
-	// public boolean ratingsSorted() {
-	// return ratingsSorted;
-	// }
-
 	/**
 	 * get ratings made by a user
 	 * 
 	 * @param userId
-	 * @return
+	 * @return set of ratings
 	 */
 	public ArrayList<Rating> getUserRatings(long userId) {
 		ArrayList<Rating> ratings = new ArrayList<>();
@@ -475,7 +470,9 @@ public class Recommender {
 			User mostSimilar = findMostSimilarUSer(user, similarUsersId);
 			if (mostSimilar == null)
 				return recommendedMovies;
-			appendRecommendedMovies(user, mostSimilar,recommendedMovies, mood);
+			appendRecommendedMovies(user, mostSimilar, recommendedMovies, mood);
+
+			// Sort the recommended movies by their average rating points
 			if (recommendedMovies.size() > 1) {
 				Collections.sort(recommendedMovies, new Comparator<Movie>() {
 					@Override // descending order
@@ -553,6 +550,8 @@ public class Recommender {
 	 */
 	private User findMostSimilarUSer(User user, HashSet<Long> similarUsersId) {
 		User mostSimilar = null;
+
+		// Get all ratings of user that are not 0
 		HashMap<Long, Rating> rated = user.getRatingsNoNeutral();
 		double min = Double.MAX_VALUE;
 		Iterator<Long> iteSim = similarUsersId.iterator();
@@ -588,15 +587,20 @@ public class Recommender {
 	 * @param list
 	 *            to append recommended movies
 	 */
-	private ArrayList<Movie> appendRecommendedMovies(User user, User mostSimilar,ArrayList<Movie> rMovies,
+	private ArrayList<Movie> appendRecommendedMovies(User user, User mostSimilar, ArrayList<Movie> rMovies,
 			boolean mood) {
 		HashSet<String> favoriteGenres = new HashSet<>();
+
+		// mood indicating the quick recommendation feature (quick
+		// recommendation use genres from the latest rated to filter while
+		// regular recommendation use all genres from all movies positively
+		// rated)
 		if (mood) {
 			long recMovie = user.getHighestRatedMovieRecently();
-			if(recMovie == -1)
+			if (recMovie == -1)
 				return rMovies;
 			favoriteGenres = movies.get(recMovie).getIndivGenre();
-			//System.out.println(favoriteGenres);
+			// System.out.println(favoriteGenres);
 			// String genres = "[";
 			// Iterator<String> ite = favoriteGenres.iterator();
 			// while (ite.hasNext()) {
@@ -618,7 +622,7 @@ public class Recommender {
 												// hasn't seen yet into
 												// account
 				Movie m = movies.get(nextId);
-				
+
 				// Content-based filter on genres
 				HashSet<String> movieGenre = m.getIndivGenre();
 				boolean flag = false;

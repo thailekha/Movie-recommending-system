@@ -9,7 +9,6 @@ import com.google.common.collect.Sets;
 
 import utils.ToJsonString;
 
-//TODO: NAMES IN LOWER CASE ? / OCCUPATION
 public class User implements Comparable<User>, Query<User> {
 	// Each user has rated at least 20 movies
 	private static long counter = 1;
@@ -21,10 +20,7 @@ public class User implements Comparable<User>, Query<User> {
 	private int age;
 
 	// Map movie and rating point
-	private HashMap<Long, Rating> ratings = new HashMap<>(); // quicker to check
-																// duplicate
-																// ratings
-	// private ArrayList<Rating> ratings = new ArrayList<>();
+	private HashMap<Long, Rating> ratings = new HashMap<>();
 
 	/**
 	 * constructor
@@ -48,7 +44,6 @@ public class User implements Comparable<User>, Query<User> {
 			this.gender = gender.trim();
 			this.occupation = occupation.trim();
 			this.zip = zip.trim();
-			// System.out.println(this);
 		} else {
 			throw new Exception("Invalid arguments to construct user object");
 		}
@@ -146,16 +141,7 @@ public class User implements Comparable<User>, Query<User> {
 
 	// What to return if: new, duplicate. If duplicate, recommender need to find
 	// and replace
-	// public Rating addRating(long movieId, int rating) throws Exception {
-	// Rating r = new Rating(userId,movieId,rating);
-	// ratings.put(movieId, r);
-	//
-	// }
 
-	// public void addRating(Rating r) {
-	// if(r != null && !ratings.contains(r))
-	// ratings.add(r);
-	// }
 
 	/**
 	 * add a rating
@@ -166,13 +152,6 @@ public class User implements Comparable<User>, Query<User> {
 		if (r != null && Rating.checkRating(r.getRating()))
 			ratings.put(r.getMovieId(), r);
 	}
-
-	// public void removeRating(Rating r) {
-	// if(r != null) {
-	// while(ratings.contains(r))
-	// ratings.remove(r);
-	// }
-	// }
 
 	/**
 	 * get set of movie ids that are rated above 0
