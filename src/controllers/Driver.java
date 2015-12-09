@@ -22,6 +22,7 @@ import edu.princeton.cs.introcs.In;
 import edu.princeton.cs.introcs.Stopwatch;
 import models.Fixtures;
 import models.Movie;
+import models.Query;
 import models.Rating;
 import models.User;
 import utils.CSVLoader;
@@ -129,12 +130,12 @@ public class Driver {
 	public void userLookup(@Param(name = "first name") String firstName, @Param(name = "last name") String lastName,
 			@Param(name = "age") int age) {
 		try {
-			ArrayList<Comparable> found = recommender.searchUser(firstName, lastName, age);
+			ArrayList<Query> found = recommender.searchUser(firstName, lastName, age);
 			if (found == null || found.size() == 0) {
 				System.out.println("Not found");
 			} else {
 				System.out.println("Found user(s):");
-				for (Comparable item : found) {
+				for (Query item : found) {
 					User u = (User) item;
 					System.out.println(u.info());
 				}
@@ -149,12 +150,12 @@ public class Driver {
 	@Command(description = "Look up movie(s)")
 	public void movieLookup(@Param(name = "movive title") String title) {
 		try {
-			ArrayList<Comparable> found = recommender.searchMovie(title);
+			ArrayList<Query> found = recommender.searchMovie(title);
 			if (found == null || found.size() == 0) {
 				System.out.println("Not found");
 			} else {
 				System.out.println("Found movie(s):");
-				for (Comparable item : found) {
+				for (Query item : found) {
 					Movie m = (Movie) item;
 					System.out.println(m.info());
 				}

@@ -9,7 +9,7 @@ import com.google.common.collect.Sets;
 import utils.ToJsonString;
 
 //TODO: NAMES IN LOWER CASE ? / OCCUPATION
-public class User implements Comparable<User> {
+public class User implements Comparable<User>, Query<User> {
 	// Each user has rated at least 20 movies
 	private static long counter = 1;
 	private static HashSet<String> occupations = Sets.newHashSet("administrator", "artist", "doctor", "educator",
@@ -49,7 +49,7 @@ public class User implements Comparable<User> {
 			throw new Exception();
 		}
 	}
-
+	
 	/**
 	 * query constructor (mainly for searching)
 	 * @param firstName
@@ -231,14 +231,18 @@ public class User implements Comparable<User> {
 	public static long getCounter() {
 		return counter;
 	}
-
+	
 	/**
-	 * compare user with another user in terms of name and age
+	 * make comparison
 	 */
 	@Override
 	public int compareTo(User that) {
+		//firstName, lastName, gender, occupation, zip
 		int compareFirstName = firstName.toLowerCase().compareTo(that.firstName.toLowerCase());
 		int compareLastName = lastName.toLowerCase().compareTo(that.lastName.toLowerCase());
+		int compareGender = gender.toLowerCase().compareTo(that.gender.toLowerCase());
+		int compareOccu = occupation.toLowerCase().compareTo(that.occupation);
+		int compareZip = zip.toLowerCase().compareTo(that.zip.toLowerCase());
 		if (compareFirstName < 0)
 			return -1;
 		if (compareFirstName > 0)
@@ -250,6 +254,18 @@ public class User implements Comparable<User> {
 		if (age < that.age)
 			return -1;
 		if (age > that.age)
+			return 1;
+		if (compareGender < 0)
+			return -1;
+		if (compareGender > 0)
+			return 1;
+		if (compareOccu < 0)
+			return -1;
+		if (compareOccu > 0)
+			return 1;
+		if (compareZip < 0)
+			return -1;
+		if (compareZip > 0)
 			return 1;
 		return 0;
 	}
@@ -281,5 +297,28 @@ public class User implements Comparable<User> {
 			return false;
 		String result = toCheck.trim();
 		return result.length() > 0 && result.length() <= length;
+	}
+	
+
+	/**
+	 * compare user with another user in terms of name and age
+	 */
+	@Override
+	public int queryCompareTo(User that) {
+		int compareFirstName = firstName.toLowerCase().compareTo(that.firstName.toLowerCase());
+		int compareLastName = lastName.toLowerCase().compareTo(that.lastName.toLowerCase());
+		if (compareFirstName < 0)
+			return -1;
+		if (compareFirstName > 0)
+			return 1;
+		if (compareLastName < 0)
+			return -1;
+		if (compareLastName > 0)
+			return 1;
+		if (age < that.age)
+			return -1;
+		if (age > that.age)
+			return 1;
+		return 0;
 	}
 }

@@ -11,6 +11,7 @@ import java.util.List;
 
 import edu.princeton.cs.introcs.Stopwatch;
 import models.Movie;
+import models.Query;
 import models.Rating;
 import models.User;
 import utils.CSVLoader;
@@ -367,7 +368,7 @@ public class Recommender {
 	 * @return user
 	 * @throws Exception
 	 */
-	public ArrayList<Comparable> searchUser(String firstName, String lastName, int age) throws Exception {
+	public ArrayList<Query> searchUser(String firstName, String lastName, int age) throws Exception {
 		User query = new User(firstName, lastName, age);
 		int position = search(users, userIdList, query);
 		if(position == -1)
@@ -382,7 +383,7 @@ public class Recommender {
 	 * @return movie
 	 * @throws Exception
 	 */
-	public ArrayList<Comparable> searchMovie(String title) throws Exception {
+	public ArrayList<Query> searchMovie(String title) throws Exception {
 		Movie query = new Movie(title);
 		int position = search(movies, movieIdList, query);
 		if(position == -1)
@@ -693,6 +694,24 @@ public class Recommender {
 				else if (result < 0) {
 					lo = mid + 1;
 				}
+				else {
+					//left
+					for(int i = mid - 1; i >= 0; i--) {
+						Comparable left = map.get(ids.get(i));
+						if(left.compareTo(midObject) != 0)
+							return i;
+					}
+					
+					//right
+					for(int i = mid + 1; i < ids.size(); i++) {
+						Comparable right = map.get(ids.get(i));
+						if(right.compareTo(midObject) != 0)
+							return i;
+					}
+					
+					//getting to this point is an error
+					throw new Exception("Error searching position");
+				}
 			}
 			// if(lo != hi)
 			// throw new Exception();
@@ -709,7 +728,7 @@ public class Recommender {
 	 * @param query
 	 * @return found position
 	 */
-	private int search(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids, Comparable query) {
+	private int search(HashMap<Long, ? extends Query> map, ArrayList<Long> ids, Query query) {
 		int foundPos = -1;
 		if (map.size() > 0) {
 			int lo = 0;
@@ -717,8 +736,8 @@ public class Recommender {
 			while (lo <= hi) {
 				int mid = (lo + hi) / 2;
 				long midId = ids.get(mid);
-				Comparable midObject = map.get(midId);
-				int result = midObject.compareTo(query);
+				Query midObject = map.get(midId);
+				int result = midObject.queryCompareTo(query);
 				if (result > 0)
 					hi = mid - 1;
 				else if (result < 0) {
@@ -742,19 +761,19 @@ public class Recommender {
 	 * @param foundPos
 	 * @return list of similar items
 	 */
-	private ArrayList<Comparable> rippleSearch(HashMap<Long, ? extends Comparable> map, ArrayList<Long> ids,
-			Comparable query, int foundPos) {
-		ArrayList<Comparable> results = new ArrayList<>();
+	private ArrayList<Query> rippleSearch(HashMap<Long, ? extends Query> map, ArrayList<Long> ids,
+			Query query, int foundPos) {
+		ArrayList<Query> results = new ArrayList<>();
 
 		if (map.size() > 0 && foundPos >= 0 && foundPos < map.size()) {
 			// ripple
-			Comparable thisObject = map.get(ids.get(foundPos));
+			Query thisObject = map.get(ids.get(foundPos));
 			results.add(thisObject);
 			// left
 			for (int i = foundPos - 1; i >= 0; i--) {
 				long objID = ids.get(i);
-				Comparable that = map.get(objID);
-				if (thisObject.compareTo(that) == 0)
+				Query that = map.get(objID);
+				if (thisObject.queryCompareTo(that) == 0)
 					results.add(that);
 				else
 					break;
@@ -763,8 +782,8 @@ public class Recommender {
 			// right
 			for (int i = foundPos + 1; i < ids.size(); i++) {
 				long objID = ids.get(i);
-				Comparable that = map.get(objID);
-				if (thisObject.compareTo(that) == 0)
+				Query that = map.get(objID);
+				if (thisObject.queryCompareTo(that) == 0)
 					results.add(that);
 				else
 					break;

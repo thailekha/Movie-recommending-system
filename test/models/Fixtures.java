@@ -33,6 +33,7 @@ public class Fixtures {
 	}
 	
 	public static User[] getSimilarUsers() throws Exception {
+		//Note the first one is later on duplicated
 		return new User[]{new User("Tom", "Cat", 99, "M", "other", "234567"),
 				new User("Tom ", "SuperCat", 88, "M", "other", "234567"),
 				new User("Tom", "Cat", 99, "M", "other", "234567"),
@@ -59,10 +60,16 @@ public class Fixtures {
 		return new Movie[] {
 				new Movie("Toy Story (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)",
 						"0001110000000000000"),
+				
+				//3
 				new Movie("GoldenEye (1995)", "01-Jan-1995", "us.imdb.com/M/title-exact?GoldenEye%20(1995)",
 						"0110000000000000100"),
+				
+				//1
 				new Movie("GoldenEye (1995)", "01-Jan-1995", "http://us.imdb.com/M/",
 						"0110000000000000100"),
+				
+				//2
 				new Movie("GoldenEye (1995)", "01-Jan-1995", "http://us.imdb.com/M/title-exact?GoldenEye%20(1995)",
 						"0110000000000000100") ,
 				new Movie("Shanghai Triad (Yao a yao yao dao waipo qiao) (1995)", "01-Jan-1995", "http://us.imdb.com/Title?Yao+a+yao+yao+dao+waipo+qiao+(1995)",

@@ -18,6 +18,7 @@ import org.junit.Test;
 import edu.princeton.cs.introcs.Stopwatch;
 import models.Fixtures;
 import models.Movie;
+import models.Query;
 import models.Rating;
 import models.User;
 import utils.CSVLoader;
@@ -114,6 +115,7 @@ public class RecommenderTest {
 			}
 			ArrayList<Long> ids = r.getUserIdList();
 			assertEquals(ids.size(), r.getUsersSize());
+			assertEquals(ids.size(), users.length);
 
 			assertEquals(r.getUser(ids.get(0)).getFirstName(),"a");
 			assertEquals(r.getUser(ids.get(1)).getFirstName(),"b");
@@ -125,7 +127,30 @@ public class RecommenderTest {
 			fail("Exception thrown");
 		}
 	}
-
+	
+	/**
+	 * right
+	 */
+	@Test
+	public void testSortMovies() {
+		try {
+			Movie[] movies = Fixtures.getSimilarMovies();
+			for (int i = 0; i < movies.length; i++) {
+				r.addMovie(movies[i]);
+			}
+			
+			ArrayList<Long> ids = r.getMovieIdList();
+			assertEquals(ids.size(), r.getMovies().size());
+			assertEquals(ids.size(), movies.length);
+			
+			assertEquals(r.getMovie(ids.get(0)).getUrl(),"http://us.imdb.com/M/");
+			assertEquals(r.getMovie(ids.get(1)).getUrl(),"http://us.imdb.com/M/title-exact?GoldenEye%20(1995)");
+			assertEquals(r.getMovie(ids.get(2)).getUrl(),"us.imdb.com/M/title-exact?GoldenEye%20(1995)");
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+	
 	/**
 	 * right and conformance
 	 */
@@ -136,7 +161,7 @@ public class RecommenderTest {
 			for (int i = 0; i < users.length; i++) {
 				r.addUser(users[i]);
 			}
-			ArrayList<Comparable> searchU = r.searchUser("tom", "cat", 99);
+			ArrayList<Query> searchU = r.searchUser("tom", "cat", 99);
 			assertNotNull(searchU);
 			assertEquals(searchU.size(),1);
 			assertTrue(searchU.get(0) instanceof User);
@@ -146,7 +171,7 @@ public class RecommenderTest {
 			for (int i = 0; i < movies.length; i++) {
 				r.addMovie(movies[i]);
 			}
-			ArrayList<Comparable> searchM = r.searchMovie("Get Shorty (1995)");
+			ArrayList<Query> searchM = r.searchMovie("Get Shorty (1995)");
 			assertNotNull(searchM);
 			assertEquals(searchM.size(),1);
 			assertTrue(searchM.get(0) instanceof Movie);
@@ -166,15 +191,15 @@ public class RecommenderTest {
 			for (int i = 0; i < users.length; i++) {
 				r.addUser(users[i]);
 			}
-			ArrayList<Comparable> searchU = r.searchUser("tom", "cat", 99);
+			ArrayList<Query> searchU = r.searchUser("tom", "cat", 99);
 			assertNotNull(searchU);
-			assertEquals(searchU.size(),5);
+			assertEquals(searchU.size(),4);
 			
 			Movie[] movies = Fixtures.getSimilarMovies();
 			for (int i = 0; i < movies.length; i++) {
 				r.addMovie(movies[i]);
 			}
-			ArrayList<Comparable> searchM = r.searchMovie("Get Shorty (1995)");
+			ArrayList<Query> searchM = r.searchMovie("GoldenEye (1995)");
 			assertNotNull(searchM);
 			assertEquals(searchM.size(),3);
 		} catch (Exception e) {

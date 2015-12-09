@@ -10,7 +10,7 @@ import com.google.common.math.DoubleMath;
 
 import utils.ToJsonString;
 
-public class Movie implements Comparable<Movie> {
+public class Movie implements Comparable<Movie>, Query<Movie> {
 
 	private static HashMap<Integer, String> genres = new HashMap<>();
 	private static long counter = 1;
@@ -209,17 +209,32 @@ public class Movie implements Comparable<Movie> {
 			return false;
 		}
 	}
-
+	
 	/**
-	 * Make comparison with another movie object (mainly for sorting by movie
-	 * title)
+	 * Make comparison
+	 * @param other movie object
+	 * @return
 	 */
-	@Override
 	public int compareTo(Movie that) {
-		int compareTitle = title.toLowerCase().compareTo(that.title.toLowerCase());
-		if (compareTitle < 0)
+		int cTitle = title.toLowerCase().compareTo(that.title.toLowerCase());
+		int cReleaseDate = releaseDate.toLowerCase().compareTo(that.releaseDate.toLowerCase());
+		int cUrl = url.toLowerCase().compareTo(that.url.toLowerCase());
+		int cGenreCode = genreCode.compareTo(that.genreCode);
+		if (cTitle < 0)
 			return -1;
-		if (compareTitle > 0)
+		if (cTitle > 0)
+			return 1;
+		if (cReleaseDate < 0)
+			return -1;
+		if (cReleaseDate > 0)
+			return 1;
+		if (cUrl < 0)
+			return -1;
+		if (cUrl > 0)
+			return 1;
+		if (cGenreCode < 0)
+			return -1;
+		if (cGenreCode > 0)
 			return 1;
 		return 0;
 	}
@@ -380,6 +395,20 @@ public class Movie implements Comparable<Movie> {
 		if(ratings.containsKey(userId)) {
 			ratings.remove(userId);
 		}
+	}
+
+	/**
+	 * Make comparison with another movie object (mainly for sorting by movie
+	 * title)
+	 */
+	@Override
+	public int queryCompareTo(Movie that) {
+		int compareTitle = title.toLowerCase().compareTo(that.title.toLowerCase());
+		if (compareTitle < 0)
+			return -1;
+		if (compareTitle > 0)
+			return 1;
+		return 0;
 	}
 
 //	public static void decrementCounter() {
