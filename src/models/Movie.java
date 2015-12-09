@@ -163,9 +163,14 @@ public class Movie implements Comparable<Movie> {
 	 * @return string of the movie's details
 	 */
 	public String info() {
+		if(ratings.size() > 0) {
 		double roundedPoint = ((int) getAveragePoint() * 10) / 10;
 		return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre() + "\nAverage point: "
 				+ roundedPoint;
+		}	
+		else {
+			return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre();
+		}
 	}
 
 	/**

@@ -11,8 +11,8 @@ import models.Rating;
 import models.User;
 
 public class CSVLoader {
-	private HashMap<Long,Long> userIdTranlator = new HashMap<>();
-	private HashMap<Long,Long> movieIdTranlator = new HashMap<>();
+	private HashMap<Long, Long> userIdTranlator = new HashMap<>();
+	private HashMap<Long, Long> movieIdTranlator = new HashMap<>();
 	private String users, movies, ratings, genres;
 
 	public CSVLoader(String users, String movies, String ratings, String genres) {
@@ -22,20 +22,20 @@ public class CSVLoader {
 		this.genres = genres;
 	}
 
-	public HashMap<Long,Long> getUserIdTranlator() {
+	public HashMap<Long, Long> getUserIdTranlator() {
 		return userIdTranlator;
 	}
-	
-	public HashMap<Long,Long> getMovieIdTranlator() {
+
+	public HashMap<Long, Long> getMovieIdTranlator() {
 		return movieIdTranlator;
 	}
-	
-	public HashMap<Integer,String> loadGenres() throws Exception {
+
+	public HashMap<Integer, String> loadGenres() throws Exception {
 		File file = new File(genres);
 		In ins = new In(file);
 		try {
 			String delims = "[|]";
-			HashMap<Integer,String> result = new HashMap<>();
+			HashMap<Integer, String> result = new HashMap<>();
 			while (!ins.isEmpty()) {
 				String details = ins.readLine();
 				String[] tokens = details.split(delims);
@@ -52,7 +52,7 @@ public class CSVLoader {
 			ins.close();
 		}
 	}
-	
+
 	public HashSet<User> loadUsers() throws Exception {
 		File file = new File(users);
 		In ins = new In(file);
@@ -72,13 +72,16 @@ public class CSVLoader {
 					String zip = tokens[6];
 					User toAdd = new User(firstName, lastName, age, gender, occupation, zip);
 					Long translation = userIdTranlator.put(id, toAdd.getUserId());
-					if(translation != null)
+					if (translation != null)
 						throw new Exception("Duplicate ids detected in <" + users + ">");
+					if (result.contains(toAdd))
+						System.out.println("Duplicate user: " + toAdd.getFirstName() + " " + toAdd.getLastName());
 					result.add(toAdd);
 				} else {
 					throw new Exception("Invalid member length: " + tokens.length);
 				}
 			}
+			System.out.println("Loaded " + result.size() + " users");
 			return result;
 		} finally {
 			ins.close();
@@ -105,14 +108,16 @@ public class CSVLoader {
 						genreCode += tokens[i];
 					Movie toAdd = new Movie(title, releaseDate, url, genreCode);
 					Long translation = movieIdTranlator.put(id, toAdd.getMovieId());
-					if(translation != null)
+					if (translation != null)
 						throw new Exception("Duplicate ids detected in <" + movies + ">");
+					if (result.contains(toAdd))
+						System.out.println("Duplicate movie: " + toAdd.getTitle());
 					result.add(toAdd);
 				} else {
 					throw new Exception("Invalid member length: " + tokens.length);
 				}
 			}
-
+			System.out.println("Loaded " + result.size() + " movies");
 			ins.close();
 			return result;
 		} finally {
@@ -134,10 +139,10 @@ public class CSVLoader {
 					long movieId = Long.parseLong(tokens[1]);
 					int rating = Integer.parseInt(tokens[2]);
 					long timestamp = Long.parseLong(tokens[3]);
-					
+
 					Long translatedUserId = userIdTranlator.get(userId);
 					Long translatedMovieId = movieIdTranlator.get(movieId);
-					if(translatedUserId == null || translatedMovieId == null) {
+					if (translatedUserId == null || translatedMovieId == null) {
 						System.out.println("null");
 					}
 					result.add(new Rating(translatedUserId, translatedMovieId, rating, timestamp));
@@ -145,6 +150,7 @@ public class CSVLoader {
 					throw new Exception("Invalid member length: " + tokens.length);
 				}
 			}
+			System.out.println("Loaded " + result.size() + " ratings");
 			return result;
 		} finally {
 			ins.close();

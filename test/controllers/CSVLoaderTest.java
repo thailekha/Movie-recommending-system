@@ -34,6 +34,9 @@ public class CSVLoaderTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * Right and cardinality
+	 */
 	@Test
 	public void testLoadGenres() {
 		try {
@@ -54,6 +57,9 @@ public class CSVLoaderTest {
 		}
 	}
 
+	/**
+	 * Right and cardinality
+	 */
 	@Test
 	public void testLoadUsers() {
 		try {
@@ -71,6 +77,9 @@ public class CSVLoaderTest {
 		}
 	}
 
+	/**
+	 * Right
+	 */
 	@Test
 	public void testLoadMovies() {
 		try {
@@ -85,11 +94,12 @@ public class CSVLoaderTest {
 		}
 	}
 
+	/**
+	 * Right and Cardinality
+	 */
 	@Test
 	public void testLoadRatings() {
 		try {
-			// Fixtures.sampleDataUsers();
-			// Fixtures.getMovies();
 			c.loadUsers();
 			c.loadMovies();
 			HashSet<Rating> ratings = c.loadRatings();
