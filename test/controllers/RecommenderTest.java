@@ -347,10 +347,50 @@ public class RecommenderTest {
 	}
 
 	/**
-	 * right
+	 * right and cardinality
 	 */
 	@Test
 	public void testRemoveUser() {
+		try {
+			User[] users = Fixtures.getUsers();
+			for (int i = 0; i < users.length; i++) {
+				r.addUser(users[i]);
+			}
+			Movie[] movies = Fixtures.getMovies();
+			for (int i = 0; i < movies.length; i++) {
+				r.addMovie(movies[i]);
+			}
+
+			r.addRating(1, 2, 5);
+			r.addRating(1, 3, 1);
+			r.addRating(1, 1, -3);
+
+			Movie ratedMovie1 = r.getMovie((long) 1);
+			Movie ratedMovie2 = r.getMovie((long) 2);
+			Movie ratedMovie3 = r.getMovie((long) 3);
+
+			assertEquals(ratedMovie1.getRatings().size(), 1);
+			assertEquals(ratedMovie2.getRatings().size(), 1);
+			assertEquals(ratedMovie3.getRatings().size(), 1);
+
+			r.removeUser(1);
+			assertEquals(r.getUsersSize(), users.length - 1);
+
+			// check that ratings made by user are gone
+			assertEquals(ratedMovie1.getRatings().size(), 0);
+			assertEquals(ratedMovie2.getRatings().size(), 0);
+			assertEquals(ratedMovie3.getRatings().size(), 0);
+
+		} catch (Exception e) {
+			fail("Exception thrown");
+		}
+	}
+	
+	/**
+	 * right
+	 */
+	@Test
+	public void testRemoveAllUser() {
 		try {
 			User[] users = Fixtures.getUsers();
 			for (int i = 0; i < users.length; i++) {
