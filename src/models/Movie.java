@@ -165,10 +165,10 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 	public String info() {
 		if (ratings.size() > 0) {
 			double roundedPoint = ((int) getAveragePoint() * 10) / 10;
-			return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre() + "\nAverage point: "
+			return title + ", " + "<ID: " + movieId + ">, " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre() + "\nAverage point: "
 					+ roundedPoint;
 		} else {
-			return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre();
+			return title + ", " + "<ID: " + movieId + ">, " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre();
 		}
 	}
 

@@ -79,7 +79,10 @@ public class Driver {
 			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) {
 		try {
 			User newU = recommender.addUser(firstName, lastName, age, gender, occupation, zip);
-			System.out.println("New user added:\n" + newU.info());
+			if(newU == null)
+				System.out.println("Error, user already existed");
+			else
+				System.out.println("New user added:\n" + newU.info());
 		} catch (Exception e) {
 			System.out.println("Error.");
 			System.out.println(e.getMessage());
@@ -92,7 +95,10 @@ public class Driver {
 			@Param(name = "Genre code") String genreCode) {
 		try {
 			Movie newM = recommender.addMovie(title, releaseDate, url, genreCode);
-			System.out.println("New movie added:\n" + newM.info());
+			if(newM == null)
+				System.out.println("Error, movie already existed");
+			else
+				System.out.println("New movie added:\n" + newM.info());
 		} catch (Exception e) {
 			System.out.println("Error.");
 			System.out.println(e.getMessage());

@@ -169,6 +169,9 @@ public class Recommender {
 		if (!users.containsValue(u)) {
 			putUser(u);
 		}
+		else {
+			return null;
+		}
 		return u;
 	}
 
@@ -214,6 +217,9 @@ public class Recommender {
 		Movie m = new Movie(title, releaseDate, url, genreCode);
 		if (!movies.containsValue(m)) {
 			putMovie(m);
+		}
+		else {
+			return null;
 		}
 		return m;
 	}
