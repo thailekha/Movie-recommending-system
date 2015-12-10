@@ -111,16 +111,19 @@ public class Recommender {
 	 * @return string
 	 */
 	public String printUserRatings(long userId) {
-		String toPrint = "";
-		toPrint += users.get(userId).info() + "\n";
-		ArrayList<Rating> ratings = getUserRatings(userId);
-		if (ratings.size() > 0) {
-			for (Rating r : ratings) {
-				toPrint += r.getRating() + " => " + "<Movie ID - " + r.getMovieId() + "> "
-						+ movies.get(r.getMovieId()).info() + "\n";
+		String toPrint = "User not found";
+		if (users.containsKey(userId)) {
+			toPrint = "";
+			toPrint += users.get(userId).info() + "\n";
+			ArrayList<Rating> ratings = getUserRatings(userId);
+			if (ratings.size() > 0) {
+				for (Rating r : ratings) {
+					toPrint += r.getRating() + " => " + "<Movie ID - " + r.getMovieId() + "> "
+							+ movies.get(r.getMovieId()).info() + "\n";
+				}
+			} else {
+				toPrint += "Not available";
 			}
-		} else {
-			toPrint += "Not available";
 		}
 		return toPrint;
 	}
@@ -157,14 +160,16 @@ public class Recommender {
 	 * @param gender
 	 * @param occupation
 	 * @param zip
+	 * @return 
 	 * @throws Exception
 	 */
-	public void addUser(String firstName, String lastName, int age, String gender, String occupation, String zip)
+	public User addUser(String firstName, String lastName, int age, String gender, String occupation, String zip)
 			throws Exception {
 		User u = new User(firstName, lastName, age, gender, occupation, zip);
 		if (!users.containsValue(u)) {
 			putUser(u);
 		}
+		return u;
 	}
 
 	/**
@@ -205,11 +210,12 @@ public class Recommender {
 	 * @param genreCode
 	 * @throws Exception
 	 */
-	public void addMovie(String title, String releaseDate, String url, String genreCode) throws Exception {
+	public Movie addMovie(String title, String releaseDate, String url, String genreCode) throws Exception {
 		Movie m = new Movie(title, releaseDate, url, genreCode);
 		if (!movies.containsValue(m)) {
 			putMovie(m);
 		}
+		return m;
 	}
 
 	/**
@@ -249,7 +255,9 @@ public class Recommender {
 	 * @return user
 	 */
 	public User getUser(Long id) {
-		return users.get(id);
+		if (users.containsKey(id))
+			return users.get(id);
+		return null;
 	}
 
 	/**
@@ -289,12 +297,14 @@ public class Recommender {
 	 *            point
 	 * @throws Exception
 	 */
-	public void addRating(long userId, long movieId, int rating) throws Exception {
+	public Rating addRating(long userId, long movieId, int rating) throws Exception {
 		if (users.containsKey(userId) && movies.containsKey(movieId)) {
 			// User user = users.get(userId);
 			Rating r = new Rating(userId, movieId, rating);
 			putRating(r);
+			return r;
 		}
+		return null;
 	}
 
 	/**
@@ -399,7 +409,13 @@ public class Recommender {
 	public List<Movie> getTopTenMovies() {
 		List<Movie> topten = new ArrayList<>();
 		if (movies.size() > 0) {
-			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>(movies.values());
+			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>();
+			Iterator<Movie> ite = movies.values().iterator();
+			while(ite.hasNext()) {
+				Movie mo = ite.next();
+				if(mo.getRatings().size() > 0)
+					movieByAvrRatingPoint.add(mo);
+			}
 			Collections.sort(movieByAvrRatingPoint, new Comparator<Movie>() {
 				@Override // descending order
 				public int compare(Movie m1, Movie m2) {
@@ -420,7 +436,7 @@ public class Recommender {
 		}
 		return topten;
 	}
-
+	
 	/**
 	 * load CSV file
 	 * 

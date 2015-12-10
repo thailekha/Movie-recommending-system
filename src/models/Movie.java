@@ -163,12 +163,11 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 	 * @return string of the movie's details
 	 */
 	public String info() {
-		if(ratings.size() > 0) {
-		double roundedPoint = ((int) getAveragePoint() * 10) / 10;
-		return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre() + "\nAverage point: "
-				+ roundedPoint;
-		}	
-		else {
+		if (ratings.size() > 0) {
+			double roundedPoint = ((int) getAveragePoint() * 10) / 10;
+			return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre() + "\nAverage point: "
+					+ roundedPoint;
+		} else {
 			return title + ", " + releaseDate + ", " + url + ", " + "\nGenre(s): " + printGenre();
 		}
 	}
@@ -209,10 +208,12 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Make comparison
-	 * @param other movie object
+	 * 
+	 * @param other
+	 *            movie object
 	 * @return
 	 */
 	public int compareTo(Movie that) {
@@ -318,12 +319,15 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 	 * @return true if valid
 	 */
 	private boolean checkGenreCode(String code) {
-		String c = code.trim();
-		for (int i = 0; i < c.length(); i++) {
-			if (!(c.charAt(i) == '0' || c.charAt(i) == '1'))
-				return false;
+		if (code != null && code.length() == 19) {
+			String c = code.trim();
+			for (int i = 0; i < c.length(); i++) {
+				if (!(c.charAt(i) == '0' || c.charAt(i) == '1'))
+					return false;
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -390,9 +394,9 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 		}
 		return genres;
 	}
-	
+
 	public void removeRating(long userId) {
-		if(ratings.containsKey(userId)) {
+		if (ratings.containsKey(userId)) {
 			ratings.remove(userId);
 		}
 	}
@@ -411,7 +415,7 @@ public class Movie implements Comparable<Movie>, Query<Movie> {
 		return 0;
 	}
 
-//	public static void decrementCounter() {
-//		counter--;
-//	}
+	// public static void decrementCounter() {
+	// counter--;
+	// }
 }

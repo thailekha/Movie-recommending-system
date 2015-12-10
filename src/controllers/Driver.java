@@ -44,15 +44,15 @@ public class Driver {
 		String smallR = "small_data/ratings5.dat";
 		File jsonDatastore = new File("datastore/store.json");
 		File xmlDatastote = new File("datastore/store.xml");
-		
+
 		CSVLoader bigCSV = new CSVLoader(bigU, bigM, bigR, genre);
 		CSVLoader smallCSV = new CSVLoader(smallU, smallM, smallR, genre);
 		JSONSerializer json = new JSONSerializer(jsonDatastore);
 		XMLSerializer xml = new XMLSerializer(xmlDatastote);
-		
+
 		int csv = choose("Big or small CSV data?\n1)Big\n2)Small\n==>");
 		int seri = choose("JSON or XML?\n1)JSON\n2)XML\n==>");
-		
+
 		recommender = new Recommender(seri == 1 ? json : xml, csv == 1 ? bigCSV : smallCSV);
 	}
 
@@ -78,7 +78,8 @@ public class Driver {
 			@Param(name = "age") int age, @Param(name = "gender") String gender,
 			@Param(name = "occupation") String occupation, @Param(name = "zip") String zip) {
 		try {
-			recommender.addUser(firstName, lastName, age, gender, occupation, zip);
+			User newU = recommender.addUser(firstName, lastName, age, gender, occupation, zip);
+			System.out.println("New user added:\n" + newU.info());
 		} catch (Exception e) {
 			System.out.println("Error.");
 			System.out.println(e.getMessage());
@@ -90,7 +91,8 @@ public class Driver {
 			@Param(name = "Movie release date") String releaseDate, @Param(name = "Movie url") String url,
 			@Param(name = "Genre code") String genreCode) {
 		try {
-			recommender.addMovie(title, releaseDate, url, genreCode);
+			Movie newM = recommender.addMovie(title, releaseDate, url, genreCode);
+			System.out.println("New movie added:\n" + newM.info());
 		} catch (Exception e) {
 			System.out.println("Error.");
 			System.out.println(e.getMessage());
@@ -100,9 +102,13 @@ public class Driver {
 	@Command(description = "Get all movies details")
 	public void getMovies() {
 		HashMap<Long, Movie> movies = recommender.getMovies();
-		ArrayList<Long> sequence = recommender.getMovieIdList();
-		for (long id : sequence) {
-			System.out.println(movies.get(id).info());
+		if (movies.size() > 0) {
+			ArrayList<Long> sequence = recommender.getMovieIdList();
+			for (long id : sequence) {
+				System.out.println(movies.get(id).info());
+			}
+		} else {
+			System.out.println("Unavailable");
 		}
 	}
 
@@ -118,8 +124,12 @@ public class Driver {
 	@Command(description = "Get all users details")
 	public void getUsers() {
 		ArrayList<Long> ids = recommender.getUserIdList();
-		for (Long id : ids) {
-			System.out.println(recommender.getUser(id).info());
+		if (ids.size() > 0) {
+			for (Long id : ids) {
+				System.out.println(recommender.getUser(id).info());
+			}
+		} else {
+			System.out.println("Unavailable");
 		}
 	}
 
@@ -130,7 +140,11 @@ public class Driver {
 
 	@Command(description = "Get user details")
 	public void getUserDetails(@Param(name = "User ID") long userId) {
-		System.out.println(recommender.getUser(userId).info());
+		User user = recommender.getUser(userId);
+		if (user != null)
+			System.out.println(user.info());
+		else
+			System.out.println("User not found");
 	}
 
 	@Command(description = "Look up user(s)")
@@ -187,7 +201,17 @@ public class Driver {
 	public void rateMovie(@Param(name = "User ID") Long userId, @Param(name = "Movie ID") Long movieId,
 			@Param(name = "Rating") int rating) {
 		try {
-			recommender.addRating(userId, movieId, rating);
+			if (recommender.getUsers().size() == 0 || recommender.getMovies().size() == 0) {
+				System.out.println("Rating function unavailable");
+			} else {
+				Rating r = recommender.addRating(userId, movieId, rating);
+				if (r != null) {
+					User u = recommender.getUser(userId);
+					Movie m = recommender.getMovie(movieId);
+					System.out.println("Rating added:\nUser " + u.getFirstName() + " " + u.getLastName() + " rated "
+							+ m.getTitle() + " " + r.getRating());
+				}
+			}
 		} catch (Exception e) {
 			System.out.println("Error.");
 			System.out.println(e.getMessage());
@@ -258,7 +282,7 @@ public class Driver {
 			System.out.println("User not found");
 		else {
 			if (movies.size() == 0) {
-				getTopten(); //hasn't rated anything
+				getTopten(); // hasn't rated anything
 			} else {
 				System.out.println(movies.size() + " recommended movies");
 				for (Movie movie : movies) {
@@ -278,7 +302,7 @@ public class Driver {
 			System.out.println("User not found");
 		else {
 			if (movies.size() == 0) {
-				getTopten(); //hasn't rated anything
+				getTopten(); // hasn't rated anything
 			} else {
 				System.out.println(movies.size() + " recommended movies");
 				for (Movie movie : movies) {
