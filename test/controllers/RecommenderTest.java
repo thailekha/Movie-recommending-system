@@ -610,17 +610,6 @@ public class RecommenderTest {
 			assertEquals(ratings.get(5).getRating(), -3);
 			assertEquals(ratings.get(6).getRating(), -5);
 
-			assertEquals(r.printUserRatings((long) 1), "Tom Cat, 99, M, other, 234567, Rated 7 movies  $$ ID: 1\n5 => "
-					+ "<Movie ID - 5> e, 01-Jan-1995, http://, \nGenre(s): [drama]\n"
-					+ "Average point: 5.0\n3 => <Movie ID - 4> d, 01-Jan-1995, http://, "
-					+ "\nGenre(s): [comedy,action,drama]\nAverage point: 3.0\n1 => "
-					+ "<Movie ID - 1> a, 01-Jan-1995, http://, \nGenre(s): [comedy,animation,children's]\n"
-					+ "Average point: 1.0\n0 => <Movie ID - 2> b, 01-Jan-1995, http://, \n"
-					+ "Genre(s): [adventure,thriller,action]\nAverage point: 0.0\n-1 => <Movie ID - 6> f, "
-					+ "01-Jan-1995, http://, \nGenre(s): [comedy,animation,children's]\nAverage point: -1.0\n-3 "
-					+ "=> <Movie ID - 7> g, 01-Jan-1995, http://, \nGenre(s): [adventure,thriller,action]\n"
-					+ "Average point: -3.0\n-5 => <Movie ID - 3> c, 01-Jan-1995, http://, \nGenre(s): [thriller]\nAverage point: -5.0\n");
-
 			r.addUser("T", "C", 9, "M", "other", "234567");
 			assertEquals(r.printUserRatings((long) 2),
 					"T C, 9, M, other, 234567, Rated 0 movies  $$ ID: 2\nNot available");
