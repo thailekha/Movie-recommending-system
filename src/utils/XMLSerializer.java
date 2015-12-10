@@ -15,14 +15,13 @@ public class XMLSerializer implements Serializer {
 	private Stack stack = new Stack();
 	private File file;
 
-	
 	public XMLSerializer(File file) {
 		this.file = file;
 	}
 
 	@Override
 	public void push(Object o) {
-		if(o != null)
+		if (o != null)
 			stack.push(o);
 	}
 
@@ -35,18 +34,22 @@ public class XMLSerializer implements Serializer {
 	}
 
 	@Override
-	public void read() throws Exception {
-		ObjectInputStream is = null; // is: in-stream
+	public int read() throws Exception {
+		if (file.isFile()) {
+			ObjectInputStream is = null; // is: in-stream
 
-		try {
-			XStream xstream = new XStream(new DomDriver());
-			is = xstream.createObjectInputStream(new FileReader(file));
-			stack = (Stack) is.readObject();
-		} finally {
-			if (is != null) {
-				is.close();
+			try {
+				XStream xstream = new XStream(new DomDriver());
+				is = xstream.createObjectInputStream(new FileReader(file));
+				stack = (Stack) is.readObject();
+			} finally {
+				if (is != null) {
+					is.close();
+				}
 			}
+			return 1;
 		}
+		return -1;
 	}
 
 	@Override

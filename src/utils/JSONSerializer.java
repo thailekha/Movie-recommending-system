@@ -59,18 +59,20 @@ public class JSONSerializer implements Serializer {
 	}
 
 	@Override
-	public void read() throws Exception {
-		// TODO Auto-generated method stub
-		ObjectInputStream is = null;
-		try {
-			XStream xstream = new XStream(new JettisonMappedXmlDriver());
-			is = xstream.createObjectInputStream(new FileReader(file));
-			buffer = (Stack) is.readObject();
+	public int read() throws Exception {
+		if (file.isFile()) {
+			ObjectInputStream is = null;
+			try {
+				XStream xstream = new XStream(new JettisonMappedXmlDriver());
+				is = xstream.createObjectInputStream(new FileReader(file));
+				buffer = (Stack) is.readObject();
+			} finally {
+				if (is != null)
+					is.close();
+			}
+			return 1;
 		}
-		finally {
-			if (is != null)
-				is.close();
-		}
+		return -1;
 	}
 
 }

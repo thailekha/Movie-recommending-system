@@ -160,7 +160,7 @@ public class Recommender {
 	 * @param gender
 	 * @param occupation
 	 * @param zip
-	 * @return 
+	 * @return
 	 * @throws Exception
 	 */
 	public User addUser(String firstName, String lastName, int age, String gender, String occupation, String zip)
@@ -168,8 +168,7 @@ public class Recommender {
 		User u = new User(firstName, lastName, age, gender, occupation, zip);
 		if (!users.containsValue(u)) {
 			putUser(u);
-		}
-		else {
+		} else {
 			return null;
 		}
 		return u;
@@ -217,8 +216,7 @@ public class Recommender {
 		Movie m = new Movie(title, releaseDate, url, genreCode);
 		if (!movies.containsValue(m)) {
 			putMovie(m);
-		}
-		else {
+		} else {
 			return null;
 		}
 		return m;
@@ -417,9 +415,9 @@ public class Recommender {
 		if (movies.size() > 0) {
 			List<Movie> movieByAvrRatingPoint = new ArrayList<Movie>();
 			Iterator<Movie> ite = movies.values().iterator();
-			while(ite.hasNext()) {
+			while (ite.hasNext()) {
 				Movie mo = ite.next();
-				if(mo.getRatings().size() > 0)
+				if (mo.getRatings().size() > 0)
 					movieByAvrRatingPoint.add(mo);
 			}
 			Collections.sort(movieByAvrRatingPoint, new Comparator<Movie>() {
@@ -442,7 +440,7 @@ public class Recommender {
 		}
 		return topten;
 	}
-	
+
 	/**
 	 * load CSV file
 	 * 
@@ -682,17 +680,22 @@ public class Recommender {
 	public void load() throws Exception {
 		Stopwatch watch = new Stopwatch();
 		System.out.println("Loading from datastore...");
-		serializer.read();
-		User.setCounter((long) serializer.pop());
-		Movie.setCounter((long) serializer.pop());
-		users = (HashMap<Long, User>) serializer.pop();
-		movies = (HashMap<Long, Movie>) serializer.pop();
-		userIdList = (ArrayList<Long>) serializer.pop();
-		movieIdList = (ArrayList<Long>) serializer.pop();
-		// ratings = (ArrayList<Rating>) serializer.pop();
-		ratingsSorted = (boolean) serializer.pop();
-		// ratingsDB = (HashBasedTable<Long, Long, Rating>) serializer.pop();
-		System.out.println("Completed, " + watch.elapsedTime() + " seconds");
+		int status = serializer.read();
+		if (status == 1) {
+			User.setCounter((long) serializer.pop());
+			Movie.setCounter((long) serializer.pop());
+			users = (HashMap<Long, User>) serializer.pop();
+			movies = (HashMap<Long, Movie>) serializer.pop();
+			userIdList = (ArrayList<Long>) serializer.pop();
+			movieIdList = (ArrayList<Long>) serializer.pop();
+			// ratings = (ArrayList<Rating>) serializer.pop();
+			ratingsSorted = (boolean) serializer.pop();
+			// ratingsDB = (HashBasedTable<Long, Long, Rating>)
+			// serializer.pop();
+			System.out.println("Completed, " + watch.elapsedTime() + " seconds");
+		} else {
+			System.out.println("Error: file does not exist");
+		}
 	}
 
 	/**
