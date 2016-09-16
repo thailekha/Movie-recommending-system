@@ -1,4 +1,4 @@
-Movie recommending system
+Movie recommending system (algorithms-assign2)
 
 The program can be run from Driver class in controller package
 
